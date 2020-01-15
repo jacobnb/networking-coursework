@@ -106,7 +106,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>Debug</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ANIMAL3D_SDK)lib\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\;$(ANIMAL3D_SDK)thirdparty\lib\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\;$(DEV_SDK_DIR)lib\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\;$(DEV_SDK_DIR)lib\$(PlatformTarget)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>animal3D.lib;animal3D-A3DM.lib;devil.lib;ilu.lib;ilut.lib;xinput1_3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>animal3D.lib;animal3D-A3DM.lib;devil.lib;ilu.lib;ilut.lib;xinput1_3.lib;RakNet.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>call "$(ANIMAL3D_SDK)utility\win\dev\animal3d_win_copy_build_call.bat" ".\lib\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\" ".\bin\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\animal3D-demos\" "$(TargetFileName)" "$(TargetFileName)" ".\bin\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\data\"</Command>
@@ -129,7 +129,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>Debug</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ANIMAL3D_SDK)lib\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\;$(ANIMAL3D_SDK)thirdparty\lib\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\;$(DEV_SDK_DIR)lib\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\;$(DEV_SDK_DIR)lib\$(PlatformTarget)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>animal3D.lib;animal3D-A3DM.lib;devil.lib;ilu.lib;ilut.lib;xinput1_3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>animal3D.lib;animal3D-A3DM.lib;devil.lib;ilu.lib;ilut.lib;xinput1_3.lib;RakNet.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>call "$(ANIMAL3D_SDK)utility\win\dev\animal3d_win_copy_build_call.bat" ".\lib\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\" ".\bin\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\animal3D-demos\" "$(TargetFileName)" "$(TargetFileName)" ".\bin\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\data\"</Command>
@@ -155,7 +155,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>No</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ANIMAL3D_SDK)lib\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\;$(ANIMAL3D_SDK)thirdparty\lib\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\;$(DEV_SDK_DIR)lib\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\;$(DEV_SDK_DIR)lib\$(PlatformTarget)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>animal3D.lib;animal3D-A3DM.lib;devil.lib;ilu.lib;ilut.lib;xinput1_3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>animal3D.lib;animal3D-A3DM.lib;devil.lib;ilu.lib;ilut.lib;xinput1_3.lib;RakNet.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
     <PostBuildEvent>
@@ -182,7 +182,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>No</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ANIMAL3D_SDK)lib\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\;$(ANIMAL3D_SDK)thirdparty\lib\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\;$(DEV_SDK_DIR)lib\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\;$(DEV_SDK_DIR)lib\$(PlatformTarget)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>animal3D.lib;animal3D-A3DM.lib;devil.lib;ilu.lib;ilut.lib;xinput1_3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>animal3D.lib;animal3D-A3DM.lib;devil.lib;ilu.lib;ilut.lib;xinput1_3.lib;RakNet.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
     <PostBuildEvent>
