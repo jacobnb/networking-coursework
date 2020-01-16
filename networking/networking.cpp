@@ -52,7 +52,7 @@ int main(void)
 		printf("Enter server IP or hit enter for 127.0.0.1\n");
 		fgets(str, 512, stdin);
 		if (str[0] == 0) {
-			strcpy(str, "127.0.0.1");
+			strcpy(str, "127.0.0.1:6000");
 		}
 		printf("Starting the client.\n");
 		peer->Connect(str, SERVER_PORT, 0, 0);
