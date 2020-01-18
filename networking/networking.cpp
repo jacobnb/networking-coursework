@@ -61,6 +61,7 @@ int main(void)
 
 	while (1)
 	{
+		// set packet; if packet; set packet;
 		for (packet = peer->Receive(); packet; peer->DeallocatePacket(packet), packet = peer->Receive())
 		{
 			switch (packet->data[0])
