@@ -16,15 +16,25 @@ enum GameMessages
 
 int main(void)
 {
-	// TODO: make these user defined.
 	unsigned int MAX_CLIENTS = 10;
 	unsigned short SERVER_PORT = 60000;
-
+	
 
 	char str[512];
 	RakNet::RakPeerInterface* peer = RakNet::RakPeerInterface::GetInstance();
 	bool isServer;
 	RakNet::Packet* packet;
+
+	printf("Set MAX_CLIENTS (default 10)\n");
+	fgets(str, 512, stdin);
+	int numInput = std::atoi(str);
+	numInput == 0 ? 1 : MAX_CLIENTS = numInput;
+
+	printf("Set SERVER_PORT (default 60000)\n");
+	fgets(str, 512, stdin);
+	int clients = std::atoi(str);
+	numInput == 0 ? 1 : SERVER_PORT = numInput;
+
 
 	printf("(C) or (S)erver?\n");
 	fgets(str, 512, stdin);
@@ -61,7 +71,8 @@ int main(void)
 
 	while (1)
 	{
-		// set packet; if packet; set packet;
+		
+		// get packet; if packet; get packet;
 		for (packet = peer->Receive(); packet; peer->DeallocatePacket(packet), packet = peer->Receive())
 		{
 			switch (packet->data[0])
@@ -84,6 +95,17 @@ int main(void)
 					RakNet::BitStream bsOut;
 					bsOut.Write((RakNet::MessageID)ID_GAME_MESSAGE_1);
 					bsOut.Write("Hello world");
+					peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
+				}
+
+				// TODO: put this in a loop and change it to send via structs
+				// http://www.raknet.net/raknet/manual/creatingpackets.html
+				if (!isServer) {
+					printf("What's your message?\n");
+					fgets(str, 512, stdin);
+					RakNet::BitStream bsOut;
+					bsOut.Write((RakNet::MessageID)ID_GAME_MESSAGE_1);
+					bsOut.Write(str);
 					peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 				}
 				break;
