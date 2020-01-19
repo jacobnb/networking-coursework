@@ -11,8 +11,22 @@
 
 enum GameMessages
 {
-	ID_GAME_MESSAGE_1 = ID_USER_PACKET_ENUM + 1
+	ID_GAME_MESSAGE_1 = ID_USER_PACKET_ENUM + 1,
+	ID_CLIENT_TO_SERVER,
+	ID_SERVER_TO_CLIENT
 };
+
+#pragma pack(push, 1)
+struct messageData
+{
+
+	unsigned char typeId; // Your type here
+	// message data string
+	char mes[512];
+
+	messageData(unsigned char id, char inMess[]) :typeId(id) { strcpy(mes, inMess); }
+};
+#pragma pack(pop)
 
 int main(void)
 {
@@ -77,6 +91,46 @@ int main(void)
 		{
 			switch (packet->data[0])
 			{
+			case ID_CLIENT_TO_SERVER:
+				{
+				//TODO: REPLACE with new struct
+				//recieve and print message
+				printf("Message recieved from client \n");
+				RakNet::RakString rs;
+				RakNet::BitStream bsIn(packet->data, packet->length, false);
+				bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
+				bsIn.Read(rs);
+				printf("%s\n", rs.C_String());
+
+				//request message and send to client with server to client id
+				printf("What's your message?\n");
+				fgets(str, 512, stdin);
+				RakNet::BitStream bsOut;
+				bsOut.Write((RakNet::MessageID)ID_SERVER_TO_CLIENT);
+				bsOut.Write(str);
+				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
+				}
+				break;
+			case ID_SERVER_TO_CLIENT:
+			{
+				//TODO: REPLACE with new struct
+				//recieve and print message
+				printf("Message recieved from server \n");
+				RakNet::RakString rs;
+				RakNet::BitStream bsIn(packet->data, packet->length, false);
+				bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
+				bsIn.Read(rs);
+				printf("%s\n", rs.C_String());
+
+				//request message and send to server with client to server id
+				printf("What's your message?\n");
+				fgets(str, 512, stdin);
+				RakNet::BitStream bsOut;
+				bsOut.Write((RakNet::MessageID)ID_SERVER_TO_CLIENT);
+				bsOut.Write(str);
+				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
+			}
+				break;
 			case ID_REMOTE_DISCONNECTION_NOTIFICATION:
 				printf("Another client has disconnected.\n");
 				break;
@@ -97,16 +151,22 @@ int main(void)
 					bsOut.Write("Hello world");
 					peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 				}
-
-				// TODO: put this in a loop and change it to send via structs
+				//TODO: REPLACE with new struct
+				// request for message, then it will send message to server using client to server id
 				// http://www.raknet.net/raknet/manual/creatingpackets.html
 				if (!isServer) {
 					printf("What's your message?\n");
 					fgets(str, 512, stdin);
+
+					//create new struct
+					messageData msOut(ID_CLIENT_TO_SERVER,str);
+
+					/* previous stuff
 					RakNet::BitStream bsOut;
-					bsOut.Write((RakNet::MessageID)ID_GAME_MESSAGE_1);
+					bsOut.Write((RakNet::MessageID)ID_CLIENT_TO_SERVER);
 					bsOut.Write(str);
-					peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
+					peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);	
+					*/
 				}
 				break;
 			case ID_NEW_INCOMING_CONNECTION:
@@ -133,11 +193,13 @@ int main(void)
 				break;
 			case ID_GAME_MESSAGE_1:
 				{
+					
 					RakNet::RakString rs;
 					RakNet::BitStream bsIn(packet->data, packet->length, false);
 					bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
 					bsIn.Read(rs);
 					printf("%s\n", rs.C_String());
+					
 				}
 				break;
 			default:
