@@ -75,8 +75,9 @@ int main(void)
 	}
 	else {
 		printf("Enter server IP or hit enter for 127.0.0.1\n");
+		// str[1] = 0;
 		fgets(str, 512, stdin);
-		if (str[0] == 0) {
+		if (str[1] == 0) {
 			strcpy(str, "127.0.0.1:60000");
 		}
 		printf("Starting the client.\n");
