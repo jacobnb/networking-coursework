@@ -23,7 +23,7 @@ struct messageData
 	RakNet::Time timeStamp;*/
 	unsigned char typeId; // Your type here
 	// message data string
-	char mes[512];
+	char mes[511]; //so total data is 512. power of two
 
 	messageData(unsigned char id, char inMess[]) :typeId(id) { strcpy(mes, inMess); }
 };
