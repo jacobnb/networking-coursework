@@ -16,19 +16,6 @@ enum GameMessages
 	ID_SERVER_TO_CLIENT
 };
 
-#pragma pack(push, 1)
-struct messageData
-{
-	/*unsigned char useTimeStamp;
-	RakNet::Time timeStamp;*/
-	unsigned char typeId; // Your type here
-	// message data string
-	char mes[512];
-
-	messageData(unsigned char id, char inMess[]) :typeId(id) { strcpy(mes, inMess); }
-};
-#pragma pack(pop)
-
 int main(void)
 {
 	unsigned int MAX_CLIENTS = 10;
