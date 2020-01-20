@@ -30,12 +30,16 @@
 
 #include "a3_dylib_config_export.h"
 #include "a3_DemoState.h"
-
+#include "_utilities/networking.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+
+// TODO: anything but this
+Networking* client = new Networking();
+Networking* server = new Networking();
 
 //-----------------------------------------------------------------------------
 // miscellaneous functions
@@ -160,6 +164,11 @@ extern "C"
 // demo is loaded
 A3DYLIBSYMBOL a3_DemoState *a3demoCB_load(a3_DemoState *demoState, a3boolean hotbuild)
 {
+	// TODO-networking
+	client->init();
+	server->init();
+
+
 	const a3ui32 stateSize = a3demo_getPersistentStateSize();
 	const a3ui32 trigSamplesPerDegree = 4;
 	
@@ -278,6 +287,10 @@ A3DYLIBSYMBOL a3i32 a3demoCB_display(a3_DemoState *demoState)
 // window idles
 A3DYLIBSYMBOL a3i32 a3demoCB_idle(a3_DemoState *demoState)
 {
+	// TODO-networking
+	client->update();
+	server->update();
+
 	// perform any idle tasks, such as rendering
 	if (!demoState->exitFlag)
 	{
@@ -301,6 +314,11 @@ A3DYLIBSYMBOL a3i32 a3demoCB_idle(a3_DemoState *demoState)
 		return 0;
 	}
 
+	// TODO-networking
+	client->cleanup();
+	server->cleanup();
+	delete client;
+	delete server;
 	// demo should exit now: return -1
 	return -1;
 }
