@@ -1,7 +1,6 @@
 #pragma once
 #include <stdio.h>
 #include "RakNet/RakPeerInterface.h"
-#include <string.h>
 #include "RakNet/MessageIdentifiers.h"
 #include "RakNet/BitStream.h"
 #include "RakNet/RakNetTypes.h"  // MessageID
@@ -13,19 +12,6 @@ enum GameMessages
 	ID_CLIENT_TO_SERVER,
 	ID_SERVER_TO_CLIENT
 };
-
-#pragma pack(push, 1)
-struct messageData
-{
-	/*unsigned char useTimeStamp;
-	RakNet::Time timeStamp;*/
-	unsigned char typeId; // Your type here
-	// message data string
-	char mes[512];
-
-	messageData(unsigned char id, char inMess[]) :typeId(id) { strcpy(mes, inMess); }
-};
-#pragma pack(pop)
 
 class Network
 {

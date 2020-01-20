@@ -1,18 +1,10 @@
 #include "network.h"
+#include "MessageData.h"
 
 Network::Network()
 {
 	peer = RakNet::RakPeerInterface::GetInstance();
 
-	printf("Set MAX_CLIENTS (default 10)\n");
-	fgets(str, 512, stdin);
-	int numInput = std::atoi(str);
-	numInput == 0 ? 1 : MAX_CLIENTS = numInput;
-
-	printf("Set SERVER_PORT (default 60000)\n");
-	fgets(str, 512, stdin);
-	int clients = std::atoi(str);
-	numInput == 0 ? 1 : SERVER_PORT = numInput;
 }
 
 Network::~Network()
@@ -21,7 +13,15 @@ Network::~Network()
 
 int Network::init()
 {
-	printf("(C) or (S)erver?\n");
+	// for Client
+	MAX_CLIENTS = 1;
+
+	printf("Set SERVER_PORT (default 60000)\n");
+	fgets(str, 512, stdin);
+	int numInput = std::atoi(str);
+	numInput == 0 ? 1 : SERVER_PORT = numInput;
+
+	printf("(C)lient or (S)erver?\n");
 	fgets(str, 512, stdin);
 	if ((str[0] == 'c') || (str[0] == 'C'))
 	{
@@ -30,6 +30,11 @@ int Network::init()
 		isServer = false;
 	}
 	else {
+		printf("Set MAX_CLIENTS (default 10)\n");
+		fgets(str, 512, stdin);
+		numInput = std::atoi(str);
+		numInput == 0 ? 1 : MAX_CLIENTS = numInput;
+
 		RakNet::SocketDescriptor sd(SERVER_PORT, 0);
 		peer->Startup(MAX_CLIENTS, &sd, 1);
 		isServer = true;

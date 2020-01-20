@@ -1,6 +1,8 @@
 #ifndef MessageData_H
 #define MessageData_H
+#include <string.h>
 
+#pragma pack(push, 1)
 struct messageData
 {
 	/*unsigned char useTimeStamp;
@@ -11,5 +13,7 @@ struct messageData
 
 	messageData(unsigned char id, char inMess[]) :typeId(id) { strcpy(mes, inMess); }
 };
+#pragma pack(pop)
+
 
 #endif // !
