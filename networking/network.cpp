@@ -171,3 +171,12 @@ void Network::update()
 		}
 	}
 }
+
+char Network::checkKeyboardState()
+{
+	//65 -> 90
+	for (int vKey = 65; vKey < 91; vKey++) {
+		SHORT keyStatus = GetAsyncKeyState(vKey);
+		
+	}
+}

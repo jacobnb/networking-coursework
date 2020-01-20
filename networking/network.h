@@ -29,4 +29,5 @@ public:
 	int init();
 	int cleanup();
 	void update();
+	void checkKeyboardState();
 };

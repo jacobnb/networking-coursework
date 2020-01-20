@@ -16,4 +16,4 @@ struct messageData
 #pragma pack(pop)
 
 
-#endif // !
+#endif // MessageData_H
