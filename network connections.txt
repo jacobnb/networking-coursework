@@ -1,0 +1,12 @@
+Client connects to server
+Servers recieves connection, send to client that connection recieved
+client recieves message, send client information, ip address and username
+server recieved message, send out acknowledgement
+
+
+
+
+submitting assignment:
+names
+repo
+branch

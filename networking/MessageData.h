@@ -8,8 +8,8 @@ struct messageData
 	/*unsigned char useTimeStamp;
 	RakNet::Time timeStamp;*/
 	unsigned char typeId; // Your type here
-	// message data string
-	char mes[512];
+	// message data string, should be in form of 2
+	char mes[511];
 
 	messageData(unsigned char id, char inMess[]) :typeId(id) { strcpy(mes, inMess); }
 };

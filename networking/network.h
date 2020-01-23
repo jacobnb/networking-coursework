@@ -8,20 +8,26 @@
 
 enum GameMessages
 {
-	ID_GAME_MESSAGE_1 = ID_USER_PACKET_ENUM + 1,
+	ID_SEND_MESSAGE = ID_USER_PACKET_ENUM + 1,
+	ID_SEND_USERNAME,
 	ID_CLIENT_TO_SERVER,
 	ID_SERVER_TO_CLIENT
 };
 
+
 class Network
 {
 private:
+
+	unsigned int MAX_CLIENTS = 10;
+	unsigned short SERVER_PORT = 60000;
+
 	RakNet::RakPeerInterface* peer;
 	bool isServer;
 	RakNet::Packet* packet;
-	char str[512];
-	unsigned int MAX_CLIENTS = 10;
-	unsigned short SERVER_PORT = 60000;
+	char str[511];
+
+	//TODO: client list
 
 public:
 	Network();
@@ -29,5 +35,5 @@ public:
 	int init();
 	int cleanup();
 	void update();
-	void checkKeyboardState();
+	char checkKeyboardState();
 };
