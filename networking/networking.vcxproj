@@ -167,6 +167,7 @@
     <ClCompile Include="networking.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="clientData.h" />
     <ClInclude Include="MessageData.h" />
     <ClInclude Include="network.h" />
   </ItemGroup>
