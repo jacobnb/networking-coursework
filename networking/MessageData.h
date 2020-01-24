@@ -2,6 +2,10 @@
 #define MessageData_H
 #include <string.h>
 
+//message has no direct destination
+char NO_DESTINATION[16] = "000000000000000";
+const int MESSAGE_LENGTH = 510;
+const int USERNAME_LENGTH = 16;
 #pragma pack(push, 1)
 struct messageData
 {
@@ -9,9 +13,13 @@ struct messageData
 	RakNet::Time timeStamp;*/
 	unsigned char typeId; // Your type here
 	// message data string, should be in form of 2
-	char mes[511];
+	char mes[MESSAGE_LENGTH];
 
-	messageData(unsigned char id, char inMess[]) :typeId(id) { strcpy(mes, inMess); }
+	//destination username or send username if being recieved as client
+	char userName[USERNAME_LENGTH];
+
+	bool privateMessage;
+	messageData(unsigned char id, char inMess[], bool isPrivate, char userN[] = NO_DESTINATION) :typeId(id), privateMessage(isPrivate) { strcpy(mes, inMess); strcpy(userName, userN); }
 };
 #pragma pack(pop)
 
