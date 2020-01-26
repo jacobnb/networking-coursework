@@ -63,9 +63,6 @@
     <ClCompile Include="_src_win\main_dll.c">
       <Filter>Source Files\platform</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_demo_callbacks.c">
-      <Filter>Source Files\common\A3_DEMO</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_utilities\a3_DemoSceneObject.c">
       <Filter>Source Files\common\A3_DEMO\_utilities</Filter>
     </ClCompile>
@@ -89,6 +86,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoState\a3_DemoState_unloading.c">
       <Filter>Source Files\common\A3_DEMO\a3_DemoState</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_demo_callbacks.cpp">
+      <Filter>Source Files\common\A3_DEMO</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
