@@ -4,8 +4,8 @@
 #include "RakNet/MessageIdentifiers.h"
 #include "RakNet/BitStream.h"
 #include "RakNet/RakNetTypes.h"  // MessageID
-#include "clientData.h"
 #include "MessageData.h"
+#include "clientData.h"
 #include <vector>
 #define RackNet RakNet
 
@@ -34,11 +34,13 @@ private:
 
 
 	char curMsg[MESSAGE_LENGTH];
+	int cursor; //current location in message;
 
 	//server data
 	std::vector<clientData> clientList;
 	char serverName[16];
-	
+	void dispCurrentMessage();
+	void clearAsyncKeyBuffers();
 
 public:
 	Network();

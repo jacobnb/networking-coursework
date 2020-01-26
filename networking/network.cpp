@@ -1,6 +1,24 @@
 #include "network.h"
 
 
+void Network::dispCurrentMessage()
+{
+	for (int i = 0; i <= cursor; i++) {
+		printf("%c", curMsg[i]);
+	}
+	// lets you print over the line. space to cover prev chars after backspace
+	printf(" ");
+	printf("\r");
+}
+
+void Network::clearAsyncKeyBuffers()
+{
+	// TODO: make this only clear the keys we check
+	for (int i = 0x1; i <= 0xFE; i++) {
+		GetAsyncKeyState(i);
+	}
+}
+
 Network::Network()
 {
 	peer = RakNet::RakPeerInterface::GetInstance();
@@ -15,14 +33,14 @@ int Network::init()
 {
 	// for Client
 	MAX_CLIENTS = 1;
-
+	cursor = 0;
 	printf("Set SERVER_PORT (default 60000)\n");
-	fgets(str, 512, stdin);
+	fgets(str, 510, stdin);
 	int numInput = std::atoi(str);
 	numInput == 0 ? 1 : SERVER_PORT = numInput;
 
 	printf("(C)lient or (S)erver?\n");
-	fgets(str, 512, stdin);
+	fgets(str, 510, stdin);
 	if ((str[0] == 'c') || (str[0] == 'C'))
 	{
 		RakNet::SocketDescriptor sd;
@@ -31,7 +49,7 @@ int Network::init()
 	}
 	else {
 		printf("Set MAX_CLIENTS (default 10)\n");
-		fgets(str, 512, stdin);
+		fgets(str, 510, stdin);
 		numInput = std::atoi(str);
 		numInput == 0 ? 1 : MAX_CLIENTS = numInput;
 
@@ -53,7 +71,7 @@ int Network::init()
 	else {
 		printf("Enter server IP or hit enter for 127.0.0.1\n");
 		// str[1] = 0;
-		fgets(str, 512, stdin);
+		fgets(str, 510, stdin);
 		if (str[1] == 0) {
 			strcpy(str, "127.0.0.1:60000");
 		}
@@ -61,6 +79,11 @@ int Network::init()
 		peer->Connect(str, SERVER_PORT, 0, 0);
 
 	}
+	
+	// attempt to clear buffers
+	fflush(stdin);
+	clearAsyncKeyBuffers();
+
 	return 0;
 }
 
@@ -72,6 +95,8 @@ int Network::cleanup()
 
 void Network::update()
 {
+	checkKeyboardState();
+	return; // TODO remove when finished debugging
 	// get packet; if packet; get packet;
 	for (packet = peer->Receive(); packet; peer->DeallocatePacket(packet), packet = peer->Receive())
 	{
@@ -79,7 +104,7 @@ void Network::update()
 		{
 		case ID_CLIENT_TO_SERVER:
 		{
-			/*
+			/* TODO?
 			//recieve and print message
 			printf("Message recieved from client \n");
 			messageData message = *(messageData*)packet->data;
@@ -100,7 +125,7 @@ void Network::update()
 			printf("Message recieved from client \n");
 			messageData message = *(messageData*)packet->data;
 
-			if (message.userName == NO_DESTINATION || !message.privateMessage)
+			if (message.userName == MD_NO_DESTINATION || !message.privateMessage)
 			{
 				sendPublicMessage(message, packet->systemAddress);
 
@@ -212,38 +237,86 @@ void Network::update()
 
 char Network::checkKeyboardState()
 {
-	//65 -> 90
-	for (int vKey = 65; vKey < 91; vKey++) {
-		SHORT keyStatus = GetAsyncKeyState(vKey);
+	SHORT keyStatus;
+	keyStatus = GetAsyncKeyState(VK_RETURN);
+	if (keyStatus & 0x1 && cursor > 0) { // check least significant bit only
+		char str[USERNAME_LENGTH];
+		// TODO: This doesn't seem to correctly read the username / lack of username.
+		// Also for some reason the input to curMsg seems to print out here
+		fflush(stdin);
+		fgets(str, USERNAME_LENGTH, stdin); // read in the leftover enter
+		printf("\n-----------------------------------------------\n");
+		printf("if this is a private message please enter the username. If not, hit enter: \n");
+		fgets(str, USERNAME_LENGTH, stdin);
+		printf("The username you entered is: %s\n", str);
+		messageData* messagePackage;
 
-		/* TODO: 
-		if (//if keystatus shows that the key is pressed)
+		// copy valid segment of curMsg
+		char message[MESSAGE_LENGTH];
+		//memcpy(message, curMsg, cursor * sizeof(char));
+		for (int i = 0; i <= cursor; i++) {
+			message[i] = curMsg[i];
+		}
+		if (isServer)
 		{
-			switch (vKey)
-			{
-				case://TODO: case for backspace, remove from last of array
-
-				case://TODO: case for enter
-					if(isServer)
-					{
-						// ask if private message if so request username to send to send message using : ID_SEND_MESSAGE type
-						//there is a function called sendPublicServerMessage if the message is public
-						//but if private see line 149 downwards
-						//to get client address for sending, getClient(username).clientAddress
-					}
-					else
-					{
-						//TODO:  ask if private message if so request username to send to send message using : ID_CLIENT_SEND_MESSAGE type
-					}
-				//Note: see MessageDAta -> bool privateMessage determines if message is private, char userName is used when sending to server the destination, can be default as no destination but when client recieves it this char indicates the source of the message (mikesplaining srry)
-			default:
-				//TODO: is any key add to char array
-				curMsg;
-				break;
+			if (str[1] != 0) {
+				// private message.
+				messagePackage = new messageData(ID_SEND_MESSAGE, message, true, str);
+				clientData cd = getClient(str);
+				printf("message: %s\n---------\n", message);
+				if (cd.userName[0] != -1) {
+					peer->Send(reinterpret_cast<char*>(&messagePackage), sizeof(messagePackage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, cd.clientAddress, false);
+				}
+			}
+			else {
+				sendPublicServerMessage(message);
 			}
 		}
-		*/
+		else
+		{
+			if (str[1] != 0) {
+				// private message.
+			}
+			else {
+				// public message
+			}
+		}
+		//Note: see MessageDAta -> bool privateMessage determines if message is private, 
+		// char userName is used when sending to server the destination, 
+		// can be default as no destination but when client recieves it this char indicates the source of the message (mikesplaining srry)
+		clearAsyncKeyBuffers();
+		cursor = 0;
 	}
+	keyStatus = GetAsyncKeyState(VK_BACK);
+	if (keyStatus & 0x1) {
+		cursor--;
+		if (cursor < 0) {
+			cursor = 0;
+		}
+		dispCurrentMessage();
+	}
+	keyStatus = GetAsyncKeyState(VK_SPACE);
+	if (keyStatus & 0x1) {
+		curMsg[++cursor] = ' ';
+	}
+
+	// punction are special cases see: 
+	//https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
+	//65 -> 90 - A-Z
+	for (int vKey = 65; vKey < 90; vKey++) {
+
+		keyStatus = GetAsyncKeyState(vKey);
+		// msb = key is down
+		// lsb = key pressed since previous call - but another app could read (take) this
+		// doesn't actually matter - no bits set if not pressed, a bit set if pressed == not 0
+		if (keyStatus & 0x1)
+		{
+			curMsg[++cursor] = vKey;
+			char c = vKey;
+			dispCurrentMessage();
+		}
+	}
+	return 'a';
 }
 
 //given an ip address, find the client data

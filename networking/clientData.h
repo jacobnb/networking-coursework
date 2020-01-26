@@ -11,7 +11,9 @@ struct clientData
 	char userName[16];
 	RakNet::SystemAddress clientAddress;
 
-	clientData() {}
+	clientData() {
+		userName[0] = -1;
+	}
 	clientData(char newUser[], RakNet::SystemAddress newAddress) : clientAddress(newAddress) { strcpy(userName, newUser); }
 
 };
