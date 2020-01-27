@@ -108,7 +108,7 @@ int Network::init()
 		fgets(str, USERNAME_LENGTH, stdin);
 		// clear newline.
 		int index = 0;
-		while (str[index] != '\n' && str[index] != '\0' && index >= USERNAME_LENGTH) {
+		while (str[index] != '\n' && str[index] != '\0' && index <= USERNAME_LENGTH) {
 			index++;
 		}
 		str[index] = '\0';
@@ -146,8 +146,8 @@ int Network::cleanup()
 
 void Network::update()
 {
-	//checkAndCreateMessage(); // non async way to type message
-	checkKeyboardState();
+	checkAndCreateMessage(); // non async way to type message
+	//checkKeyboardState();
 	// get packet; if packet; get packet;
 	for (packet = peer->Receive(); packet; peer->DeallocatePacket(packet), packet = peer->Receive())
 	{
@@ -263,7 +263,7 @@ void Network::update()
 			clientList.push_back(clientData(message.userName, packet->systemAddress));
 
 			//send aknowledgement, sending private message
-			messageData msOut(SERVER_ACKNOWLEDGEMENT, message.mes, true, serverName);
+			messageData msOut(SERVER_ACKNOWLEDGEMENT, message.userName, true, serverName);
 			peer->Send(reinterpret_cast<char*>(&msOut), sizeof(msOut), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 
 		}
@@ -293,7 +293,7 @@ void Network::update()
 		case SERVER_ACKNOWLEDGEMENT:
 		{
 			messageData message = *(messageData*)packet->data;
-			printf("%s: Welcome: %s", message.userName, message.mes);
+			printf("%s: Welcome: %s \n", message.userName, message.mes);
 		}
 		case ID_SEND_MESSAGE:
 		{
