@@ -146,6 +146,7 @@ int Network::cleanup()
 void Network::update()
 {
 	checkAndCreateMessage(); // non async way to type message
+	// checkKeyboardState();
 	// get packet; if packet; get packet;
 	for (packet = peer->Receive(); packet; peer->DeallocatePacket(packet), packet = peer->Receive())
 	{
@@ -233,13 +234,14 @@ void Network::update()
 			serverAddress = packet->systemAddress;
 			printf("Enter your username\n");
 			fgets(str, USERNAME_LENGTH, stdin);
+			// Either the newline doesn't need to be cleared here or...
 			// clear newline.
 			int index = 0;
 			while (str[index] != '\n' && str[index] != '\0') {
 				index++;
 			}
 			str[index] = '\0';
-			messageData msOut(ID_SEND_USERNAME, str, false);
+			messageData msOut(ID_SEND_USERNAME, str, false, str);
 			peer->Send(reinterpret_cast<char*>(&msOut), sizeof(msOut), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 		}
 		break;
@@ -257,6 +259,7 @@ void Network::update()
 			//TODOne: Add client to client list with username and ip address
 			clientList.push_back(clientData(message.mes, packet->systemAddress));
 
+			// This str copy could be broken.
 			//send aknowledgement, sending private message
 			strcpy(str, (char)"Welcome " + message.mes);
 			messageData msOut(ID_SEND_MESSAGE, str, true, serverName);
@@ -296,7 +299,6 @@ void Network::update()
 			{
 				//printf(message.userName + (char)"(private): %s\n", message.mes);
 				printf("%s: %s", message.userName, message.mes);
-				
 			}
 			else
 			{
