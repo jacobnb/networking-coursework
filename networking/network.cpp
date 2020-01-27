@@ -192,11 +192,21 @@ void Network::update()
 			{
 
 				clientData targetClient = getClient(message.userName);
+				if (targetClient.userName[0] == -1) {
+					printf("Client name error\n");
+					return;
+				}
 				//send private message
 				messageData msOut(CLIENT_SEND_MESSAGE, str, false);
 				peer->Send(reinterpret_cast<char*>(&msOut), sizeof(msOut), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 
-				printf("%s: %s\n", getClient(packet->systemAddress).userName, message.mes);
+				char* userName = getClient(packet->systemAddress).userName;
+				if (userName[0] == -1) {
+					printf("User name error\n");
+				}
+				else {
+					printf("%s: %s\n", userName , message.mes);
+				}
 				//printf(getClient(packet->systemAddress).userName + (char)"->" + (char)targetClient.userName + (char)": %s\n", message.mes);
 			}
 
