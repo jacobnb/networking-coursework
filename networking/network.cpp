@@ -114,7 +114,8 @@ int Network::init()
 		str[index] = '\0';
 		strcpy(serverName, str);
 
-		printf("Starting the server.\n");
+
+		printf("Starting the server. Hello %s \n", serverName);
 		// We need to let the server accept incoming connections from the clients
 		peer->SetMaximumIncomingConnections(MAX_CLIENTS);
 	}
@@ -145,8 +146,8 @@ int Network::cleanup()
 
 void Network::update()
 {
-	checkAndCreateMessage(); // non async way to type message
-	// checkKeyboardState();
+	//checkAndCreateMessage(); // non async way to type message
+	checkKeyboardState();
 	// get packet; if packet; get packet;
 	for (packet = peer->Receive(); packet; peer->DeallocatePacket(packet), packet = peer->Receive())
 	{
@@ -179,35 +180,37 @@ void Network::update()
 			{
 				sendPublicMessage(message, packet->systemAddress);
 
-				char* userName = getClient(packet->systemAddress).userName;
-				if (userName[0] == -1) {
-					printf("User Name Error\n");
-				}
-				else {
+				char userName[USERNAME_LENGTH];
+				strcpy(userName,getClient(packet->systemAddress).userName);
+				//if (userName[0] == -1) {
+				//	printf("User Name Error\n");
+				//}
+				//else {
 					printf("%s: %s\n", userName, message.mes);
-				}
-				delete userName;
+				//}
 				//printf(getClient(packet->systemAddress).userName + (char)": %s\n", message.mes);
 			}
 			else
 			{
 
 				clientData targetClient = getClient(message.userName);
-				if (targetClient.userName[0] == -1) {
-					printf("Client name error\n");
-					return;
-				}
+				//if (targetClient.userName[0] == -1) {
+				//	printf("Client name error\n");
+				//	return;
+				//}
 				//send private message
 				messageData msOut(CLIENT_SEND_MESSAGE, str, false);
 				peer->Send(reinterpret_cast<char*>(&msOut), sizeof(msOut), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 
-				char* userName = getClient(packet->systemAddress).userName;
-				if (userName[0] == -1) {
-					printf("User name error\n");
-				}
-				else {
-					printf("%s: %s\n", userName , message.mes);
-				}
+				char userName[USERNAME_LENGTH];
+				strcpy(userName,getClient(packet->systemAddress).userName);
+				//if (userName[0] == -1) {
+				//	printf("User name error\n");
+				//}
+				//else {
+					printf("%s: %s\n", userName, message.mes);
+					printf("finished");
+				//}
 				//printf(getClient(packet->systemAddress).userName + (char)"->" + (char)targetClient.userName + (char)": %s\n", message.mes);
 			}
 
@@ -234,14 +237,13 @@ void Network::update()
 			serverAddress = packet->systemAddress;
 			printf("Enter your username\n");
 			fgets(str, USERNAME_LENGTH, stdin);
-			// Either the newline doesn't need to be cleared here or...
 			// clear newline.
 			int index = 0;
 			while (str[index] != '\n' && str[index] != '\0') {
 				index++;
 			}
 			str[index] = '\0';
-			messageData msOut(ID_SEND_USERNAME, str, false, str);
+			messageData msOut(ID_SEND_USERNAME, str, false);
 			peer->Send(reinterpret_cast<char*>(&msOut), sizeof(msOut), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 		}
 		break;
@@ -252,17 +254,16 @@ void Network::update()
 
 			printf("Client Username: %s\n", message.mes);
 
+			//this never sends fix TODO: strcpy doesnt work
 			char serverMsg[MESSAGE_LENGTH];
 			strcpy(serverMsg, message.mes + (char)" has joined the chat");
 			sendPublicServerMessage(serverMsg);
 
 			//TODOne: Add client to client list with username and ip address
-			clientList.push_back(clientData(message.mes, packet->systemAddress));
+			clientList.push_back(clientData(message.userName, packet->systemAddress));
 
-			// This str copy could be broken.
 			//send aknowledgement, sending private message
-			strcpy(str, (char)"Welcome " + message.mes);
-			messageData msOut(ID_SEND_MESSAGE, str, true, serverName);
+			messageData msOut(SERVER_ACKNOWLEDGEMENT, message.mes, true, serverName);
 			peer->Send(reinterpret_cast<char*>(&msOut), sizeof(msOut), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 
 		}
@@ -289,6 +290,11 @@ void Network::update()
 				printf("Connection lost.\n");
 			}
 			break;
+		case SERVER_ACKNOWLEDGEMENT:
+		{
+			messageData message = *(messageData*)packet->data;
+			printf("%s: Welcome: %s", message.userName, message.mes);
+		}
 		case ID_SEND_MESSAGE:
 		{
 			// TODO: this prints out garbage rn
@@ -299,6 +305,7 @@ void Network::update()
 			{
 				//printf(message.userName + (char)"(private): %s\n", message.mes);
 				printf("%s: %s", message.userName, message.mes);
+				
 			}
 			else
 			{
@@ -437,35 +444,36 @@ clientData Network::getClient(char userName[16])
 //send a public message, avoid sending message back to user
 void Network::sendPublicMessage(messageData msgData, RakNet::SystemAddress originClient)
 {
+
 	//set up new message
 	char user[USERNAME_LENGTH];
 	//strcpy(user, getClient(originClient).userName);
 	clientData tempClient = getClient(originClient);
-	if (tempClient.userName[0] == -1) {
-		// couldn't access client
-		printf("Couldn't access client\n");
-		return;
-	}
+	//if (tempClient.userName[0] == -1) {
+	//	// couldn't access client
+	//	printf("Couldn't access client\n");
+	//	return;
+	//}
 	strcpy(user, tempClient.userName);
-
 
 	// for (auto it = clientList.begin(); it != clientList.end(); it++)
 	for (std::vector<clientData>::iterator it = clientList.begin(); it != clientList.end(); it++)
 	{
 		if (it->clientAddress != originClient)
 		{
-
 			//send message
 			messageData msOut(ID_SEND_MESSAGE, msgData.mes, false, user);
 			peer->Send(reinterpret_cast<char*>(&msOut), sizeof(msOut), HIGH_PRIORITY, RELIABLE_ORDERED, 0, it->clientAddress, false);
 
 		}
 	}
+
 }
 
 //send a public message, avoid sending message back to user
 void Network::sendPublicServerMessage(char msg[MESSAGE_LENGTH])
 {
+	printf("Start Send public\n");
 	// for (auto it = clientList.begin(); it != clientList.end(); it++)
 	for (std::vector<clientData>::iterator it = clientList.begin(); it != clientList.end(); it++)
 	{
