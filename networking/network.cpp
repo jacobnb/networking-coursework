@@ -108,7 +108,7 @@ int Network::init()
 		fgets(str, USERNAME_LENGTH, stdin);
 		// clear newline.
 		int index = 0;
-		while (str[index] != '\n' || str[index] != '\0') {
+		while (str[index] != '\n' && str[index] != '\0' && index >= USERNAME_LENGTH) {
 			index++;
 		}
 		str[index] = '\0';
@@ -218,7 +218,7 @@ void Network::update()
 			fgets(str, USERNAME_LENGTH, stdin);
 			// clear newline.
 			int index = 0;
-			while (str[index] != '\n' || str[index] != '\0') {
+			while (str[index] != '\n' && str[index] != '\0') {
 				index++;
 			}
 			str[index] = '\0';
