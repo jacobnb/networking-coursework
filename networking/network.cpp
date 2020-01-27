@@ -243,7 +243,7 @@ void Network::update()
 				index++;
 			}
 			str[index] = '\0';
-			messageData msOut(ID_SEND_USERNAME, str, false);
+			messageData msOut(ID_SEND_USERNAME, str, false, str);
 			peer->Send(reinterpret_cast<char*>(&msOut), sizeof(msOut), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 		}
 		break;
@@ -263,7 +263,7 @@ void Network::update()
 			clientList.push_back(clientData(message.userName, packet->systemAddress));
 
 			//send aknowledgement, sending private message
-			messageData msOut(SERVER_ACKNOWLEDGEMENT, message.userName, true, serverName);
+			messageData msOut(SERVER_ACKNOWLEDGEMENT, message.mes, true, serverName);
 			peer->Send(reinterpret_cast<char*>(&msOut), sizeof(msOut), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 
 		}
@@ -294,6 +294,7 @@ void Network::update()
 		{
 			messageData message = *(messageData*)packet->data;
 			printf("%s: Welcome: %s \n", message.userName, message.mes);
+			break;
 		}
 		case ID_SEND_MESSAGE:
 		{
