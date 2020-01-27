@@ -36,6 +36,9 @@ private:
 	char curMsg[MESSAGE_LENGTH];
 	int cursor; //current location in message;
 
+	//client data
+	RakNet::SystemAddress serverAddress;
+
 	//server data
 	std::vector<clientData> clientList;
 	char serverName[16];

@@ -161,6 +161,8 @@ void Network::update()
 		// request for message, then it will send message to server using client to server id
 		// http://www.raknet.net/raknet/manual/creatingpackets.html
 		if (!isServer) {
+
+			serverAddress = packet->systemAddress;
 			printf("Enter your username\n");
 			fgets(str, USERNAME_LENGTH, stdin);
 			messageData msOut(ID_SEND_USERNAME, str, false);
@@ -240,15 +242,15 @@ char Network::checkKeyboardState()
 	SHORT keyStatus;
 	keyStatus = GetAsyncKeyState(VK_RETURN);
 	if (keyStatus & 0x1 && cursor > 0) { // check least significant bit only
-		char str[USERNAME_LENGTH];
+		char usrName[USERNAME_LENGTH];
 		// TODO: This doesn't seem to correctly read the username / lack of username.
 		// Also for some reason the input to curMsg seems to print out here
 		fflush(stdin);
-		fgets(str, USERNAME_LENGTH, stdin); // read in the leftover enter
+		fgets(usrName, USERNAME_LENGTH, stdin); // read in the leftover enter
 		printf("\n-----------------------------------------------\n");
 		printf("if this is a private message please enter the username. If not, hit enter: \n");
-		fgets(str, USERNAME_LENGTH, stdin);
-		printf("The username you entered is: %s\n", str);
+		fgets(usrName, USERNAME_LENGTH, stdin);
+		printf("The username you entered is: %s\n", usrName);
 		messageData* messagePackage;
 
 		// copy valid segment of curMsg
@@ -259,10 +261,10 @@ char Network::checkKeyboardState()
 		}
 		if (isServer)
 		{
-			if (str[1] != 0) {
+			if (usrName[1] != 0) {
 				// private message.
-				messagePackage = new messageData(ID_SEND_MESSAGE, message, true, str);
-				clientData cd = getClient(str);
+				messagePackage = new messageData(ID_SEND_MESSAGE, message, true, usrName);
+				clientData cd = getClient(usrName);
 				printf("message: %s\n---------\n", message);
 				if (cd.userName[0] != -1) {
 					peer->Send(reinterpret_cast<char*>(&messagePackage), sizeof(messagePackage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, cd.clientAddress, false);
@@ -274,11 +276,16 @@ char Network::checkKeyboardState()
 		}
 		else
 		{
-			if (str[1] != 0) {
+			if (usrName[1] != 0) {
 				// private message.
+				messagePackage = new messageData(CLIENT_SEND_MESSAGE, message, true, usrName);
+				peer->Send(reinterpret_cast<char*>(&messagePackage), sizeof(messagePackage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, serverAddress, false);
 			}
 			else {
 				// public message
+
+				messagePackage = new messageData(CLIENT_SEND_MESSAGE, message, false);
+				peer->Send(reinterpret_cast<char*>(&messagePackage), sizeof(messagePackage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, serverAddress, false);
 			}
 		}
 		//Note: see MessageDAta -> bool privateMessage determines if message is private, 
