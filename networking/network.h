@@ -44,7 +44,7 @@ private:
 	char serverName[16];
 	void dispCurrentMessage();
 	void clearAsyncKeyBuffers();
-
+	void checkAndCreateMessage();
 public:
 	Network();
 	~Network();

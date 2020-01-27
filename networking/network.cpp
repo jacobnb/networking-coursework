@@ -19,6 +19,50 @@ void Network::clearAsyncKeyBuffers()
 	}
 }
 
+void Network::checkAndCreateMessage()
+{
+	SHORT keyStatus;
+	keyStatus = GetAsyncKeyState(VK_RSHIFT);
+	if (keyStatus & 0x1) { // check least significant bit only
+		while ((getchar()) != '\n');
+		char usrName[USERNAME_LENGTH];
+		char message[MESSAGE_LENGTH];
+		printf("What's your message: \n");
+		fgets(message, MESSAGE_LENGTH, stdin); // read in the message
+		printf("\n-----------------------------------------------\n");
+		printf("if this is a private message please enter the username. If not, hit enter: \n");
+		fgets(usrName, USERNAME_LENGTH, stdin);
+
+		if (isServer)
+		{
+			if (usrName[1] != 0) {
+				// private message.
+				messageData messagePackage = messageData(ID_SEND_MESSAGE, message, true, usrName);
+				clientData cd = getClient(usrName);
+				if (cd.userName[0] != -1) {
+					peer->Send(reinterpret_cast<char*>(&messagePackage), sizeof(messagePackage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, cd.clientAddress, false);
+				}
+			}
+			else {
+				sendPublicServerMessage(message);
+			}
+		}
+		else
+		{
+			if (usrName[1] != 0) {
+				// private message.
+				messageData messagePackage = messageData(CLIENT_SEND_MESSAGE, message, true, usrName);
+				peer->Send(reinterpret_cast<char*>(&messagePackage), sizeof(messagePackage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, serverAddress, false);
+			}
+			else {
+				// public message
+				messageData messagePackage = messageData(CLIENT_SEND_MESSAGE, message, false);
+				peer->Send(reinterpret_cast<char*>(&messagePackage), sizeof(messagePackage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, serverAddress, false);
+			}
+		}
+	}
+}
+
 Network::Network()
 {
 	peer = RakNet::RakPeerInterface::GetInstance();
@@ -95,8 +139,7 @@ int Network::cleanup()
 
 void Network::update()
 {
-	if(isServer)
-		checkKeyboardState();
+	checkAndCreateMessage(); // non async way to type message
 	// get packet; if packet; get packet;
 	for (packet = peer->Receive(); packet; peer->DeallocatePacket(packet), packet = peer->Receive())
 	{
@@ -167,7 +210,6 @@ void Network::update()
 			fgets(str, USERNAME_LENGTH, stdin);
 			messageData msOut(ID_SEND_USERNAME, str, false);
 			peer->Send(reinterpret_cast<char*>(&msOut), sizeof(msOut), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
-
 		}
 		break;
 		case ID_SEND_USERNAME:
@@ -249,7 +291,11 @@ char Network::checkKeyboardState()
 			char message[MESSAGE_LENGTH];
 			// TODOne: This doesn't seem to correctly read the username / lack of username.
 			// Also for some reason the input to curMsg seems to print out here
-
+			int index = 0;
+			for (index = 0; index < cursor; index++) {
+				message[index] = curMsg[index + 1]; //curMessage start with /0
+			}
+			message[index] = '\0';
 			fgets(message, MESSAGE_LENGTH, stdin); // read in the message
 			printf("\n-----------------------------------------------\n");
 			printf("if this is a private message please enter the username. If not, hit enter: \n");
