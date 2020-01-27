@@ -79,7 +79,7 @@ int Network::init()
 		peer->Connect(str, SERVER_PORT, 0, 0);
 
 	}
-	
+
 	// attempt to clear buffers
 	fflush(stdin);
 	clearAsyncKeyBuffers();
@@ -95,8 +95,8 @@ int Network::cleanup()
 
 void Network::update()
 {
-	checkKeyboardState();
-	return; // TODO remove when finished debugging
+	if(isServer)
+		checkKeyboardState();
 	// get packet; if packet; get packet;
 	for (packet = peer->Receive(); packet; peer->DeallocatePacket(packet), packet = peer->Receive())
 	{
@@ -142,7 +142,7 @@ void Network::update()
 				printf(getClient(packet->systemAddress).userName + (char)"->" + (char)targetClient.userName + (char)": %s\n", message.mes);
 			}
 
-	
+
 		}
 		break;
 		case ID_REMOTE_DISCONNECTION_NOTIFICATION:
@@ -171,17 +171,17 @@ void Network::update()
 		}
 		break;
 		case ID_SEND_USERNAME:
-			{
+		{
 			printf("Message recieved \n");
 			messageData message = *(messageData*)packet->data;
-			
+
 			printf("Client Username: %s\n", message.mes);
 
 			char serverMsg[MESSAGE_LENGTH];
 			strcpy(serverMsg, message.mes + (char)" has joined the chat");
 			sendPublicServerMessage(serverMsg);
 
-			//TODO: Add client to client list with username and ip address
+			//TODOne: Add client to client list with username and ip address
 			clientList.push_back(clientData(message.mes, packet->systemAddress));
 
 			//send aknowledgement, sending private message
@@ -189,9 +189,8 @@ void Network::update()
 			messageData msOut(ID_SEND_MESSAGE, str, true, serverName);
 			peer->Send(reinterpret_cast<char*>(&msOut), sizeof(msOut), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 
-			}
-
-			break;
+		}
+		break;
 		case ID_NEW_INCOMING_CONNECTION:
 			printf("A connection is incoming.\n");
 			break;
@@ -227,7 +226,7 @@ void Network::update()
 			{
 				printf(message.userName + (char)": %s\n", message.mes);
 			}
-	
+
 		}
 		break;
 		default:
@@ -241,58 +240,54 @@ char Network::checkKeyboardState()
 {
 	SHORT keyStatus;
 	keyStatus = GetAsyncKeyState(VK_RETURN);
-	if (keyStatus & 0x1 && cursor > 0) { // check least significant bit only
-		char usrName[USERNAME_LENGTH];
-		// TODO: This doesn't seem to correctly read the username / lack of username.
-		// Also for some reason the input to curMsg seems to print out here
-		fflush(stdin);
-		fgets(usrName, USERNAME_LENGTH, stdin); // read in the leftover enter
-		printf("\n-----------------------------------------------\n");
-		printf("if this is a private message please enter the username. If not, hit enter: \n");
-		fgets(usrName, USERNAME_LENGTH, stdin);
-		printf("The username you entered is: %s\n", usrName);
-		messageData* messagePackage;
-
-		// copy valid segment of curMsg
-		char message[MESSAGE_LENGTH];
-		//memcpy(message, curMsg, cursor * sizeof(char));
-		for (int i = 0; i <= cursor; i++) {
-			message[i] = curMsg[i];
+	if (keyStatus & 0x1) { // check least significant bit only
+		if (cursor <= 0) {
+			while ((getchar()) != '\n');
 		}
-		if (isServer)
-		{
-			if (usrName[1] != 0) {
-				// private message.
-				messagePackage = new messageData(ID_SEND_MESSAGE, message, true, usrName);
-				clientData cd = getClient(usrName);
-				printf("message: %s\n---------\n", message);
-				if (cd.userName[0] != -1) {
-					peer->Send(reinterpret_cast<char*>(&messagePackage), sizeof(messagePackage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, cd.clientAddress, false);
+		else {
+			char usrName[USERNAME_LENGTH];
+			char message[MESSAGE_LENGTH];
+			// TODOne: This doesn't seem to correctly read the username / lack of username.
+			// Also for some reason the input to curMsg seems to print out here
+
+			fgets(message, MESSAGE_LENGTH, stdin); // read in the message
+			printf("\n-----------------------------------------------\n");
+			printf("if this is a private message please enter the username. If not, hit enter: \n");
+			fgets(usrName, USERNAME_LENGTH, stdin);
+
+			if (isServer)
+			{
+				if (usrName[1] != 0) {
+					// private message.
+					messageData messagePackage = messageData(ID_SEND_MESSAGE, message, true, usrName);
+					clientData cd = getClient(usrName);
+					if (cd.userName[0] != -1) {
+						peer->Send(reinterpret_cast<char*>(&messagePackage), sizeof(messagePackage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, cd.clientAddress, false);
+					}
+				}
+				else {
+					sendPublicServerMessage(message);
 				}
 			}
-			else {
-				sendPublicServerMessage(message);
+			else
+			{
+				if (usrName[1] != 0) {
+					// private message.
+					messageData messagePackage = messageData(CLIENT_SEND_MESSAGE, message, true, usrName);
+					peer->Send(reinterpret_cast<char*>(&messagePackage), sizeof(messagePackage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, serverAddress, false);
+				}
+				else {
+					// public message
+					messageData messagePackage = messageData(CLIENT_SEND_MESSAGE, message, false);
+					peer->Send(reinterpret_cast<char*>(&messagePackage), sizeof(messagePackage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, serverAddress, false);
+				}
 			}
+			//Note: see MessageDAta -> bool privateMessage determines if message is private, 
+			// char userName is used when sending to server the destination, 
+			// can be default as no destination but when client recieves it this char indicates the source of the message (mikesplaining srry)
+			clearAsyncKeyBuffers();
+			cursor = 0;
 		}
-		else
-		{
-			if (usrName[1] != 0) {
-				// private message.
-				messagePackage = new messageData(CLIENT_SEND_MESSAGE, message, true, usrName);
-				peer->Send(reinterpret_cast<char*>(&messagePackage), sizeof(messagePackage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, serverAddress, false);
-			}
-			else {
-				// public message
-
-				messagePackage = new messageData(CLIENT_SEND_MESSAGE, message, false);
-				peer->Send(reinterpret_cast<char*>(&messagePackage), sizeof(messagePackage), HIGH_PRIORITY, RELIABLE_ORDERED, 0, serverAddress, false);
-			}
-		}
-		//Note: see MessageDAta -> bool privateMessage determines if message is private, 
-		// char userName is used when sending to server the destination, 
-		// can be default as no destination but when client recieves it this char indicates the source of the message (mikesplaining srry)
-		clearAsyncKeyBuffers();
-		cursor = 0;
 	}
 	keyStatus = GetAsyncKeyState(VK_BACK);
 	if (keyStatus & 0x1) {
@@ -306,10 +301,10 @@ char Network::checkKeyboardState()
 	if (keyStatus & 0x1) {
 		curMsg[++cursor] = ' ';
 	}
-
 	// punction are special cases see: 
 	//https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
 	//65 -> 90 - A-Z
+	// TODO: Track punctuation and shift for upper/lower case.
 	for (int vKey = 65; vKey < 90; vKey++) {
 
 		keyStatus = GetAsyncKeyState(vKey);
@@ -327,9 +322,10 @@ char Network::checkKeyboardState()
 }
 
 //given an ip address, find the client data
-clientData Network::getClient( RakNet::SystemAddress userAddress)
+clientData Network::getClient(RakNet::SystemAddress userAddress)
 {
 	//oh boy i avoided auto here cool https://stackoverflow.com/questions/2395275/how-to-navigate-through-a-vector-using-iterators-c
+	// for (auto it = clientList.begin(); it != clientList.end(); it++)
 	for (std::vector<clientData>::iterator it = clientList.begin(); it != clientList.end(); it++)
 	{
 		if (it->clientAddress == userAddress)
@@ -337,13 +333,13 @@ clientData Network::getClient( RakNet::SystemAddress userAddress)
 			return *it;
 		}
 	}
-
 	return clientData();
 }
 
 //given an username, find the client data
 clientData Network::getClient(char userName[16])
 {
+	// for (auto it = clientList.begin(); it != clientList.end(); it++)
 	for (std::vector<clientData>::iterator it = clientList.begin(); it != clientList.end(); it++)
 	{
 		if (it->userName == userName)
@@ -360,14 +356,15 @@ void Network::sendPublicMessage(messageData msgData, RakNet::SystemAddress origi
 {
 	//set up new message
 	char user[USERNAME_LENGTH];
-	strcpy(user,getClient(originClient).userName);
+	strcpy(user, getClient(originClient).userName);
 
 
+	// for (auto it = clientList.begin(); it != clientList.end(); it++)
 	for (std::vector<clientData>::iterator it = clientList.begin(); it != clientList.end(); it++)
 	{
 		if (it->clientAddress != originClient)
 		{
-			
+
 			//send message
 			messageData msOut(ID_SEND_MESSAGE, msgData.mes, false, user);
 			peer->Send(reinterpret_cast<char*>(&msOut), sizeof(msOut), HIGH_PRIORITY, RELIABLE_ORDERED, 0, it->clientAddress, false);
@@ -379,6 +376,7 @@ void Network::sendPublicMessage(messageData msgData, RakNet::SystemAddress origi
 //send a public message, avoid sending message back to user
 void Network::sendPublicServerMessage(char msg[MESSAGE_LENGTH])
 {
+	// for (auto it = clientList.begin(); it != clientList.end(); it++)
 	for (std::vector<clientData>::iterator it = clientList.begin(); it != clientList.end(); it++)
 	{
 		//send message
