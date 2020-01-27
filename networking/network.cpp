@@ -24,7 +24,7 @@ void Network::checkAndCreateMessage()
 	SHORT keyStatus;
 	keyStatus = GetAsyncKeyState(VK_RSHIFT);
 	if (keyStatus & 0x1) { // check least significant bit only
-		while ((getchar()) != '\n');
+		// while ((getchar()) != '\n');
 		char usrName[USERNAME_LENGTH];
 		char message[MESSAGE_LENGTH];
 		printf("What's your message: \n");
@@ -257,6 +257,7 @@ void Network::update()
 			break;
 		case ID_SEND_MESSAGE:
 		{
+			// TODO: this prints out garbage rn
 			messageData message = *(messageData*)packet->data;
 
 			//if the message recieved is a private message
