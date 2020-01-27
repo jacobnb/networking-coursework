@@ -178,7 +178,14 @@ void Network::update()
 			{
 				sendPublicMessage(message, packet->systemAddress);
 
-				printf("%s: %s\n", getClient(packet->systemAddress).userName, message.mes);
+				char* userName = getClient(packet->systemAddress).userName;
+				if (userName[0] == -1) {
+					printf("User Name Error\n");
+				}
+				else {
+					printf("%s: %s\n", userName, message.mes);
+				}
+				delete userName;
 				//printf(getClient(packet->systemAddress).userName + (char)": %s\n", message.mes);
 			}
 			else
@@ -420,7 +427,14 @@ void Network::sendPublicMessage(messageData msgData, RakNet::SystemAddress origi
 {
 	//set up new message
 	char user[USERNAME_LENGTH];
-	strcpy(user, getClient(originClient).userName);
+	//strcpy(user, getClient(originClient).userName);
+	clientData tempClient = getClient(originClient);
+	if (tempClient.userName[0] == -1) {
+		// couldn't access client
+		printf("Couldn't access client\n");
+		return;
+	}
+	strcpy(user, tempClient.userName);
 
 
 	// for (auto it = clientList.begin(); it != clientList.end(); it++)
