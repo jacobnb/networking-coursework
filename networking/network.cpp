@@ -106,6 +106,12 @@ int Network::init()
 	{
 		printf("Enter your username\n");
 		fgets(str, USERNAME_LENGTH, stdin);
+		// clear newline.
+		int index = 0;
+		while (str[index] != '\n' || str[index] != '\0') {
+			index++;
+		}
+		str[index] = '\0';
 		strcpy(serverName, str);
 
 		printf("Starting the server.\n");
@@ -172,7 +178,8 @@ void Network::update()
 			{
 				sendPublicMessage(message, packet->systemAddress);
 
-				printf(getClient(packet->systemAddress).userName + (char)": %s\n", message.mes);
+				printf("%s: %s\n", getClient(packet->systemAddress).userName, message.mes);
+				//printf(getClient(packet->systemAddress).userName + (char)": %s\n", message.mes);
 			}
 			else
 			{
@@ -182,7 +189,8 @@ void Network::update()
 				messageData msOut(CLIENT_SEND_MESSAGE, str, false);
 				peer->Send(reinterpret_cast<char*>(&msOut), sizeof(msOut), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 
-				printf(getClient(packet->systemAddress).userName + (char)"->" + (char)targetClient.userName + (char)": %s\n", message.mes);
+				printf("%s: %s\n", getClient(packet->systemAddress).userName, message.mes);
+				//printf(getClient(packet->systemAddress).userName + (char)"->" + (char)targetClient.userName + (char)": %s\n", message.mes);
 			}
 
 
@@ -208,6 +216,12 @@ void Network::update()
 			serverAddress = packet->systemAddress;
 			printf("Enter your username\n");
 			fgets(str, USERNAME_LENGTH, stdin);
+			// clear newline.
+			int index = 0;
+			while (str[index] != '\n' || str[index] != '\0') {
+				index++;
+			}
+			str[index] = '\0';
 			messageData msOut(ID_SEND_USERNAME, str, false);
 			peer->Send(reinterpret_cast<char*>(&msOut), sizeof(msOut), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 		}
