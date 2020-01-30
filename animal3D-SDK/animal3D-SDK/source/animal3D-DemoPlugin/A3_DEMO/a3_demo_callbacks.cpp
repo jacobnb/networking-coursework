@@ -29,12 +29,62 @@
 
 
 #include "a3_dylib_config_export.h"
-#include "a3_DemoState.h"
+//#include "a3_DemoState.h"
 
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+
+#include "animal3D/animal3D.h"
+#include "animal3D-A3DG/animal3D-A3DG.h"
+#include "animal3D-A3DM/animal3D-A3DM.h"
+
+#include "RakNet/RakPeerInterface.h"
+
+	// persistent demo state data structure
+struct a3_DemoState
+{
+	//---------------------------------------------------------------------
+	// general variables pertinent to the state
+
+	// terminate key pressed
+	a3i32 exitFlag;
+
+	// global vertical axis: Z = 0, Y = 1
+	a3i32 verticalAxis;
+
+	// asset streaming between loads enabled (careful!)
+	a3i32 streaming;
+
+	// window and full-frame dimensions
+	a3ui32 windowWidth, windowHeight;
+	a3real windowWidthInv, windowHeightInv, windowAspect;
+	a3ui32 frameWidth, frameHeight;
+	a3real frameWidthInv, frameHeightInv, frameAspect;
+	a3i32 frameBorder;
+
+
+	//---------------------------------------------------------------------
+	// objects that have known or fixed instance count in the whole demo
+
+	// text renderer
+	a3i32 textInit, textMode, textModeCount;
+	a3_TextRenderer text[1];
+
+	// input
+	a3_MouseInput mouse[1];
+	a3_KeyboardInput keyboard[1];
+	a3_XboxControllerInput xcontrol[4];
+
+	// pointer to fast trig table
+	a3f32 trigTable[4096 * 4];
+
+	// NETWORKING STUFF
+	a3_Timer renderTimer[1];
+	RakNet::RakPeerInterface* peer;
+};
 
 
 //-----------------------------------------------------------------------------
@@ -67,37 +117,37 @@ inline void a3demoCB_keyCharPress_main(a3_DemoState *demoState, a3i32 asciiKey,
 	const a3ui32 demoSubMode, const a3ui32 demoOutput,
 	const a3ui32 demoSubModeCount, const a3ui32 demoOutputCount)
 {
-	switch (asciiKey)
-	{
-		// sub-modes
-	case '>':
-		break;
-	case '<':
-		break;
-
-		// toggle active camera
-//	case 'v':
-//		demoState->activeCamera = (demoState->activeCamera + 1) % demoStateMaxCount_cameraObject;
-//		break;
-//	case 'c':
-//		demoState->activeCamera = (demoState->activeCamera - 1 + demoStateMaxCount_cameraObject) % demoStateMaxCount_cameraObject;
-//		break;
-
-		// toggle skybox
-	case 'b':
-		demoState->displaySkybox = 1 - demoState->displaySkybox;
-		break;
-
-		// toggle hidden volumes
-	case 'h':
-		demoState->displayHiddenVolumes = 1 - demoState->displayHiddenVolumes;
-		break;
-
-		// toggle pipeline overlay
-	case 'o':
-		demoState->displayPipeline = 1 - demoState->displayPipeline;
-		break;
-	}
+	//	switch (asciiKey)
+	//	{
+	//		// sub-modes
+	//	case '>':
+	//		break;
+	//	case '<':
+	//		break;
+	//
+	//		// toggle active camera
+	////	case 'v':
+	////		demoState->activeCamera = (demoState->activeCamera + 1) % demoStateMaxCount_cameraObject;
+	////		break;
+	////	case 'c':
+	////		demoState->activeCamera = (demoState->activeCamera - 1 + demoStateMaxCount_cameraObject) % demoStateMaxCount_cameraObject;
+	////		break;
+	//
+	//		// toggle skybox
+	//	case 'b':
+	//		demoState->displaySkybox = 1 - demoState->displaySkybox;
+	//		break;
+	//
+	//		// toggle hidden volumes
+	//	case 'h':
+	//		demoState->displayHiddenVolumes = 1 - demoState->displayHiddenVolumes;
+	//		break;
+	//
+	//		// toggle pipeline overlay
+	//	case 'o':
+	//		demoState->displayPipeline = 1 - demoState->displayPipeline;
+	//		break;
+	//	}
 }
 
 inline void a3demoCB_keyCharHold_main(a3_DemoState *demoState, a3i32 asciiKey)
@@ -113,6 +163,14 @@ inline void a3demoCB_keyCharHold_main(a3_DemoState *demoState, a3i32 asciiKey)
 }
 
 
+#include <GL/glew.h>
+void a3demoTestrender(a3_DemoState const* demoState) {
+	glClear(GL_COLOR_BUFFER_BIT);
+	
+	//Draw some textuals
+	a3textDraw(demoState->text, 0, 0, 0, 1, 1, 1, 1, "%f", (float)demoState->renderTimer->totalTime);
+}
+
 //-----------------------------------------------------------------------------
 // callback prototypes
 // NOTE: do not move to header; they should be private to this file
@@ -122,6 +180,8 @@ inline void a3demoCB_keyCharHold_main(a3_DemoState *demoState, a3i32 asciiKey)
 // copy this config line and the DLL to your main config with a new name when 
 //	you're happy with it: 
 //	"<root>/resource/animal3D-data/animal3D-demoinfo.txt"
+
+
 
 
 #ifdef __cplusplus
@@ -175,10 +235,10 @@ A3DYLIBSYMBOL a3_DemoState *a3demoCB_load(a3_DemoState *demoState, a3boolean hot
 		memset(demoState, 0, stateSize);
 		*demoState = copy;
 
-		// call refresh to re-link pointers in case demo state address changed
-		a3demo_refresh(demoState);
-		a3demo_initSceneRefresh(demoState);
-		a3trigInitSetTables(trigSamplesPerDegree, demoState->trigTable);
+		//// call refresh to re-link pointers in case demo state address changed
+		//a3demo_refresh(demoState);
+		//a3demo_initSceneRefresh(demoState);
+		//a3trigInitSetTables(trigSamplesPerDegree, demoState->trigTable);
 	}
 
 	// do any initial allocation tasks
@@ -213,17 +273,17 @@ A3DYLIBSYMBOL a3_DemoState *a3demoCB_load(a3_DemoState *demoState, a3boolean hot
 		a3fileStreamMakeDirectory("./data");
 
 
-		// set default GL state
-		a3demo_setDefaultGraphicsState();
+		//// set default GL state
+		//a3demo_setDefaultGraphicsState();
 
-		// geometry
-		a3demo_loadGeometry(demoState);
+		//// geometry
+		//a3demo_loadGeometry(demoState);
 
-		// shaders
-		a3demo_loadShaders(demoState);
+		//// shaders
+		//a3demo_loadShaders(demoState);
 
-		// scene objects
-		a3demo_initScene(demoState);
+		//// scene objects
+		//a3demo_initScene(demoState);
 	}
 
 	// return persistent state pointer
@@ -247,12 +307,12 @@ A3DYLIBSYMBOL a3_DemoState *a3demoCB_unload(a3_DemoState *demoState, a3boolean h
 		// free fixed objects
 		a3textRelease(demoState->text);
 
-		// free graphics objects
-		a3demo_unloadGeometry(demoState);
-		a3demo_unloadShaders(demoState);
+		//// free graphics objects
+		//a3demo_unloadGeometry(demoState);
+		//a3demo_unloadShaders(demoState);
 
-		// validate unload
-		a3demo_validateUnload(demoState);
+		//// validate unload
+		//a3demo_validateUnload(demoState);
 
 		// erase other stuff
 		a3trigFree();
@@ -284,10 +344,10 @@ A3DYLIBSYMBOL a3i32 a3demoCB_idle(a3_DemoState *demoState)
 		if (a3timerUpdate(demoState->renderTimer) > 0)
 		{
 			// render timer ticked, update demo state and draw
-			a3demo_update(demoState, demoState->renderTimer->secondsPerTick);
+		/*	a3demo_update(demoState, demoState->renderTimer->secondsPerTick);
 			a3demo_input(demoState, demoState->renderTimer->secondsPerTick);
-			a3demo_render(demoState);
-
+			a3demo_render(demoState);*/
+			a3demoTestrender(demoState);
 			// update input
 			a3mouseUpdate(demoState->mouse);
 			a3keyboardUpdate(demoState->keyboard);
@@ -332,8 +392,8 @@ A3DYLIBSYMBOL void a3demoCB_windowMove(a3_DemoState *demoState, a3i32 newWindowP
 // window resizes
 A3DYLIBSYMBOL void a3demoCB_windowResize(a3_DemoState *demoState, a3i32 newWindowWidth, a3i32 newWindowHeight)
 {
-	a3ui32 i;
-	a3_DemoCamera *camera;
+	//a3ui32 i;
+	//a3_DemoCamera *camera;
 
 	// account for borders here
 	const a3i32 frameBorder = 0;
@@ -362,13 +422,13 @@ A3DYLIBSYMBOL void a3demoCB_windowResize(a3_DemoState *demoState, a3i32 newWindo
 	// use framebuffer deactivate utility to set viewport
 	a3framebufferDeactivateSetViewport(a3fbo_depthDisable, -frameBorder, -frameBorder, demoState->frameWidth, demoState->frameHeight);
 
-	// viewing info for projection matrix
-	// initialize cameras dependent on viewport
-	for (i = 0, camera = demoState->camera + i; i < demoStateMaxCount_cameraObject; ++i, ++camera)
-	{
-		camera->aspect = frameAspect;
-		a3demo_updateCameraProjection(camera);
-	}
+	//// viewing info for projection matrix
+	//// initialize cameras dependent on viewport
+	//for (i = 0, camera = demoState->camera + i; i < demoStateMaxCount_cameraObject; ++i, ++camera)
+	//{
+	//	camera->aspect = frameAspect;
+	//	a3demo_updateCameraProjection(camera);
+	//}
 }
 
 // any key is pressed
@@ -396,109 +456,109 @@ A3DYLIBSYMBOL void a3demoCB_keyRelease(a3_DemoState *demoState, a3i32 virtualKey
 // NOTE: there is no release counterpart
 A3DYLIBSYMBOL void a3demoCB_keyCharPress(a3_DemoState *demoState, a3i32 asciiKey)
 {
-	a3ui32 demoSubMode = demoState->demoSubMode[demoState->demoMode];
-	const a3ui32 demoSubModeCount = demoState->demoSubModeCount[demoState->demoMode];
-	const a3ui32 demoOutput = demoState->demoOutputMode[demoState->demoMode][demoSubMode];
-	const a3ui32 demoOutputCount = demoState->demoOutputCount[demoState->demoMode][demoSubMode];
+	//a3ui32 demoSubMode = demoState->demoSubMode[demoState->demoMode];
+	//const a3ui32 demoSubModeCount = demoState->demoSubModeCount[demoState->demoMode];
+	//const a3ui32 demoOutput = demoState->demoOutputMode[demoState->demoMode][demoSubMode];
+	//const a3ui32 demoOutputCount = demoState->demoOutputCount[demoState->demoMode][demoSubMode];
 
 	// persistent state update
 	a3keyboardSetStateASCII(demoState->keyboard, (a3byte)asciiKey);
 
 	// handle special cases immediately
-	switch (asciiKey)
-	{
-		// uncomment to make escape key kill the current demo
-		// if disabled, use 'exit demo' menu option
-//	case 27: 
-//		demoState->exitFlag = 1;
+//	switch (asciiKey)
+//	{
+//		// uncomment to make escape key kill the current demo
+//		// if disabled, use 'exit demo' menu option
+////	case 27: 
+////		demoState->exitFlag = 1;
+////		break;
+//
+//		// reload (T) or toggle (t) text
+//	case 'T':
+//		if (!a3textIsInitialized(demoState->text))
+//		{
+//			a3demo_initializeText(demoState->text);
+//			demoState->textInit = 1;
+//		}
+//		else
+//		{
+//			a3textRelease(demoState->text);
+//			demoState->textInit = 0;
+//		}
 //		break;
-
-		// reload (T) or toggle (t) text
-	case 'T':
-		if (!a3textIsInitialized(demoState->text))
-		{
-			a3demo_initializeText(demoState->text);
-			demoState->textInit = 1;
-		}
-		else
-		{
-			a3textRelease(demoState->text);
-			demoState->textInit = 0;
-		}
-		break;
-	case 't':
-		demoState->textMode = (demoState->textMode + 1) % demoState->textModeCount;
-		break;
-
-		// reload all shaders in real-time
-	case 'P':
-		a3demo_unloadShaders(demoState);
-		a3demo_loadShaders(demoState);
-		break;
-
-
-		// change pipeline mode
-	case '.':
-		demoState->demoMode = (demoState->demoMode + 1) % demoState->demoModeCount;
-		break;
-	case ',':
-		demoState->demoMode = (demoState->demoMode + demoState->demoModeCount - 1) % demoState->demoModeCount;
-		break;
-
-		// change pipeline stage
-	case '>':
-		demoSubMode = demoState->demoSubMode[demoState->demoMode] = (demoSubMode + 1) % demoSubModeCount;
-		break;
-	case '<':
-		demoSubMode = demoState->demoSubMode[demoState->demoMode] = (demoSubMode + demoSubModeCount - 1) % demoSubModeCount;
-		break;
-
-		// change stage output
-	case '}':
-		demoState->demoOutputMode[demoState->demoMode][demoSubMode] = (demoOutput + 1) % demoOutputCount;
-		break;
-	case '{':
-		demoState->demoOutputMode[demoState->demoMode][demoSubMode] = (demoOutput + demoOutputCount - 1) % demoOutputCount;
-		break;
-
-
-		// toggle grid
-	case 'g':
-		demoState->displayGrid = 1 - demoState->displayGrid;
-		break;
-
-		// toggle world axes
-	case 'x':
-		demoState->displayWorldAxes = 1 - demoState->displayWorldAxes;
-		break;
-
-		// toggle object axes
-	case 'z':
-		demoState->displayObjectAxes = 1 - demoState->displayObjectAxes;
-		break;
-
-		// toggle tangent bases on vertices or other
-	case 'B':
-		demoState->displayTangentBases = 1 - demoState->displayTangentBases;
-		break;
-
-
-		// update animation
-	case 'm':
-		demoState->updateAnimation = 1 - demoState->updateAnimation;
-		break;
-	}
-
-
-	// callback for current mode
-	switch (demoState->demoMode)
-	{
-		// main render pipeline
-	case demoStateMode_main:
-		a3demoCB_keyCharPress_main(demoState, asciiKey,
-			demoSubMode, demoOutput, demoSubModeCount, demoOutputCount);
-		break;
-	}
+//	case 't':
+//		demoState->textMode = (demoState->textMode + 1) % demoState->textModeCount;
+//		break;
+//
+//		// reload all shaders in real-time
+//	case 'P':
+//		a3demo_unloadShaders(demoState);
+//		a3demo_loadShaders(demoState);
+//		break;
+//
+//
+//		// change pipeline mode
+//	case '.':
+//		demoState->demoMode = (demoState->demoMode + 1) % demoState->demoModeCount;
+//		break;
+//	case ',':
+//		demoState->demoMode = (demoState->demoMode + demoState->demoModeCount - 1) % demoState->demoModeCount;
+//		break;
+//
+//		// change pipeline stage
+//	case '>':
+//		demoSubMode = demoState->demoSubMode[demoState->demoMode] = (demoSubMode + 1) % demoSubModeCount;
+//		break;
+//	case '<':
+//		demoSubMode = demoState->demoSubMode[demoState->demoMode] = (demoSubMode + demoSubModeCount - 1) % demoSubModeCount;
+//		break;
+//
+//		// change stage output
+//	case '}':
+//		demoState->demoOutputMode[demoState->demoMode][demoSubMode] = (demoOutput + 1) % demoOutputCount;
+//		break;
+//	case '{':
+//		demoState->demoOutputMode[demoState->demoMode][demoSubMode] = (demoOutput + demoOutputCount - 1) % demoOutputCount;
+//		break;
+//
+//
+//		// toggle grid
+//	case 'g':
+//		demoState->displayGrid = 1 - demoState->displayGrid;
+//		break;
+//
+//		// toggle world axes
+//	case 'x':
+//		demoState->displayWorldAxes = 1 - demoState->displayWorldAxes;
+//		break;
+//
+//		// toggle object axes
+//	case 'z':
+//		demoState->displayObjectAxes = 1 - demoState->displayObjectAxes;
+//		break;
+//
+//		// toggle tangent bases on vertices or other
+//	case 'B':
+//		demoState->displayTangentBases = 1 - demoState->displayTangentBases;
+//		break;
+//
+//
+//		// update animation
+//	case 'm':
+//		demoState->updateAnimation = 1 - demoState->updateAnimation;
+//		break;
+//	}
+//
+//
+//	// callback for current mode
+//	switch (demoState->demoMode)
+//	{
+//		// main render pipeline
+//	case demoStateMode_main:
+//		a3demoCB_keyCharPress_main(demoState, asciiKey,
+//			demoSubMode, demoOutput, demoSubModeCount, demoOutputCount);
+//		break;
+//	}
 }
 
 // ASCII key is held
@@ -508,14 +568,14 @@ A3DYLIBSYMBOL void a3demoCB_keyCharHold(a3_DemoState *demoState, a3i32 asciiKey)
 	a3keyboardSetStateASCII(demoState->keyboard, (a3byte)asciiKey);
 
 
-	// callback for current mode
-	switch (demoState->demoMode)
-	{
-		// main render pipeline
-	case demoStateMode_main:
-		a3demoCB_keyCharHold_main(demoState, asciiKey);
-		break;
-	}
+	//// callback for current mode
+	//switch (demoState->demoMode)
+	//{
+	//	// main render pipeline
+	//case demoStateMode_main:
+	//	a3demoCB_keyCharHold_main(demoState, asciiKey);
+	//	break;
+	//}
 }
 
 // mouse button is clicked
@@ -545,25 +605,25 @@ A3DYLIBSYMBOL void a3demoCB_mouseRelease(a3_DemoState *demoState, a3i32 button, 
 // mouse wheel is turned
 A3DYLIBSYMBOL void a3demoCB_mouseWheel(a3_DemoState *demoState, a3i32 delta, a3i32 cursorX, a3i32 cursorY)
 {
-	// controlled camera when zooming
-	a3_DemoCamera *camera;
+	//// controlled camera when zooming
+	//a3_DemoCamera *camera;
 
 	// persistent state update
 	a3mouseSetStateWheel(demoState->mouse, (a3_MouseWheelState)delta);
 	a3mouseSetPosition(demoState->mouse, cursorX, cursorY);
 
-	switch (demoState->demoMode)
-	{
-		// main render pipeline
-	case demoStateMode_main:
-		// can use this to change zoom
-		// zoom should be faster farther away
-		camera = demoState->camera + demoState->activeCamera;
-		camera->fovy -= camera->ctrlZoomSpeed * (camera->fovy / a3real_oneeighty) * (a3f32)delta;
-		camera->fovy = a3clamp(camera->ctrlZoomSpeed, a3real_oneeighty - camera->ctrlZoomSpeed, camera->fovy);
-		a3demo_updateCameraProjection(camera);
-		break;
-	}
+	//switch (demoState->demoMode)
+	//{
+	//	// main render pipeline
+	//case demoStateMode_main:
+	//	// can use this to change zoom
+	//	// zoom should be faster farther away
+	//	camera = demoState->camera + demoState->activeCamera;
+	//	camera->fovy -= camera->ctrlZoomSpeed * (camera->fovy / a3real_oneeighty) * (a3f32)delta;
+	//	camera->fovy = a3clamp(camera->ctrlZoomSpeed, a3real_oneeighty - camera->ctrlZoomSpeed, camera->fovy);
+	//	a3demo_updateCameraProjection(camera);
+	//	break;
+	//}
 }
 
 // mouse moves
