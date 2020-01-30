@@ -166,10 +166,17 @@ inline void a3demoCB_keyCharHold_main(a3_DemoState *demoState, a3i32 asciiKey)
 #include <GL/glew.h>
 void a3demoTestrender(a3_DemoState const* demoState) {
 	glClear(GL_COLOR_BUFFER_BIT);
-	
+
 	//Draw some textuals
-	a3textDraw(demoState->text, 0, 0, 0, 1, 1, 1, 1, "%f", (float)demoState->renderTimer->totalTime);
+	a3textDraw(demoState->text, 0, 0, 0, 1, 1, 1, 1, "%+.3f", (float)demoState->renderTimer->totalTime);
 }
+
+void a3demoTestNetworking(a3_DemoState const demoState) {
+	//TODO Networking
+	return;
+}
+
+//TODO input, update.
 
 //-----------------------------------------------------------------------------
 // callback prototypes
@@ -272,6 +279,7 @@ A3DYLIBSYMBOL a3_DemoState *a3demoCB_load(a3_DemoState *demoState, a3boolean hot
 		// create directory for data
 		a3fileStreamMakeDirectory("./data");
 
+		// TODO- networking setup
 
 		//// set default GL state
 		//a3demo_setDefaultGraphicsState();
@@ -320,6 +328,8 @@ A3DYLIBSYMBOL a3_DemoState *a3demoCB_unload(a3_DemoState *demoState, a3boolean h
 		// erase persistent state
 		free(demoState);
 		demoState = 0;
+		RakNet::RakPeerInterface::DestroyInstance(demoState->peer);
+		demoState->peer = 0;
 	}
 
 	// return state pointer
@@ -348,6 +358,7 @@ A3DYLIBSYMBOL a3i32 a3demoCB_idle(a3_DemoState *demoState)
 			a3demo_input(demoState, demoState->renderTimer->secondsPerTick);
 			a3demo_render(demoState);*/
 			a3demoTestrender(demoState);
+			a3demoTestNetworking(demoState);
 			// update input
 			a3mouseUpdate(demoState->mouse);
 			a3keyboardUpdate(demoState->keyboard);
