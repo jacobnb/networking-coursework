@@ -1,0 +1,21 @@
+
+Client0	 |-connect--recieve-------------------------------------------------------------------
+			  /	\  /			/
+Server   |---c---c-----------start game--------------------------------------------------------
+			/ \	  \
+Client2  |-c---r---remote-------\-----------------------------------------------------------
+
+
+start game: select game and pull players in
+
+
+data
+- player list
+- Game mode
+- Chat messages
+- Game moves
+	- end turn
+	- player move unit
+		unit it, xy coooooooords.
+		this can be done in tictactoorchessorcheckers.
+
