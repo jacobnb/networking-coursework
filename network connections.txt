@@ -1,0 +1,24 @@
+Client connects to server
+Servers recieves connection, send to client that connection recieved
+client recieves message, send client information, ip address and username
+server recieved message, send out acknowledgement
+
+
+client sends message
+message struct has
+destination->
+message->
+type->
+server reads message
+server resends message to other client if destination is empty
+
+client can request client list
+
+
+
+submitting assignment:
+names
+repo
+branch
+
+

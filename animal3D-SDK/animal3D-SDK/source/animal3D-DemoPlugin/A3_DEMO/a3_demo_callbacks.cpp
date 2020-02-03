@@ -171,7 +171,7 @@ void a3demoTestrender(a3_DemoState const* demoState) {
 	a3textDraw(demoState->text, 0, 0, 0, 1, 1, 1, 1, "%+.3f", (float)demoState->renderTimer->totalTime);
 }
 
-void a3demoTestNetworking(a3_DemoState const demoState) {
+void a3demoTestNetworking(a3_DemoState const* demoState) {
 	//TODO Networking
 	return;
 }

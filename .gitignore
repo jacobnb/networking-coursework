@@ -1,3 +1,6 @@
+SDKs/
+DevSDKs-GPRO-2020
+
 # git ignore filter
 *.hg*
 *.merge*
