@@ -9,6 +9,7 @@ DevSDKs-GPRO-2020
 *.BASE.txt
 *.LOCAL.txt
 *.REMOTE.txt
+*.vs/
 bin*/
 lib*/
 gen*/

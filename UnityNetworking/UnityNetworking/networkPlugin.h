@@ -1,6 +1,9 @@
 #ifndef MYUNITYPLUGIN_H
 #define MYUNITYPLUGIN_H
 
+
+#define MYUNITYPLUGIN_EXPORT
+
 #include "Lib.h"
 
 /*

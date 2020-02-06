@@ -16,6 +16,6 @@ data
 - Game moves
 	- end turn
 	- player move unit
-		unit it, xy coooooooords.
-		this can be done in tictactoorchessorcheckers.
-
+		unit it, xy coords.
+Tic-Tac-Toe
+Checkers
