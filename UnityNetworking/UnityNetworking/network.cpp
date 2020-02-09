@@ -16,7 +16,7 @@ int Network::initClient(uString IP, unsigned short port, uString username)
 {
 	MAX_CLIENTS = 1;
 	SERVER_PORT = port;
-	strcpy(serverName, username);
+	strcpy_s(serverName, username);
 	peer->Connect(IP, port, 0, 0);
 	return 0;
 }
@@ -122,10 +122,11 @@ void  Network::kickPlayer(int userID)
 
 int Network::getClientListLength()
 {
-
+	return 1;
 }
 
 uString Network::getClient(int index)
 {
-
+	char* string = new char['asdf'];
+	return string;
 }
