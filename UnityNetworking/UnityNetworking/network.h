@@ -1,6 +1,4 @@
 #pragma once
-#include "pch.h"
-#include <stdio.h>
 #include "RakNet/RakPeerInterface.h"
 #include "RakNet/MessageIdentifiers.h"
 #include "RakNet/BitStream.h"
@@ -8,7 +6,6 @@
 #include <vector>
 #include <string>
 #include "NetworkPackageStructs.h"
-#define RackNet RakNet
 
 #define uString char* //Whatever we use to transfer string data from Unity
 enum GameMessages

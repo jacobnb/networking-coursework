@@ -1,62 +1,62 @@
 #pragma once
-#include <stdio.h>
 #include "RakNet/RakPeerInterface.h"
 #include "RakNet/MessageIdentifiers.h"
 #include "RakNet/BitStream.h"
 #include "RakNet/RakNetTypes.h"  // MessageID
-#include "MessageData.h"
-#include "clientData.h"
 #include <vector>
-#define RackNet RakNet
+#include <string>
+#include "NetworkPackageStructs.h"
 
+#define uString char* //Whatever we use to transfer string data from Unity
 enum GameMessages
 {
-	ID_SEND_MESSAGE = ID_USER_PACKET_ENUM + 1,
-	ID_SEND_USERNAME,
-	ID_CLIENT_TO_SERVER,
-	CLIENT_SEND_MESSAGE,
-	SERVER_ACKNOWLEDGEMENT
+	TURN_MOVE = ID_USER_PACKET_ENUM + 1,
+	USER_SEND_USERNAME,
+	SERVER_RETURN_ACKNOWLEDGE,
+	USER_SEND_MESSAGE,
+	RECIEVE_CHAT_MESSAGE,
+	KICK_USER,
+	GAME_START,
+	GAME_END
 };
 
+struct clientData {
+	std::string username;
+	int ID;
+};
 
-
-class Network
-{
+class Network {
 private:
-
 	unsigned int MAX_CLIENTS = 10;
 	unsigned short SERVER_PORT = 60000;
 
-
 	RakNet::RakPeerInterface* peer;
 	bool isServer;
+
 	RakNet::Packet* packet;
-	char str[MESSAGE_LENGTH];
-
-
-	char curMsg[MESSAGE_LENGTH];
-	int cursor; //current location in message;
 
 	//client data
 	RakNet::SystemAddress serverAddress;
+	int clientID;
 
 	//server data
 	std::vector<clientData> clientList;
 	char serverName[16];
-	void dispCurrentMessage();
-	void clearAsyncKeyBuffers();
-	void checkAndCreateMessage();
+
+	int playerOneID; //if the id is -1 then it is server
+	int playerTwoID;
+
 public:
 	Network();
 	~Network();
-	int init();
+	int initClient(uString IP, unsigned short port, uString username);
+	int initServer(uString port, uString username, int maxClients = 10);
 	int cleanup();
-	void update();
-	char checkKeyboardState();
+	int sendMessage();
+	int readMessages();
 
 	//server functions
-	clientData getClient(RakNet::SystemAddress userAddress);
-	clientData getClient(char userName[16]);
-	void sendPublicMessage(messageData msgData, RakNet::SystemAddress originClient);
-	void sendPublicServerMessage(char msg[MESSAGE_LENGTH]);
+	void kickPlayer(int userID);
+	int getClientListLength();
+	uString getClient(int index);
 };

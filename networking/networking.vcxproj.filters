@@ -21,6 +21,15 @@
     <ClCompile Include="network.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="dllMain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="networkPlugin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MessageData.h">
@@ -30,6 +39,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="clientData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkPackageStructs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="framework.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lib.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="networkPlugin.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
