@@ -9,11 +9,24 @@
 dogs instances;
 int length; //active length
 
+int testInt(int num) {
+	return 42;
+}
+int testString(char* str) {
+	return 42;
+}
+char* testString2(char* str) {
+	return new char['h'];
+}
+char* testString3() {
+	return new char['h'];
+}
+
 // @param: Number of instances planned to be initialized.
 int initNetwork(int numNetworkInstances) {
 	instances.resize(numNetworkInstances);
 	length = 0;
-	return TRUE;
+	return 1337;
 }
 
 // @return: ID to access network instance.
@@ -22,12 +35,13 @@ netID getNetworkInstance() {
 	return length++;
 }
 
-int initClient(netID ID, uString IP, unsigned short port, uString username) {
+int initClient(netID ID, uString IP, int port, uString username) {
 	if (instances[ID]) {
 		instances[ID]->initClient(IP, port, username);
-		return TRUE;
+		// return TRUE;
 	}
-	return FALSE;
+	// return FALSE;
+	return 42;
 }
 
 int initServer(netID ID, uString port, uString username, int maxClients) {

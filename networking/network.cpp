@@ -39,6 +39,16 @@ int Network::sendMessage()
 	return 0;
 }
 
+// char* message = <message type><encoded body>
+//readMessage() {
+//	packet = peer -> Receive();
+//	if (!packet) {
+//		return null struct;
+//	}
+//	else {
+//		message.
+//	}
+//}
 
 int Network::readMessages()
 {
