@@ -4,7 +4,9 @@
 
 #define MYUNITYPLUGIN_EXPORT
 
+#define netID int
 #include "Lib.h"
+#include "network.h"
 
 /*
 * expose C functions for Unity.
@@ -21,9 +23,12 @@ extern "C"
 #else // !__cplusplus
 #endif // __cplusplus
 
-MYUNITYPLUGIN_SYMBOL int initFoo(int f_new);
-MYUNITYPLUGIN_SYMBOL int doFoo(int bar);
-MYUNITYPLUGIN_SYMBOL int termFoo();
+MYUNITYPLUGIN_SYMBOL int initNetwork(int numNetworkInstances);
+MYUNITYPLUGIN_SYMBOL netID getNetworkInstance();
+MYUNITYPLUGIN_SYMBOL int initClient(netID ID, uString IP, unsigned short port, uString username);
+MYUNITYPLUGIN_SYMBOL int initServer(netID ID, uString port, uString username, int maxClients = 10);
+MYUNITYPLUGIN_SYMBOL int cleanup(netID ID);
+
 
 #ifdef __cplusplus
 } // extern "C"
