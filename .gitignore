@@ -1,6 +1,7 @@
 SDKs/
 DevSDKs-GPRO-2020
 
+!NetWorkedBoardGame/Plugins/Debug
 # git ignore filter
 *.hg*
 *.merge*
