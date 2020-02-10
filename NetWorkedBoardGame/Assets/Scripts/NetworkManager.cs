@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using System.Text;
 public class NetworkManager : MonoBehaviour
 {
     private static NetworkManager instance;
@@ -30,5 +30,16 @@ public class NetworkManager : MonoBehaviour
     {
         Network.getNetworkInstance();
         Network.initClient(IP, port, username);
+    }
+    public string readMessage()
+    {
+        StringBuilder sb = new StringBuilder(256);
+        if(Network.readMessage(sb, sb.Capacity)>0)
+            return sb.ToString();
+        return "";
+    }
+    public void sendMessage(string message)
+    {
+        Network.sendMessage(message);
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 public class StartScene : MonoBehaviour
 {
 	private static StartScene instance;
@@ -49,6 +50,7 @@ public class StartScene : MonoBehaviour
         {
             NetworkManager.Instance.initClient(IP_input.text, int.Parse(PortInput.text), UserName.text);
         }
+        SceneManager.LoadScene("waitingForPlayers");
     }
 
 }
