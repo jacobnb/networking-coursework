@@ -3,26 +3,24 @@
 #include <memory>
 #include <vector>
 
-#define dogs std::vector<std::unique_ptr<Network>> // Hannah wanted the datatype to be dogs
 
 // I'm setting this up to have multiple instances for local testing.
-dogs instances;
+Network* instances[5];
 int length; //active length
 
 // @param: Number of instances planned to be initialized.
 int initNetwork(int numNetworkInstances) {
-	instances.resize(numNetworkInstances);
 	length = 0;
-	return TRUE;
+	return 1337;
 }
 
 // @return: ID to access network instance.
 netID getNetworkInstance() {
-	instances.push_back(std::make_unique<Network>());
+	instances[length] = new Network();
 	return length++;
 }
 
-int initClient(netID ID, uString IP, unsigned short port, uString username) {
+int initClient(uString IP, int port, uString username, netID ID) {
 	if (instances[ID]) {
 		instances[ID]->initClient(IP, port, username);
 		return TRUE;
@@ -30,7 +28,7 @@ int initClient(netID ID, uString IP, unsigned short port, uString username) {
 	return FALSE;
 }
 
-int initServer(netID ID, uString port, uString username, int maxClients) {
+int initServer(int port, uString username, int maxClients, netID ID) {
 	if (instances[ID]) {
 		instances[ID]->initServer(port, username, maxClients);
 		return TRUE;
@@ -41,9 +39,69 @@ int initServer(netID ID, uString port, uString username, int maxClients) {
 int cleanup(netID ID) {
 	if (instances[ID]) {
 		instances[ID]->cleanup();
-		instances[ID].release();
+		delete instances[ID];
+		instances[ID] = 0;
 		return TRUE;
 	}
 	return FALSE;
 }
 
+int sendMessage(char* message, netID ID) {
+	if (instances[ID]) {
+		instances[ID]->sendMessage(message);
+		return TRUE;
+	}
+	return FALSE;
+}
+
+int readMessage(char* message, int bufferSize, netID ID) {
+	if (instances[ID]) {
+		return instances[ID]->readMessage(message, bufferSize);
+	}
+	return -1;
+}
+
+int checkConnection(netID ID)
+{
+	if (instances[ID]){
+		return instances[ID]->GetConnectionState();
+	}
+	return -1;
+}
+
+bool server;
+bool client = 0;
+int doEverything(bool isServer)
+{
+	if (isServer ) {
+		if (!server) {
+			::fprintf(stderr, "init server\n");
+			initNetwork(5);
+			//server = new Network();
+			//server->initServer(60000, (char*)"jacob", 3);
+			getNetworkInstance();
+			initServer(60000, (char*)"Jacob");
+			server = 1;
+		}
+		else {
+			instances[0]->readMessages();
+		}
+	}
+	if(!isServer) {
+		if (!client) {
+			::fprintf(stderr, "init client\n");
+			getNetworkInstance();
+			initClient((char*)"127.0.0.1", 60000, (char*)"bob", 1);
+			//client = new Network();
+			//client->initClient((char*)"127.0.0.1", 60000, (char*)"jacob");
+			client = 1;
+		} else
+		{
+			instances[1]->sendMessage((char*)"Howdy from client");
+			instances[1]->readMessages();
+			//client->readMessages();
+			//client->readMessages();
+		}
+	}
+	return 0;
+}

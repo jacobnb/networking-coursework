@@ -30,7 +30,7 @@ private:
 	unsigned int MAX_CLIENTS = 10;
 	unsigned short SERVER_PORT = 60000;
 
-	RakNet::RakPeerInterface* peer;
+	
 	bool isServer;
 
 	RakNet::Packet* packet;
@@ -47,14 +47,18 @@ private:
 	int playerTwoID;
 
 public:
+	RakNet::RakPeerInterface* peer;
+
 	Network();
 	~Network();
-	int initClient(uString IP, unsigned short port, uString username);
-	int initServer(uString port, uString username, int maxClients = 10);
+	int initClient(uString IP, int port, uString username);
+	int initServer(int port, uString username, int maxClients = 10);
 	int cleanup();
-	int sendMessage();
+	// http://www.jenkinssoftware.com/raknet/manual/Doxygen/namespaceRakNet.html#84a0fb005391f71130dd341f77f62138
+	int GetConnectionState();
 	int readMessages();
-
+	int sendMessage(char* message);
+	int readMessage(char* message, int bufferSize);
 	//server functions
 	void kickPlayer(int userID);
 	int getClientListLength();

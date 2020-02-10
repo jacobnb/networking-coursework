@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="networking.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="network.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -32,13 +29,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="MessageData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="network.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="clientData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="NetworkPackageStructs.h">
