@@ -64,6 +64,7 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\GameHandler.cs" />
     <Compile Include="Assets\Scripts\StartScene.cs" />
+    <Compile Include="Assets\testScript.cs" />
     <Reference Include="Unity.Timeline.Editor">
       <HintPath>C:/Users/micha/OneDrive/Desktop/projects/networking-coursework/NetWorkedBoardGame/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
     </Reference>
