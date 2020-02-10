@@ -23,6 +23,7 @@ netID getNetworkInstance() {
 int initClient(uString IP, int port, uString username, netID ID) {
 	if (instances[ID]) {
 		instances[ID]->initClient(IP, port, username);
+		::fprintf(stderr, "init client\n");
 		return TRUE;
 	}
 	return FALSE;
@@ -31,6 +32,7 @@ int initClient(uString IP, int port, uString username, netID ID) {
 int initServer(int port, uString username, int maxClients, netID ID) {
 	if (instances[ID]) {
 		instances[ID]->initServer(port, username, maxClients);
+		::fprintf(stderr, "init server\n");
 		return TRUE;
 	}
 	return FALSE;
