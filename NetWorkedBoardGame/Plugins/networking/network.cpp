@@ -1,5 +1,5 @@
 #include "network.h"
-
+#include "RakNet/RakNetTypes.h"
 Network::Network() {
 	peer = RakNet::RakPeerInterface::GetInstance();
 }
@@ -12,20 +12,32 @@ Network::~Network()
 // Start client
 // Attempt to connect with server
 // username <=15
-int Network::initClient(uString IP, unsigned short port, uString username)
+int Network::initClient(uString IP, int port, uString username)
 {
+	RakNet::SocketDescriptor sd;
+	peer->Startup(1, &sd, 1);
+	isServer = false;
 	MAX_CLIENTS = 1;
 	SERVER_PORT = port;
+
 	strcpy_s(serverName, username);
 	peer->Connect(IP, port, 0, 0);
-	return 0;
+	//peer->Connect("127.0.0.1:60000", 60000, 0, 0);
+
+	return TRUE;
 }
 
 
 // Start Server.
-int Network::initServer(uString port, uString username, int maxClients)
+int Network::initServer(int port, uString username, int maxClients)
 {
-	return 0;
+	MAX_CLIENTS = maxClients;
+	RakNet::SocketDescriptor sd(port, 0);
+	peer->Startup(MAX_CLIENTS, &sd, 1);
+	isServer = true;
+	peer->SetMaximumIncomingConnections(MAX_CLIENTS);
+	strcpy_s(serverName, username);
+	return TRUE;
 }
 
 int Network::cleanup() {
@@ -33,12 +45,9 @@ int Network::cleanup() {
 	return TRUE;
 }
 
-
-int Network::sendMessage()
-{
-	return 0;
+int Network::GetConnectionState() {
+	return peer->GetConnectionState(peer->GetSystemAddressFromGuid(peer->GetMyGUID()));
 }
-
 
 int Network::readMessages()
 {
@@ -46,20 +55,20 @@ int Network::readMessages()
 	{
 		switch (packet->data[0]) {
 		case ID_REMOTE_DISCONNECTION_NOTIFICATION:
-			printf("Another client has disconnected.\n");
+			::fprintf(stderr, "Another client has disconnected.\n");
 			break;
 
 		case ID_REMOTE_CONNECTION_LOST:
-			printf("Another client has lost the connection.\n");
+			::fprintf(stderr, "Another client has lost the connection.\n");
 			break;
 
 		case ID_REMOTE_NEW_INCOMING_CONNECTION:
-			printf("Another client has connected.\n");
+			::fprintf(stderr, "Another client has connected.\n");
 			break;
 
 		case ID_CONNECTION_REQUEST_ACCEPTED:
 		{
-			printf("Our connection request has been accepted.\n");
+			::fprintf(stderr, "Our connection request has been accepted.\n");
 		}
 		if (!isServer)
 		{
@@ -86,31 +95,50 @@ int Network::readMessages()
 			break;
 
 		case ID_NEW_INCOMING_CONNECTION:
-			printf("A connection is incoming.\n");
+			::fprintf(stderr, "A connection is incoming.\n");
 			break;
 
 		case ID_NO_FREE_INCOMING_CONNECTIONS:
-			printf("The server is full.\n");
+			::fprintf(stderr, "The server is full.\n");
 			break;
 
 		case ID_DISCONNECTION_NOTIFICATION:
 			if (isServer) {
-				printf("A client has disconnected.\n");
+				::fprintf(stderr, "A client has disconnected.\n");
 			}
 			else {
-				printf("We have been disconnected.\n");
+				::fprintf(stderr, "We have been disconnected.\n");
 			}
 			break;
 
 		case ID_CONNECTION_LOST:
 			if (isServer) {
-				printf("A client lost the connection.\n");
+				::fprintf(stderr, "A client lost the connection.\n");
 			}
 			else {
-				printf("Connection lost.\n");
+				::fprintf(stderr, "Connection lost.\n");
 			}
 			break;
+		default:
+			::fprintf(stderr, (char*)packet->data);
 		}
+
+	}
+	return 0;
+}
+
+int Network::sendMessage(char* message)
+{
+	peer->Send(message, sizeof(message)*3, HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetSystemAddressFromGuid(peer->GetMyGUID()), true);
+	return 1;
+}
+
+int Network::readMessage(char* message, int bufferSize)
+{
+	packet = peer->Receive();
+	if (packet) {
+		strcpy_s(message, bufferSize, (char*)packet->data);
+		return 1;
 	}
 	return 0;
 }
