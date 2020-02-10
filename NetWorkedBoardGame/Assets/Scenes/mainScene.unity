@@ -3307,7 +3307,8 @@ MonoBehaviour:
     type: 3}
   ticTacPiece2: {fileID: 2960598860985133864, guid: f194d4be15366a849938d8b76ea09acf,
     type: 3}
-  checkerPiece: {fileID: 0}
+  checkerPiece: {fileID: 2960598860985133864, guid: f194d4be15366a849938d8b76ea09acf,
+    type: 3}
   modeDropDown: {fileID: 1609209779}
   player1Drop: {fileID: 2006708557}
   player2Drop: {fileID: 919264157}

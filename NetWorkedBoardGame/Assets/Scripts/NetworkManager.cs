@@ -10,7 +10,7 @@ public class NetworkManager : MonoBehaviour
         get{ return instance; }
     }
     public int networkInstances = 5;
-
+    public bool isServer = false;
     private void Awake()
     {
         if (instance != null && instance != this)
@@ -23,11 +23,13 @@ public class NetworkManager : MonoBehaviour
     }
     public void initServer(int port, string username)
     {
+        isServer = true;
         Network.getNetworkInstance();
         Network.initServer(port, username);
     }
     public void initClient(string IP, int port, string username)
     {
+        isServer = false;
         Network.getNetworkInstance();
         Network.initClient(IP, port, username);
     }

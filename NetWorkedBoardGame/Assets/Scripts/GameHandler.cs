@@ -54,10 +54,10 @@ public class GameHandler : MonoBehaviour
 	GameObject highlightedPiece;
 	private void Start()
 	{
-		isServer = StartScene.Instance.isServer;
+        isServer = NetworkManager.Instance.isServer;
 		player1Pieces = new List<GameObject>();
 		player2Pieces = new List<GameObject>();
-
+        initTicTac();
 		initLobby();
 	}
 
