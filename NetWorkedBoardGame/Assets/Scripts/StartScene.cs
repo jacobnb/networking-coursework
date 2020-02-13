@@ -50,7 +50,7 @@ public class StartScene : MonoBehaviour
         {
             NetworkManager.Instance.initClient(IP_input.text, int.Parse(PortInput.text), UserName.text);
         }
-        SceneManager.LoadScene("waitingForPlayers");
+        SceneManager.LoadScene("game");
     }
 
 }
