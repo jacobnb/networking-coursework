@@ -4,11 +4,16 @@ using UnityEngine;
 
 public class RocketLeague : MonoBehaviour
 {
-    // TODO: Colors, speed changes.
-    public Rigidbody ball;
+    int score0, score1;
+    public GameObject ballFab;
+    GameObject ballObject;
+    Rigidbody ball;
+    Material ballShader;
     [SerializeField]
     float force = 10f;
-    enum ForceDirection
+    [SerializeField]
+    float forceMod = 1f;
+    public enum ForceDirection
     {
         UP,
         DOWN,
@@ -19,10 +24,13 @@ public class RocketLeague : MonoBehaviour
     }
     Queue<ForceDirection> forces = new Queue<ForceDirection>();
     Queue<Vector4> colors = new Queue<Vector4>();
+    Queue<int> forceChanges = new Queue<int>();
     // Start is called before the first frame update
     void Start()
     {
-        
+        score0 = 0;
+        score1 = 0;
+        resetBall();
     }
 
     // Update is called once per frame
@@ -31,9 +39,12 @@ public class RocketLeague : MonoBehaviour
         // TODO: Remove following
         getKeyboardInput();
 
-        getInput();
-        getAndApplyForces();
+        //get all events and enqueue
+        GET_THE_FUCKING_MESSAGES_FROM_THE_PLUGIN_AND_ADD_THEM_TO_THE_RIGHT_QUEUE();
 
+        getAndApplyForces();
+        applyColors();
+        applyForceChange();
         // TODO: Do we need to sync clients?
     }
     void getKeyboardInput()
@@ -51,12 +62,52 @@ public class RocketLeague : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Q))
             forces.Enqueue(ForceDirection.VERT_DOWN);
     }
-    void getInput()
+    void GET_THE_FUCKING_MESSAGES_FROM_THE_PLUGIN_AND_ADD_THEM_TO_THE_RIGHT_QUEUE()
     {
         // TODO: for each message, queue force in forces.
         // TODO: for each message queue color in colors
         // TODO: for each message queue speed change in speeds.
+        // TODO: Chat messages.
 
+    }
+    public void resetBall()
+    {
+        Destroy(ballObject);
+        ballObject = Instantiate(ballFab);
+        ball = ballObject.GetComponent<Rigidbody>();
+        ballShader = ballObject.GetComponent<Material>();
+
+    }
+    public void addScore(int teamNum)
+    {
+        if (teamNum == 0)
+        {
+            score0 += 1;
+        }
+        else if (teamNum == 1)
+        {
+            score1 += 1;
+        }
+        else
+        {
+            Debug.LogError("Invalid team Num: " + teamNum);
+        }
+    }
+    void applyForceChange()
+    {
+        for(int i=forceChanges.Count; i >0; i--)
+        {
+            force += forceMod * forceChanges.Dequeue();
+        }
+    }
+    void applyColors()
+    {
+        for(int i = colors.Count; i > 0; i--)
+        {
+            Vector4 color = ballShader.color;
+            color += colors.Dequeue();
+            ballShader.color = color / 2f;
+        }
     }
     void getAndApplyForces()
     {
@@ -88,5 +139,5 @@ public class RocketLeague : MonoBehaviour
                 ball.AddForce(Vector3.up * force, ForceMode.Impulse);
             break;
         }
-}
+    }
 }
