@@ -162,6 +162,7 @@
     <ClInclude Include="ColorEvent.h" />
     <ClInclude Include="DirectionEvent.h" />
     <ClInclude Include="Event.h" />
+    <ClInclude Include="EventList.h" />
     <ClInclude Include="EventManager.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="MessageEvent.h" />
@@ -177,6 +178,7 @@
     <ClCompile Include="DirectionEvent.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Event.cpp" />
+    <ClCompile Include="EventList.cpp" />
     <ClCompile Include="EventManager.cpp" />
     <ClCompile Include="MessageEvent.cpp" />
     <ClCompile Include="network.cpp" />
