@@ -12,7 +12,7 @@ public:
 	static EventManager* getInstance();
 
 	char* executeEvent();
-	bool addEvent(eventType eventID, Event* newEvent);
+	bool addEvent(Event* newEvent);
 	int getListLength();
 private:
 	EventManager();

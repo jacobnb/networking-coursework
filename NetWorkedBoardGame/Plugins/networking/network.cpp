@@ -1,5 +1,7 @@
 #include "network.h"
 #include "RakNet/RakNetTypes.h"
+#include "EventManager.h"
+#include "MessageEvent.h"
 Network::Network() {
 	peer = RakNet::RakPeerInterface::GetInstance();
 }
@@ -138,10 +140,18 @@ int Network::readMessage(char* message, int bufferSize)
 			strcpy_s(message, bufferSize, (char*)packet->data);
 
 			//read in message and add to event manager
+			Event* nEvent;
+			
+			nEvent = new MessageEvent(message);
+
+			if (nEvent != nullptr)
+			{
+				EventManager::getInstance()->addEvent(nEvent);
+			}
+
 			return 1;
 		}
 	}
-
 	return 0;
 }
 

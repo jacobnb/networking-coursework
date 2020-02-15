@@ -25,7 +25,7 @@ char* EventManager::executeEvent()
 	//return strign event
 }
 
-bool EventManager::addEvent(eventType eventID, Event* newEvent)
+bool EventManager::addEvent(Event* newEvent)
 {
 	return true;
 }

@@ -15,10 +15,11 @@ public:
 	Event();
 	~Event();
 
-	float timeStamp;
+	virtual void executeOrder(char* message) = 0;
+
 private:
 
-	virtual void executeOrder() = 0;
+	float timeStamp;
 };
 
 #endif // !EVENT_H

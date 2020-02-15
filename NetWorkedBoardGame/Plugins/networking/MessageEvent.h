@@ -3,12 +3,14 @@
 
 #include "Event.h"
 
-class MessageEvent : Event
+class MessageEvent : public Event
 {
 	public:
-
-	void executeOrder();
+	MessageEvent(char* message);
+	virtual void executeOrder(char* message) ;
 	private:
+
+	char* mMessage;
 };
 
 #endif // !MESSAGEEVENT_H
