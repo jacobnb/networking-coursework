@@ -49,6 +49,8 @@ int Network::GetConnectionState() {
 	return peer->GetConnectionState(peer->GetSystemAddressFromGuid(peer->GetMyGUID()));
 }
 
+
+//server read messages / send
 int Network::readMessages()
 {
 	for (packet = peer->Receive(); packet; peer->DeallocatePacket(packet), packet = peer->Receive())
@@ -75,25 +77,6 @@ int Network::readMessages()
 			//isClient do client stuff
 			//send username message
 		}
-
-		case USER_SEND_USERNAME:
-			break;
-
-		case SERVER_RETURN_ACKNOWLEDGE:
-			break;
-
-		case USER_SEND_MESSAGE:
-			break;
-
-		case RECIEVE_CHAT_MESSAGE:
-			break;
-
-		case GAME_START:
-			break;
-
-		case GAME_END:
-			break;
-
 		case ID_NEW_INCOMING_CONNECTION:
 			::fprintf(stderr, "A connection is incoming.\n");
 			break;
@@ -127,19 +110,38 @@ int Network::readMessages()
 	return 0;
 }
 
+//client send message
 int Network::sendMessage(char* message)
 {
 	peer->Send(message, sizeof(message)*3, HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetSystemAddressFromGuid(peer->GetMyGUID()), true);
 	return 1;
 }
 
+//client read message
 int Network::readMessage(char* message, int bufferSize)
 {
-	packet = peer->Receive();
-	if (packet) {
-		strcpy_s(message, bufferSize, (char*)packet->data);
-		return 1;
+	if (isServer)
+	{
+		//recieve the message 
+		packet = peer->Receive();
+		if (packet) {
+			strcpy_s(message, bufferSize, (char*)packet->data);
+
+			//resend message to other client
+			return 1;
+		}
 	}
+	else
+	{
+		packet = peer->Receive();
+		if (packet) {
+			strcpy_s(message, bufferSize, (char*)packet->data);
+
+			//read in message and add to event manager
+			return 1;
+		}
+	}
+
 	return 0;
 }
 

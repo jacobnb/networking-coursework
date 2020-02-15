@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 
+//BEATER-MAN NOTE:  netID is used for when multiple instances of the same thing
 
 // I'm setting this up to have multiple instances for local testing.
 Network* instances[5];
@@ -24,6 +25,10 @@ int initClient(uString IP, int port, uString username, netID ID) {
 	if (instances[ID]) {
 		instances[ID]->initClient(IP, port, username);
 		::fprintf(stderr, "init client\n");
+
+		//init event manager
+		
+
 		return TRUE;
 	}
 	return FALSE;
