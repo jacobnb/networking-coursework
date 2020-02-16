@@ -7,7 +7,7 @@ class MessageEvent : public Event
 {
 	public:
 	MessageEvent(char* message);
-	virtual void executeOrder(char* message) ;
+	void executeOrder(char* message) ;
 	private:
 
 	char* mMessage;

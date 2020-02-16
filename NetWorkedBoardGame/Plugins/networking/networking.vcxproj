@@ -166,7 +166,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="ColorEventcpp.cpp" />
+    <ClCompile Include="ColorEvent.cpp" />
     <ClCompile Include="DirectionEvent.cpp" />
     <ClCompile Include="dllMain.cpp" />
     <ClCompile Include="Event.cpp" />

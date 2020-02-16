@@ -16,9 +16,10 @@ public:
 	~Event();
 
 	virtual void executeOrder(char* message) = 0;
-
+	eventType getType() {return type;}
+	float getTime() {return timeStamp;}
 private:
-
+	eventType type;
 	float timeStamp;
 };
 

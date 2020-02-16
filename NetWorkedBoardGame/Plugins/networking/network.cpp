@@ -1,7 +1,10 @@
 #include "network.h"
 #include "RakNet/RakNetTypes.h"
 #include "EventManager.h"
+#include "DirectionEvent.h"
+#include "SpeedEvent.h"
 #include "MessageEvent.h"
+#include "ColorEvent.h"
 Network::Network() {
 	peer = RakNet::RakPeerInterface::GetInstance();
 }
@@ -124,7 +127,7 @@ int Network::readMessage(char* message, int bufferSize)
 {
 	if (isServer)
 	{
-		//recieve the message 
+		//recieve messages
 		packet = peer->Receive();
 		if (packet) {
 			strcpy_s(message, bufferSize, (char*)packet->data);
@@ -140,10 +143,8 @@ int Network::readMessage(char* message, int bufferSize)
 			strcpy_s(message, bufferSize, (char*)packet->data);
 
 			//read in message and add to event manager
-			Event* nEvent;
-			
-			nEvent = new MessageEvent(message);
-
+			//decode back into event
+			//add time stamp TODO
 			if (nEvent != nullptr)
 			{
 				EventManager::getInstance()->addEvent(nEvent);
@@ -155,18 +156,35 @@ int Network::readMessage(char* message, int bufferSize)
 	return 0;
 }
 
-void  Network::kickPlayer(int userID)
-{
-
-}
-
-int Network::getClientListLength()
-{
-	return 1;
-}
-
 uString Network::getClient(int index)
 {
 	char* string = new char['asdf'];
 	return string;
 }
+
+int Network::nSendColorEvent(float r, float g, float b)
+{
+	ColorEvent colorEvent = ColorEvent(r,g,b);
+	//send message
+}
+
+int Network::nSendDirectionEvent(float x, float y, float z)
+{
+	DirectionEvent dirEvent = DirectionEvent(x,y,z);
+	//send message
+}
+
+int Network::nSendMessageEvent(char* message)
+{
+	MessageEvent messEvent = MessageEvent(message);
+	//send message
+}
+
+int Network::nSpeedEvent(float speed)
+{
+//	Event* ev = &SpeedEvent(speed);
+	SpeedEvent spdEvent = SpeedEvent(speed);
+	//send message
+}
+
+

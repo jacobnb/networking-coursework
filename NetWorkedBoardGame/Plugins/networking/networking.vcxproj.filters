@@ -45,9 +45,6 @@
     <ClCompile Include="EventManager.cpp">
       <Filter>Source Files\EventStructure</Filter>
     </ClCompile>
-    <ClCompile Include="ColorEventcpp.cpp">
-      <Filter>Source Files\Events</Filter>
-    </ClCompile>
     <ClCompile Include="DirectionEvent.cpp">
       <Filter>Source Files\Events</Filter>
     </ClCompile>
@@ -58,6 +55,9 @@
       <Filter>Source Files\Events</Filter>
     </ClCompile>
     <ClCompile Include="SpeedEvent.cpp">
+      <Filter>Source Files\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorEvent.cpp">
       <Filter>Source Files\Events</Filter>
     </ClCompile>
   </ItemGroup>
@@ -80,9 +80,6 @@
     <ClInclude Include="networkPlugin.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ColorEvent.h">
-      <Filter>Header Files\Events</Filter>
-    </ClInclude>
     <ClInclude Include="DirectionEvent.h">
       <Filter>Header Files\Events</Filter>
     </ClInclude>
@@ -100,6 +97,9 @@
     </ClInclude>
     <ClInclude Include="EventManager.h">
       <Filter>Header Files\EventStructure</Filter>
+    </ClInclude>
+    <ClInclude Include="ColorEvent.h">
+      <Filter>Header Files\Events</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

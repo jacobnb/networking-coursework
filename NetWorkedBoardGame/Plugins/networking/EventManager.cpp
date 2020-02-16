@@ -22,11 +22,71 @@ EventManager::~EventManager()
 
 char* EventManager::executeEvent()
 {
-	//return strign event
+	//return string event
+
+	//find current
+	ListNode* current = mHead;
+	
+	//reset head to the next one
+	mHead = mHead->getNext();
+
+	//get event TODO:
+
+	//delete event and current
+	delete current->getEvent();
+
+	delete current;
 }
 
 bool EventManager::addEvent(Event* newEvent)
 {
+	//iterate through eventlist, then check time stamp,
+	//if the next node's time stamp is greater than it then insert there
+	bool inserted = false;
+	ListNode* current = mHead;
+
+	//if the list is empty create new head
+	if (mHead == nullptr)
+	{
+		inserted = true;
+		mHead = new ListNode(newEvent);
+	}
+
+	//if the head is higher than the new event, create new head
+	if (mHead->getEvent()->getTime() >= newEvent->getTime())
+	{
+		inserted = true;
+		ListNode* newHead = new ListNode(newEvent);	
+		newHead->setNext(mHead);
+		mHead = newHead;
+	}
+
+	//iterate until inserted
+	while (!inserted)
+	{
+		//if at the end of the list
+		if (current->getNext() == nullptr)
+		{
+			//current is last in line
+			inserted = true;
+			current->setNext(new ListNode(newEvent));
+		}
+		//if the next node has greater time stamp than current event
+		else if(current->getNext()->getEvent()->getTime() >= newEvent->getTime())
+		{
+			//insert and relink the nodes
+			inserted = true;
+			ListNode* newNode = new ListNode(newEvent);
+			newNode->setNext(current->getNext());
+			current->setNext(newNode);
+		}
+		else
+		{
+			//iterate next
+			current = current->getNext();
+		}
+	}
+
 	return true;
 }
 

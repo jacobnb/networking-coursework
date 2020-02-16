@@ -3,13 +3,15 @@
 
 #include "Event.h"
 
-class SpeedEvent : Event
+class SpeedEvent : public Event
 {
 	public: 
 	
-	void executeOrder();
+	SpeedEvent(float iSpeed);
+	void executeOrder(char* message);
 
 	private:
+	float speed;
 };
 
 #endif // !SPEEDEVENT_H

@@ -6,11 +6,12 @@
 class ListNode
 {
 public:
-	ListNode();
+	ListNode(Event* newEvent);
 	~ListNode();
 
 	Event* getEvent();
 	ListNode* getNext();
+	void setNext(ListNode* newNext);
 private:
 	ListNode* next;	
 

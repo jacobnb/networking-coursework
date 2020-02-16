@@ -3,11 +3,16 @@
 
 #include "Event.h"
 
-class DirectionEvent : Event
+class DirectionEvent : public Event
 {
 	public:
-	
-	void executeOrder();
+	DirectionEvent(float ix, float iy, float iz);
+	void executeOrder(char* message);
 	private:
+
+	float x;
+	float y;
+	float z;
+
 };
 #endif // !DIRECTIONEVENT_H

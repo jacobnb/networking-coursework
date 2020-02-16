@@ -53,8 +53,13 @@ public:
 	int readMessages();
 	int sendMessage(char* message);
 	int readMessage(char* message, int bufferSize);
-	//server functions
-	void kickPlayer(int userID);
-	int getClientListLength();
+
 	uString getClient(int index);
+
+	int nSendColorEvent(float r, float g, float b);
+	int nSendDirectionEvent(float x, float y, float z);
+	int nSendMessageEvent(char* message);
+	int nSpeedEvent(float speed);	
+
+	//
 };

@@ -1,5 +1,10 @@
 #include "pch.h"
 #include "networkPlugin.h"
+#include "Event.h"
+#include "DirectionEvent.h"
+#include "SpeedEvent.h"
+#include "MessageEvent.h"
+#include "ColorEvent.h"
 #include <memory>
 #include <vector>
 
@@ -111,4 +116,32 @@ int doEverything(bool isServer)
 		}
 	}
 	return 0;
+}
+
+int sendColorEvent(float r, float g, float b, netID ID = 0)
+{
+	instances[ID]->nSendColorEvent(r,g,b);
+	//send message
+}
+
+int sendDirectionEvent(float x, float y, float z, netID ID = 0)
+{
+  //create event
+	instances[ID]->nSendDirectionEvent(x,y,z);
+	//send message
+}
+
+int sendMessageEvent(char* message, netID ID = 0)
+{
+	//create event
+	instances[ID]->nSendMessageEvent(message);
+	//send message
+}
+
+int sendSpeedEvent(float speed, netID ID = 0)
+{
+	//create event
+
+	instances[ID]->nSpeedEvent(speed);
+	//send message
 }

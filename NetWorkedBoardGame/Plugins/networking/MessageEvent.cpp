@@ -2,7 +2,7 @@
 
 MessageEvent::MessageEvent(char* message)
 {
-	mMessage = nullptr;
+	mMessage = message;
 }
 
 void MessageEvent::executeOrder(char* message)
