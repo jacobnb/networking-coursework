@@ -13,18 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Header Files\EventStructure">
-      <UniqueIdentifier>{649a8521-4391-4ae5-a1f9-fd42572e42b5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Events">
-      <UniqueIdentifier>{a85390fa-84af-403a-8d22-a8ac6ba02af6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Events">
-      <UniqueIdentifier>{66a7b21e-bf1e-4bc0-8481-4d5e719423ec}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\EventStructure">
-      <UniqueIdentifier>{dc50997b-700c-47b3-8106-120e1797d82b}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="network.cpp">
@@ -38,27 +26,6 @@
     </ClCompile>
     <ClCompile Include="networkPlugin.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="EventList.cpp">
-      <Filter>Source Files\EventStructure</Filter>
-    </ClCompile>
-    <ClCompile Include="EventManager.cpp">
-      <Filter>Source Files\EventStructure</Filter>
-    </ClCompile>
-    <ClCompile Include="DirectionEvent.cpp">
-      <Filter>Source Files\Events</Filter>
-    </ClCompile>
-    <ClCompile Include="Event.cpp">
-      <Filter>Source Files\Events</Filter>
-    </ClCompile>
-    <ClCompile Include="MessageEvent.cpp">
-      <Filter>Source Files\Events</Filter>
-    </ClCompile>
-    <ClCompile Include="SpeedEvent.cpp">
-      <Filter>Source Files\Events</Filter>
-    </ClCompile>
-    <ClCompile Include="ColorEvent.cpp">
-      <Filter>Source Files\Events</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -79,27 +46,6 @@
     </ClInclude>
     <ClInclude Include="networkPlugin.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DirectionEvent.h">
-      <Filter>Header Files\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="Event.h">
-      <Filter>Header Files\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="MessageEvent.h">
-      <Filter>Header Files\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="SpeedEvent.h">
-      <Filter>Header Files\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="EventList.h">
-      <Filter>Header Files\EventStructure</Filter>
-    </ClInclude>
-    <ClInclude Include="EventManager.h">
-      <Filter>Header Files\EventStructure</Filter>
-    </ClInclude>
-    <ClInclude Include="ColorEvent.h">
-      <Filter>Header Files\Events</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
