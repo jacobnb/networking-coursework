@@ -107,3 +107,51 @@ int doEverything(bool isServer)
 	}
 	return 0;
 }
+
+int sendColorEvent(float r, float g, float b, netID ID)
+{
+	instances[ID]->nSendColorEvent(r,g,b);
+	//send message
+
+	return 0;
+}
+
+int sendDirectionEvent(float x, float y, float z, netID ID)
+{
+  //create event
+	instances[ID]->nSendDirectionEvent(x,y,z);
+	//send message
+
+	return 0;
+}
+
+int sendMessageEvent(char* message, int bufferSize, netID ID)
+{
+	//create event
+	instances[ID]->nSendMessageEvent(message, bufferSize);
+	//send message
+
+	return 0;
+}
+
+int sendSpeedEvent(float speed, netID ID)
+{
+	//create event
+
+	instances[ID]->nSpeedEvent(speed);
+	//send message
+
+	return 0;
+}
+
+int getEventList(netID ID)
+{
+	return instances[ID]->getEventList();
+}
+
+int executeEvent(char* message, int bufferSize, netID ID)
+{
+	instances[ID]->executeEvent(message, bufferSize);
+
+	return 0;
+}

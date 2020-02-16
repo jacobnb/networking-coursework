@@ -32,6 +32,15 @@ MYUNITYPLUGIN_SYMBOL int sendMessage(char* message, netID ID = 0);
 MYUNITYPLUGIN_SYMBOL int readMessage(char* message, int bufferSize, netID ID = 0);
 MYUNITYPLUGIN_SYMBOL int checkConnection(netID ID = 0);
 MYUNITYPLUGIN_SYMBOL int doEverything(bool isServer);
+
+//send message
+//for each event send message
+MYUNITYPLUGIN_SYMBOL int sendColorEvent(float r, float g, float b, netID = 0);
+MYUNITYPLUGIN_SYMBOL int sendDirectionEvent(float x, float y, float z, netID ID = 0);
+MYUNITYPLUGIN_SYMBOL int sendMessageEvent(char* message, int bufferSize, netID ID = 0);
+MYUNITYPLUGIN_SYMBOL int sendSpeedEvent(float speed, netID ID = 0);
+MYUNITYPLUGIN_SYMBOL int getEventList(netID ID = 0);
+MYUNITYPLUGIN_SYMBOL int executeEvent(char* message, int bufferSize, netID ID = 0);
 #ifdef __cplusplus
 } // extern "C"
 #else // !__cplusplus

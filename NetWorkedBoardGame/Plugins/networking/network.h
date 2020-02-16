@@ -6,7 +6,7 @@
 #include <vector>
 #include <string>
 #include "NetworkPackageStructs.h"
-
+#include "EventManager.h"
 #define uString char* //Whatever we use to transfer string data from Unity
 enum GameMessages
 {
@@ -36,7 +36,7 @@ private:
 	RakNet::Packet* packet;
 
 	//client data
-	RakNet::SystemAddress serverAddress;
+	EventManager* eventMan;
 	int clientID;
 
 	//server data
@@ -63,4 +63,12 @@ public:
 	void kickPlayer(int userID);
 	int getClientListLength();
 	uString getClient(int index);
+
+	int nSendColorEvent(float r, float g, float b);
+	int nSendDirectionEvent(float x, float y, float z);
+	int nSendMessageEvent(char* message, int bufferSize);
+	int nSpeedEvent(float speed);	
+
+	int getEventList();
+	int executeEvent(char* message, int bufferSize);
 };

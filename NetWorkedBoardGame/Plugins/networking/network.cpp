@@ -1,5 +1,10 @@
 #include "network.h"
 #include "RakNet/RakNetTypes.h"
+#include "DirectionEvent.h"
+#include "SpeedEvent.h"
+#include "MessageEvent.h"
+#include "ColorEvent.h"
+#include "RakNet/GetTime.h"
 
 #include "RakNet/NativeFeatureIncludes.h"
 #include "RakNet/PacketizedTCP.h"
@@ -32,6 +37,8 @@ int Network::initClient(uString IP, int port, uString username)
 	peer->Connect(IP, port, 0, 0);
 	//peer->Connect("127.0.0.1:60000", 60000, 0, 0);
 
+	eventMan = new EventManager();
+
 	return TRUE;
 }
 
@@ -50,6 +57,7 @@ int Network::initServer(int port, uString username, int maxClients)
 
 int Network::cleanup() {
 	RakNet::RakPeerInterface::DestroyInstance(peer);
+	delete eventMan;
 	return TRUE;
 }
 
@@ -144,6 +152,27 @@ int Network::sendMessage(char* message)
 
 int Network::readMessage(char* message, int bufferSize)
 {
+	for (packet = peer->Receive(); packet; peer->DeallocatePacket(packet), packet = peer->Receive())
+	{
+		if (packet) {
+			strcpy_s(message, bufferSize, (char*)packet->data);
+
+			//read in message and add to event manager
+			//decode back into event
+			//add time stamp TODO
+			if (isServer)
+			{
+				peer->Send(message, sizeof(message), HIGH_PRIORITY, RELIABLE_ORDERED, 0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
+			}
+			else
+			{
+				Event* nEvent = (Event*)packet->data;
+				eventMan->addEvent(nEvent);
+			}
+
+			return 1;
+		}
+	}
 	packet = peer->Receive();
 	if (packet) {
 		strcpy_s(message, bufferSize, (char*)packet->data);
@@ -155,15 +184,53 @@ int Network::readMessage(char* message, int bufferSize)
 void  Network::kickPlayer(int userID)
 {
 
+int Network::nSendColorEvent(float r, float g, float b)
+{
+	ColorEvent colorEvent = ColorEvent(r,g,b);
+	colorEvent.setTime(RakNet::GetTime());
+	//send message
+
+	return peer->Send(reinterpret_cast<char*>(&colorEvent), sizeof(colorEvent), HIGH_PRIORITY, RELIABLE_ORDERED,0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
 }
 
 int Network::getClientListLength()
 {
+	DirectionEvent dirEvent = DirectionEvent(x,y,z);
+	dirEvent.setTime(RakNet::GetTime());
+	//send message
+	return peer->Send(reinterpret_cast<char*>(&dirEvent), sizeof(dirEvent), HIGH_PRIORITY, RELIABLE_ORDERED, 0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
 	return 1;
 }
 
+int Network::nSendMessageEvent(char* message, int bufferSize)
 uString Network::getClient(int index)
 {
+	MessageEvent messEvent = MessageEvent(message, bufferSize);
+	messEvent.setTime(RakNet::GetTime());
+	//send message
+
+	return peer->Send(reinterpret_cast<char*>(&messEvent), sizeof(messEvent), HIGH_PRIORITY, RELIABLE_ORDERED, 0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
 	char* string = new char['asdf'];
 	return string;
+}
+
+int Network::nSpeedEvent(float speed)
+{
+//	Event* ev = &SpeedEvent(speed);
+	SpeedEvent spdEvent = SpeedEvent(speed);
+	spdEvent.setTime(RakNet::GetTime());
+	//send message
+
+	return peer->Send(reinterpret_cast<char*>(&spdEvent), sizeof(spdEvent), HIGH_PRIORITY, RELIABLE_ORDERED, 0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
+}
+
+int Network::getEventList()
+{
+	return eventMan->getListLength();
+}
+
+int Network::executeEvent(char* message, int bufferSize)
+{
+	eventMan->executeEvent(message, bufferSize);
+	return 0;
 }
