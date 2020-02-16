@@ -15,6 +15,11 @@ int EventManager::executeEvent(char* message, int bufferSize)
 	//find current
 	ListNode* current = mHead;
 	
+	if (current == nullptr)
+	{
+		return -1;
+	}
+
 	//reset head to the next one
 	mHead = mHead->getNext();
 

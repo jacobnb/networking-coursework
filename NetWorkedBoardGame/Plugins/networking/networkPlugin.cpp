@@ -116,10 +116,10 @@ int sendColorEvent(float r, float g, float b, netID ID)
 	return 0;
 }
 
-int sendDirectionEvent(float x, float y, float z, netID ID)
+int sendDirectionEvent(int x, netID ID)
 {
   //create event
-	instances[ID]->nSendDirectionEvent(x,y,z);
+	instances[ID]->nSendDirectionEvent(x);
 	//send message
 
 	return 0;

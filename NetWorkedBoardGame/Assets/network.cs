@@ -24,4 +24,22 @@ public class Network
     public static extern int checkConnection(int ID = 0);
     [DllImport("networking")]
     public static extern int doEverything(bool isServer);
+
+    [DllImport("networking")]
+    public static extern int sendColorEvent(float r, float g, float b, int ID = 0);
+
+    [DllImport("networking")]
+    public static extern int sendDirectionEvent(int direction, int ID = 0);
+
+    [DllImport("networking")]
+    public static extern int sendMessageEvent(string message, int ID = 0);
+
+    [DllImport("networking")]
+    public static extern int sendSpeedEvent(float speed, int ID = 0);
+
+    [DllImport("networking")]
+    public static extern int getEventList(int ID = 0);
+
+    [DllImport("networking")]
+    public static extern int executeEvent(StringBuilder message, int ID = 0);
 }

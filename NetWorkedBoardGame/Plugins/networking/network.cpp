@@ -192,9 +192,9 @@ int Network::nSendColorEvent(float r, float g, float b)
 	return peer->Send(reinterpret_cast<char*>(&colorEvent), sizeof(colorEvent), HIGH_PRIORITY, RELIABLE_ORDERED, 0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
 }
 
-int Network::nSendDirectionEvent(float x, float y, float z)
+int Network::nSendDirectionEvent(int x)
 {
-	DirectionEvent dirEvent = DirectionEvent(x, y, z);
+	DirectionEvent dirEvent = DirectionEvent(x);
 	dirEvent.setTime(RakNet::GetTime());
 	//send message
 	return peer->Send(reinterpret_cast<char*>(&dirEvent), sizeof(dirEvent), HIGH_PRIORITY, RELIABLE_ORDERED, 0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);

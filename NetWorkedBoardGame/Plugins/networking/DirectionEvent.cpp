@@ -1,10 +1,9 @@
 #include "DirectionEvent.h"
 
-DirectionEvent::DirectionEvent(float ix, float iy, float iz)
+DirectionEvent::DirectionEvent(int ix)
 {
 	x = ix;
-	y = iy;
-	z = iz;
+
 }
 
 void DirectionEvent::executeOrder(char* message, int bufferSize)

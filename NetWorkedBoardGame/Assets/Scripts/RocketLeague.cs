@@ -48,6 +48,8 @@ public class RocketLeague : MonoBehaviour
         // TODO: Do we need to sync clients?
         // TODO: Chat
     }
+
+/*
     void getKeyboardInput()
     {
         if (Input.GetKeyDown(KeyCode.W))
@@ -63,8 +65,11 @@ public class RocketLeague : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Q))
             forces.Enqueue(ForceDirection.VERT_DOWN);
     }
+
+*/
     void GET_THE_FUCKING_MESSAGES_FROM_THE_PLUGIN_AND_ADD_THEM_TO_THE_RIGHT_QUEUE()
     {
+        /*
         StringBuilder sb = new StringBuilder(256);
         int isMessage = Network.readMessage(sb, sb.Capacity);
         string message = sb.ToString();
@@ -90,6 +95,18 @@ public class RocketLeague : MonoBehaviour
             }
             isMessage = Network.readMessage(sb, sb.Capacity);
             message = sb.ToString();
+        }
+        */
+       
+        StringBuilder sb = new StringBuilder(256);
+        Network.readMessage(sb, sb.Capacity); //dummy string builder insert
+
+        for(int i = 0; i < Network.getEventList(); i++)
+        {
+            if(Network.executeEvent(sb, sb.Capacity) == 0)
+            {
+                Debug.Log(sb.ToString());
+            }
         }
     }
     public void resetBall()
