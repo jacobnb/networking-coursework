@@ -1,14 +1,8 @@
 #include "pch.h"
 #include "networkPlugin.h"
-#include "Event.h"
-#include "DirectionEvent.h"
-#include "SpeedEvent.h"
-#include "MessageEvent.h"
-#include "ColorEvent.h"
 #include <memory>
 #include <vector>
 
-//BEATER-MAN NOTE:  netID is used for when multiple instances of the same thing
 
 // I'm setting this up to have multiple instances for local testing.
 Network* instances[5];
@@ -30,10 +24,6 @@ int initClient(uString IP, int port, uString username, netID ID) {
 	if (instances[ID]) {
 		instances[ID]->initClient(IP, port, username);
 		::fprintf(stderr, "init client\n");
-
-		//init event manager
-		
-
 		return TRUE;
 	}
 	return FALSE;
@@ -116,32 +106,4 @@ int doEverything(bool isServer)
 		}
 	}
 	return 0;
-}
-
-int sendColorEvent(float r, float g, float b, netID ID = 0)
-{
-	instances[ID]->nSendColorEvent(r,g,b);
-	//send message
-}
-
-int sendDirectionEvent(float x, float y, float z, netID ID = 0)
-{
-  //create event
-	instances[ID]->nSendDirectionEvent(x,y,z);
-	//send message
-}
-
-int sendMessageEvent(char* message, netID ID = 0)
-{
-	//create event
-	instances[ID]->nSendMessageEvent(message);
-	//send message
-}
-
-int sendSpeedEvent(float speed, netID ID = 0)
-{
-	//create event
-
-	instances[ID]->nSpeedEvent(speed);
-	//send message
 }
