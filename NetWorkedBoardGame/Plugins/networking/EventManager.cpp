@@ -1,15 +1,5 @@
 #include "EventManager.h"
 
-EventManager* EventManager::getInstance()
-{
-	if (instance == nullptr)
-	{
-		instance = new EventManager();
-	}
-
-	return instance;
-}
-
 EventManager::EventManager()
 {
 	nodeCount = 0;
@@ -17,12 +7,10 @@ EventManager::EventManager()
 
 EventManager::~EventManager()
 {
-	delete instance;
 }
 
-char* EventManager::executeEvent()
+int EventManager::executeEvent(char* message, int bufferSize)
 {
-	//return string event
 
 	//find current
 	ListNode* current = mHead;
@@ -30,12 +18,14 @@ char* EventManager::executeEvent()
 	//reset head to the next one
 	mHead = mHead->getNext();
 
-	//get event TODO:
-
+	//get event
+	current->getEvent()->executeOrder(message, bufferSize);
 	//delete event and current
 	delete current->getEvent();
 
 	delete current;
+
+	return 0;
 }
 
 bool EventManager::addEvent(Event* newEvent)

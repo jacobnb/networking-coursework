@@ -7,7 +7,7 @@ ColorEvent::ColorEvent(float ir, float ig, float ib)
 	b = ib;
 }
 
-void ColorEvent::executeOrder(char* message)
+void ColorEvent::executeOrder(char* message, int bufferSize)
 {
 
 }

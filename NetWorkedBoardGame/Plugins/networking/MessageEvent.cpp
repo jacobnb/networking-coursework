@@ -1,11 +1,12 @@
 #include "MessageEvent.h"
-
-MessageEvent::MessageEvent(char* message)
+#include <string>
+MessageEvent::MessageEvent(char* message, int bufferSize)
 {
-	mMessage = message;
+	//mMessage is a char*
+	strcpy_s(mMessage, bufferSize, message);
 }
 
-void MessageEvent::executeOrder(char* message)
+void MessageEvent::executeOrder(char* message, int bufferSize)
 {
 	message = mMessage;
 }

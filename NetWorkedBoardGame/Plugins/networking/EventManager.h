@@ -6,19 +6,15 @@
 class EventManager
 {
 public:
-
+	EventManager();
 	~EventManager();
 
-	static EventManager* getInstance();
-
-	char* executeEvent();
+	int executeEvent(char* message, int bufferSize);
 	bool addEvent(Event* newEvent);
 	int getListLength();
 private:
-	EventManager();
-	
-	static EventManager* instance;
 
+	
 	ListNode* mHead;
 	int nodeCount;
 };

@@ -7,7 +7,7 @@ class ColorEvent : public Event
 {
 	public:
 	ColorEvent(float ir, float ig, float ib);
-	virtual void executeOrder(char* message);
+	virtual void executeOrder(char* message, int bufferSize);
 
 	private:
 	

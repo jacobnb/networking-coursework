@@ -7,7 +7,7 @@ DirectionEvent::DirectionEvent(float ix, float iy, float iz)
 	z = iz;
 }
 
-void DirectionEvent::executeOrder(char* message)
+void DirectionEvent::executeOrder(char* message, int bufferSize)
 {
 	
 }

@@ -6,8 +6,8 @@
 class MessageEvent : public Event
 {
 	public:
-	MessageEvent(char* message);
-	void executeOrder(char* message) ;
+	MessageEvent(char* message, int bufferSize);
+	void executeOrder(char* message, int bufferSize) ;
 	private:
 
 	char* mMessage;

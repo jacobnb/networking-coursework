@@ -5,7 +5,7 @@ SpeedEvent::SpeedEvent(float iSpeed)
 	speed = iSpeed;
 }
 
-void SpeedEvent::executeOrder(char* message)
+void SpeedEvent::executeOrder(char* message, int bufferSize)
 {
 
 }

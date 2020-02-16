@@ -7,7 +7,7 @@ class DirectionEvent : public Event
 {
 	public:
 	DirectionEvent(float ix, float iy, float iz);
-	void executeOrder(char* message);
+	void executeOrder(char* message, int bufferSize);
 	private:
 
 	float x;

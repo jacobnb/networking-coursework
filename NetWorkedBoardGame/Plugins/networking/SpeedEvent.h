@@ -8,7 +8,7 @@ class SpeedEvent : public Event
 	public: 
 	
 	SpeedEvent(float iSpeed);
-	void executeOrder(char* message);
+	void executeOrder(char* message, int bufferSize);
 
 	private:
 	float speed;
