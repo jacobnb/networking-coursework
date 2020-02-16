@@ -100,14 +100,17 @@ public class RocketLeague : MonoBehaviour
        
         StringBuilder sb = new StringBuilder(256);
         Network.readMessage(sb, sb.Capacity); //dummy string builder insert
-
-        for(int i = 0; i < Network.getEventList(); i++)
+        if(!NetworkManager.Instance.isServer)
         {
-            if(Network.executeEvent(sb, sb.Capacity) == 0)
+            for (int i = 0; i < Network.getEventList(); i++)
             {
-                Debug.Log(sb.ToString());
+                if (Network.executeEvent(sb, sb.Capacity) == 0)
+                {
+                    Debug.Log(sb.ToString());
+                }
             }
         }
+ 
     }
     public void resetBall()
     {
