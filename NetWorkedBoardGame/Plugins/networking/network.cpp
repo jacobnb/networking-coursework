@@ -1,5 +1,13 @@
 #include "network.h"
 #include "RakNet/RakNetTypes.h"
+
+#include "RakNet/NativeFeatureIncludes.h"
+#include "RakNet/PacketizedTCP.h"
+#include "RakNet/NativeTypes.h"
+#include "RakNet/BitStream.h"
+#include "RakNet/MessageIdentifiers.h"
+#include "RakNet/RakAlloca.h"
+
 Network::Network() {
 	peer = RakNet::RakPeerInterface::GetInstance();
 }
@@ -129,7 +137,8 @@ int Network::readMessages()
 
 int Network::sendMessage(char* message)
 {
-	peer->Send(message, sizeof(message)*3, HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetSystemAddressFromGuid(peer->GetMyGUID()), true);
+	// peer->Send(message, sizeof(message)*3, HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetSystemAddressFromGuid(peer->GetMyGUID()), true);
+	peer->Send(message, sizeof(message)*3, HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetGuidFromSystemAddress(RakNet::UNASSIGNED_SYSTEM_ADDRESS), true);
 	return 1;
 }
 
