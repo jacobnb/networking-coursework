@@ -17,10 +17,10 @@ public:
 
 	virtual void executeOrder(char* message, int bufferSize) = 0;
 	float getTime() {return timeStamp;}
-	void setTime(float time) {timeStamp = time;}
+	void setTime(int time) {timeStamp = time;}
 private:
 
-	float timeStamp;
+	int timeStamp;
 };
 
 #endif // !EVENT_H

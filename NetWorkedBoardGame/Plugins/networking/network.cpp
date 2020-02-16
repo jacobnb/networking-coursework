@@ -173,50 +173,45 @@ int Network::readMessage(char* message, int bufferSize)
 			return 1;
 		}
 	}
-	packet = peer->Receive();
-	if (packet) {
-		strcpy_s(message, bufferSize, (char*)packet->data);
-		return 1;
-	}
+
 	return 0;
 }
 
-void  Network::kickPlayer(int userID)
+uString Network::getClient(int index)
 {
+	char* string = new char['asdf'];
+	return string;
+}
 
 int Network::nSendColorEvent(float r, float g, float b)
 {
-	ColorEvent colorEvent = ColorEvent(r,g,b);
+	ColorEvent colorEvent = ColorEvent(r, g, b);
 	colorEvent.setTime(RakNet::GetTime());
 	//send message
 
-	return peer->Send(reinterpret_cast<char*>(&colorEvent), sizeof(colorEvent), HIGH_PRIORITY, RELIABLE_ORDERED,0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
+	return peer->Send(reinterpret_cast<char*>(&colorEvent), sizeof(colorEvent), HIGH_PRIORITY, RELIABLE_ORDERED, 0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
 }
 
-int Network::getClientListLength()
+int Network::nSendDirectionEvent(float x, float y, float z)
 {
-	DirectionEvent dirEvent = DirectionEvent(x,y,z);
+	DirectionEvent dirEvent = DirectionEvent(x, y, z);
 	dirEvent.setTime(RakNet::GetTime());
 	//send message
 	return peer->Send(reinterpret_cast<char*>(&dirEvent), sizeof(dirEvent), HIGH_PRIORITY, RELIABLE_ORDERED, 0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
-	return 1;
 }
 
 int Network::nSendMessageEvent(char* message, int bufferSize)
-uString Network::getClient(int index)
 {
 	MessageEvent messEvent = MessageEvent(message, bufferSize);
 	messEvent.setTime(RakNet::GetTime());
 	//send message
 
 	return peer->Send(reinterpret_cast<char*>(&messEvent), sizeof(messEvent), HIGH_PRIORITY, RELIABLE_ORDERED, 0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
-	char* string = new char['asdf'];
-	return string;
 }
 
 int Network::nSpeedEvent(float speed)
 {
-//	Event* ev = &SpeedEvent(speed);
+	//	Event* ev = &SpeedEvent(speed);
 	SpeedEvent spdEvent = SpeedEvent(speed);
 	spdEvent.setTime(RakNet::GetTime());
 	//send message
