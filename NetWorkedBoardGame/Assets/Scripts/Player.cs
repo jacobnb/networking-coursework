@@ -23,6 +23,7 @@ public class Player : MonoBehaviour
         string message="";
         if (Input.GetKeyDown(KeyCode.W))
         {
+            Debug.Log("Moving Up");
             //message = MessageParser.encodeForceMessage(RocketLeague.ForceDirection.UP);
             Network.sendDirectionEvent((int)RocketLeague.ForceDirection.UP);
         }

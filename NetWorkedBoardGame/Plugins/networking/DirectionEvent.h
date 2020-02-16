@@ -10,6 +10,6 @@ class DirectionEvent : public Event
 	void executeOrder(char* message, int bufferSize);
 	private:
 
-	float x;
+	int x;
 };
 #endif // !DIRECTIONEVENT_H
