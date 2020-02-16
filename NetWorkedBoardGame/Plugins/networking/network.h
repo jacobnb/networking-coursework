@@ -10,14 +10,8 @@
 #define uString char* //Whatever we use to transfer string data from Unity
 enum GameMessages
 {
-	TURN_MOVE = ID_USER_PACKET_ENUM + 1,
-	USER_SEND_USERNAME,
-	SERVER_RETURN_ACKNOWLEDGE,
-	USER_SEND_MESSAGE,
-	RECIEVE_CHAT_MESSAGE,
-	KICK_USER,
-	GAME_START,
-	GAME_END
+	SENDMESSAGE = ID_USER_PACKET_ENUM + 1,
+
 };
 
 struct clientData {
@@ -59,8 +53,13 @@ public:
 	int readMessages();
 	int sendMessage(char* message);
 	int readMessage(char* message, int bufferSize);
-	//server functions
-	void kickPlayer(int userID);
-	int getClientListLength();
+
 	uString getClient(int index);
+
+	int nSendColorEvent(float r, float g, float b);
+	int nSendDirectionEvent(float x, float y, float z);
+	int nSendMessageEvent(char* message);
+	int nSpeedEvent(float speed);	
+
+	//
 };

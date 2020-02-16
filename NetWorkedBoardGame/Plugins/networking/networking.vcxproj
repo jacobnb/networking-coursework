@@ -166,18 +166,32 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ColorEvent.cpp" />
+    <ClCompile Include="DirectionEvent.cpp" />
     <ClCompile Include="dllMain.cpp" />
+    <ClCompile Include="Event.cpp" />
+    <ClCompile Include="EventList.cpp" />
+    <ClCompile Include="EventManager.cpp" />
+    <ClCompile Include="MessageEvent.cpp" />
     <ClCompile Include="network.cpp" />
     <ClCompile Include="networkPlugin.cpp" />
     <ClCompile Include="pch.cpp" />
+    <ClCompile Include="SpeedEvent.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ColorEvent.h" />
+    <ClInclude Include="DirectionEvent.h" />
+    <ClInclude Include="Event.h" />
+    <ClInclude Include="EventList.h" />
+    <ClInclude Include="EventManager.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="lib.h" />
+    <ClInclude Include="MessageEvent.h" />
     <ClInclude Include="network.h" />
     <ClInclude Include="NetworkPackageStructs.h" />
     <ClInclude Include="networkPlugin.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="SpeedEvent.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

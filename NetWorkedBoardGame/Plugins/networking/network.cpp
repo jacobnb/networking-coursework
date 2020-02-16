@@ -1,13 +1,10 @@
 #include "network.h"
 #include "RakNet/RakNetTypes.h"
-
-#include "RakNet/NativeFeatureIncludes.h"
-#include "RakNet/PacketizedTCP.h"
-#include "RakNet/NativeTypes.h"
-#include "RakNet/BitStream.h"
-#include "RakNet/MessageIdentifiers.h"
-#include "RakNet/RakAlloca.h"
-
+#include "EventManager.h"
+#include "DirectionEvent.h"
+#include "SpeedEvent.h"
+#include "MessageEvent.h"
+#include "ColorEvent.h"
 Network::Network() {
 	peer = RakNet::RakPeerInterface::GetInstance();
 }
@@ -57,6 +54,8 @@ int Network::GetConnectionState() {
 	return peer->GetConnectionState(peer->GetSystemAddressFromGuid(peer->GetMyGUID()));
 }
 
+
+//server read messages / send
 int Network::readMessages()
 {
 	for (packet = peer->Receive(); packet; peer->DeallocatePacket(packet), packet = peer->Receive())
@@ -83,25 +82,6 @@ int Network::readMessages()
 			//isClient do client stuff
 			//send username message
 		}
-
-		case USER_SEND_USERNAME:
-			break;
-
-		case SERVER_RETURN_ACKNOWLEDGE:
-			break;
-
-		case USER_SEND_MESSAGE:
-			break;
-
-		case RECIEVE_CHAT_MESSAGE:
-			break;
-
-		case GAME_START:
-			break;
-
-		case GAME_END:
-			break;
-
 		case ID_NEW_INCOMING_CONNECTION:
 			::fprintf(stderr, "A connection is incoming.\n");
 			break;
@@ -135,31 +115,45 @@ int Network::readMessages()
 	return 0;
 }
 
+//client send message
 int Network::sendMessage(char* message)
 {
-	// peer->Send(message, sizeof(message)*3, HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetSystemAddressFromGuid(peer->GetMyGUID()), true);
-	peer->Send(message, sizeof(message)*3, HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetGuidFromSystemAddress(RakNet::UNASSIGNED_SYSTEM_ADDRESS), true);
+	peer->Send(message, sizeof(message)*3, HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetSystemAddressFromGuid(peer->GetMyGUID()), true);
 	return 1;
 }
 
+//client read message
 int Network::readMessage(char* message, int bufferSize)
 {
-	packet = peer->Receive();
-	if (packet) {
-		strcpy_s(message, bufferSize, (char*)packet->data);
-		return 1;
+	if (isServer)
+	{
+		//recieve messages
+		packet = peer->Receive();
+		if (packet) {
+			strcpy_s(message, bufferSize, (char*)packet->data);
+
+			//resend message to other client
+			return 1;
+		}
+	}
+	else
+	{
+		packet = peer->Receive();
+		if (packet) {
+			strcpy_s(message, bufferSize, (char*)packet->data);
+
+			//read in message and add to event manager
+			//decode back into event
+			//add time stamp TODO
+			if (nEvent != nullptr)
+			{
+				EventManager::getInstance()->addEvent(nEvent);
+			}
+
+			return 1;
+		}
 	}
 	return 0;
-}
-
-void  Network::kickPlayer(int userID)
-{
-
-}
-
-int Network::getClientListLength()
-{
-	return 1;
 }
 
 uString Network::getClient(int index)
@@ -167,3 +161,30 @@ uString Network::getClient(int index)
 	char* string = new char['asdf'];
 	return string;
 }
+
+int Network::nSendColorEvent(float r, float g, float b)
+{
+	ColorEvent colorEvent = ColorEvent(r,g,b);
+	//send message
+}
+
+int Network::nSendDirectionEvent(float x, float y, float z)
+{
+	DirectionEvent dirEvent = DirectionEvent(x,y,z);
+	//send message
+}
+
+int Network::nSendMessageEvent(char* message)
+{
+	MessageEvent messEvent = MessageEvent(message);
+	//send message
+}
+
+int Network::nSpeedEvent(float speed)
+{
+//	Event* ev = &SpeedEvent(speed);
+	SpeedEvent spdEvent = SpeedEvent(speed);
+	//send message
+}
+
+
