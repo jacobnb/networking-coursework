@@ -76,5 +76,9 @@ public class Player : MonoBehaviour
             message = MessageParser.encodeForceChangeMessage(-1);
             sendMessage(message);
         }
+        if (message != "")
+        {
+            Debug.Log(message);
+        }
     }
 }

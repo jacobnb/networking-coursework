@@ -37,7 +37,7 @@ public class RocketLeague : MonoBehaviour
     void Update()
     {
         // TODO: Remove following
-        getKeyboardInput();
+        //getKeyboardInput();
 
         //get all events and enqueue
         GET_THE_FUCKING_MESSAGES_FROM_THE_PLUGIN_AND_ADD_THEM_TO_THE_RIGHT_QUEUE();
@@ -46,6 +46,7 @@ public class RocketLeague : MonoBehaviour
         applyColors();
         applyForceChange();
         // TODO: Do we need to sync clients?
+        // TODO: Chat
     }
     void getKeyboardInput()
     {
@@ -69,6 +70,7 @@ public class RocketLeague : MonoBehaviour
         string message = sb.ToString();
         while(isMessage == 1)
         {
+            Debug.Log("Message: " +message);
             switch (MessageParser.getMessageType(message))
             {
                 case MessageParser.MessageType.FORCE:
@@ -83,7 +85,7 @@ public class RocketLeague : MonoBehaviour
                 // TODO --case MessageParser.MessageType.CHAT:
                 //    break;
                 default:
-                    Debug.LogError("Invalid message type: " + message);
+                    Debug.Log("Invalid message type: " + message);
                     break;
             }
             isMessage = Network.readMessage(sb, sb.Capacity);

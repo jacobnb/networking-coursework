@@ -9,7 +9,8 @@ public class MessageParser : MonoBehaviour
         FORCE,
         FORCE_CHANGE,
         COLOR,
-        CHAT
+        CHAT,
+        INVALID_TYPE
     }
     public static string encodeForceMessage(RocketLeague.ForceDirection forceDirection)
     {
@@ -33,6 +34,10 @@ public class MessageParser : MonoBehaviour
     }
     public static MessageType getMessageType(string message)
     {
+        if (message.Length < 2)
+        {
+            return MessageType.INVALID_TYPE;
+        }
         return (MessageType)int.Parse(message.Substring(0,1));
     }
     public static RocketLeague.ForceDirection getForce(string message)
