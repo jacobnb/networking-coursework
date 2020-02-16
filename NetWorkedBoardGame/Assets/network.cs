@@ -13,8 +13,11 @@ public class Network
     public static extern int initServer(int port, string username, int maxClients = 10, int ID = 0);
     [DllImport("networking")]
     public static extern int cleanup(int ID = 0);
+
+    //send gameplay message
     [DllImport("networking", CharSet=CharSet.Ansi)]
     public static extern int sendMessage(string message, int ID = 0);
+    //@return 1 = message, 0 = no message, -1 = error
     [DllImport("networking", CharSet=CharSet.Ansi)]
     public static extern int readMessage(StringBuilder message, int bufferSize, int ID = 0);
     [DllImport("networking")]

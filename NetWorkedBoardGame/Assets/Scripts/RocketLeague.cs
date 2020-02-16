@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using System.Text;
 public class RocketLeague : MonoBehaviour
 {
     int score0, score1;
@@ -64,11 +64,31 @@ public class RocketLeague : MonoBehaviour
     }
     void GET_THE_FUCKING_MESSAGES_FROM_THE_PLUGIN_AND_ADD_THEM_TO_THE_RIGHT_QUEUE()
     {
-        // TODO: for each message, queue force in forces.
-        // TODO: for each message queue color in colors
-        // TODO: for each message queue speed change in speeds.
-        // TODO: Chat messages.
-
+        StringBuilder sb = new StringBuilder(256);
+        int isMessage = Network.readMessage(sb, sb.Capacity);
+        string message = sb.ToString();
+        while(isMessage == 1)
+        {
+            switch (MessageParser.getMessageType(message))
+            {
+                case MessageParser.MessageType.FORCE:
+                    forces.Enqueue(MessageParser.getForce(message));
+                    break;
+                case MessageParser.MessageType.COLOR:
+                    colors.Enqueue(MessageParser.getColor(message));
+                    break;
+                case MessageParser.MessageType.FORCE_CHANGE:
+                    forceChanges.Enqueue(MessageParser.getForceChange(message));
+                    break;
+                // TODO --case MessageParser.MessageType.CHAT:
+                //    break;
+                default:
+                    Debug.LogError("Invalid message type: " + message);
+                    break;
+            }
+            isMessage = Network.readMessage(sb, sb.Capacity);
+            message = sb.ToString();
+        }
     }
     public void resetBall()
     {
