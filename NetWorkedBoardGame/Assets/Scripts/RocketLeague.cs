@@ -104,14 +104,23 @@ public class RocketLeague : MonoBehaviour
         if(!NetworkManager.Instance.isServer)
         {
             Debug.Log(Network.getEventList());
-            
+            /*
             for (int i = 0; i < Network.getEventList(); i++)
             {
-                if (Network.executeEvent(sb, sb.Capacity) == 0)
+                int check = Network.executeEvent(sb, sb.Capacity);
+                if (check == 0)
                 {
                     Debug.Log(sb.ToString());
                 }
-            } 
+                else if(check == -1)
+                {
+                    Debug.Log("empty");
+                }
+            } */
+        }
+        else
+        {
+            Debug.Log(sb.ToString());
         }
     }
     public void resetBall()

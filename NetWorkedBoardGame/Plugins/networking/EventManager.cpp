@@ -25,6 +25,7 @@ int EventManager::executeEvent(char* message, int bufferSize)
 
 	//get event
 	current->getEvent()->executeOrder(message, bufferSize);
+
 	//delete event and current
 	delete current->getEvent();
 

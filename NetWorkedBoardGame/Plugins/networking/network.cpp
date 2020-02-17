@@ -146,7 +146,7 @@ int Network::readMessages()
 int Network::sendMessage(char* message)
 {
 	// peer->Send(message, sizeof(message)*3, HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetSystemAddressFromGuid(peer->GetMyGUID()), true);
-	peer->Send(message, sizeof(message)*3, HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetGuidFromSystemAddress(RakNet::UNASSIGNED_SYSTEM_ADDRESS), true);
+	peer->Send(message, sizeof(message)*3, HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetSystemAddressFromIndex(0), true);
 	return 1;
 }
 
@@ -162,7 +162,7 @@ int Network::readMessage(char* message, int bufferSize)
 
 			if (isServer)
 			{
-				peer->Send(message, sizeof(message)*3, HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetGuidFromSystemAddress(RakNet::UNASSIGNED_SYSTEM_ADDRESS), true);
+				peer->Send(message, sizeof(message)*10, HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetGuidFromSystemAddress(RakNet::UNASSIGNED_SYSTEM_ADDRESS), true);
 			}
 			else
 			{
@@ -199,7 +199,7 @@ int Network::nSendDirectionEvent(int x)
 	DirectionEvent dirEvent = DirectionEvent(x);
 	dirEvent.setTime(RakNet::GetTime());
 	//send message
-	return peer->Send(reinterpret_cast<char*>(&dirEvent), sizeof(dirEvent)*3, HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetGuidFromSystemAddress(RakNet::UNASSIGNED_SYSTEM_ADDRESS), true);
+	return peer->Send(reinterpret_cast<char*>(&dirEvent), sizeof(dirEvent), HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetGuidFromSystemAddress(RakNet::UNASSIGNED_SYSTEM_ADDRESS), true);
 }
 
 int Network::nSendMessageEvent(char* message, int bufferSize)
