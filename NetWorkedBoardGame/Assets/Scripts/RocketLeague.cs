@@ -100,7 +100,7 @@ public class RocketLeague : MonoBehaviour
        
         StringBuilder sb = new StringBuilder(256);
         Network.readMessage(sb, sb.Capacity); //dummy string builder insert
-        Debug.Log("tr:" + sb.ToString());
+       
         if(!NetworkManager.Instance.isServer)
         {
             Debug.Log(Network.getEventList());
@@ -112,6 +112,10 @@ public class RocketLeague : MonoBehaviour
                     Debug.Log(sb.ToString());
                 }
             } */
+        }
+        else
+        {
+            Debug.Log("tr:" + sb.ToString());
         }
  
     }
