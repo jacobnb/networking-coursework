@@ -99,7 +99,10 @@ public class RocketLeague : MonoBehaviour
         */
        
         StringBuilder sb = new StringBuilder(256);
-        Network.readMessage(sb, sb.Capacity); //dummy string builder insert
+        if (Network.readMessage(sb, sb.Capacity) == 1)//dummy string builder insert
+        {
+            Debug.Log("Recieved Messages");
+        }
        
         if(!NetworkManager.Instance.isServer)
         {

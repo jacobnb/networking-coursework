@@ -162,7 +162,8 @@ int Network::readMessage(char* message, int bufferSize)
 
 			if (isServer)
 			{
-				peer->Send(message, sizeof(message)*10, HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetGuidFromSystemAddress(RakNet::UNASSIGNED_SYSTEM_ADDRESS), true);
+				peer->Send(message, sizeof(message), HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetGuidFromSystemAddress(RakNet::UNASSIGNED_SYSTEM_ADDRESS), true);
+				return 1;
 			}
 			else
 			{
@@ -190,8 +191,7 @@ int Network::nSendColorEvent(float r, float g, float b)
 	ColorEvent colorEvent = ColorEvent(r, g, b);
 	colorEvent.setTime(RakNet::GetTime());
 	//send message
-
-	return peer->Send(reinterpret_cast<char*>(&colorEvent), sizeof(colorEvent)*3, HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetGuidFromSystemAddress(RakNet::UNASSIGNED_SYSTEM_ADDRESS), true);
+	return peer->Send(reinterpret_cast<char*>(&colorEvent), sizeof(colorEvent), HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetGuidFromSystemAddress(RakNet::UNASSIGNED_SYSTEM_ADDRESS), true);
 }
 
 int Network::nSendDirectionEvent(int x)
@@ -199,7 +199,7 @@ int Network::nSendDirectionEvent(int x)
 	DirectionEvent dirEvent = DirectionEvent(x);
 	dirEvent.setTime(RakNet::GetTime());
 	//send message
-	return peer->Send(reinterpret_cast<char*>(&dirEvent), sizeof(dirEvent), HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetGuidFromSystemAddress(RakNet::UNASSIGNED_SYSTEM_ADDRESS), true);
+	return peer->Send(reinterpret_cast<char*>(&dirEvent), sizeof(dirEvent), HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetSystemAddressFromIndex(0), false);
 }
 
 int Network::nSendMessageEvent(char* message, int bufferSize)
@@ -208,7 +208,7 @@ int Network::nSendMessageEvent(char* message, int bufferSize)
 	messEvent.setTime(RakNet::GetTime());
 	//send message
 
-	return peer->Send(reinterpret_cast<char*>(&messEvent), sizeof(messEvent)*3, HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetGuidFromSystemAddress(RakNet::UNASSIGNED_SYSTEM_ADDRESS), true);
+	return peer->Send(reinterpret_cast<char*>(&messEvent), sizeof(messEvent), HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetGuidFromSystemAddress(RakNet::UNASSIGNED_SYSTEM_ADDRESS), true);
 }
 
 int Network::nSpeedEvent(float speed)
@@ -218,7 +218,7 @@ int Network::nSpeedEvent(float speed)
 	spdEvent.setTime(RakNet::GetTime());
 	//send message
 
-	return peer->Send(reinterpret_cast<char*>(&spdEvent), sizeof(spdEvent)*3, HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetGuidFromSystemAddress(RakNet::UNASSIGNED_SYSTEM_ADDRESS), true);
+	return peer->Send(reinterpret_cast<char*>(&spdEvent), sizeof(spdEvent), HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetGuidFromSystemAddress(RakNet::UNASSIGNED_SYSTEM_ADDRESS), true);
 }
 
 int Network::getEventList()
