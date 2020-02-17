@@ -8,5 +8,5 @@ MessageEvent::MessageEvent(char* message, int bufferSize)
 
 void MessageEvent::executeOrder(char* message, int bufferSize)
 {
-	message = mMessage;
+	strcpy_s(message, bufferSize, mMessage);
 }

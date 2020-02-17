@@ -162,13 +162,16 @@ int Network::readMessage(char* message, int bufferSize)
 
 			if (isServer)
 			{
+				//take the message and broadcast it
 				peer->Send(message, sizeof(message), HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetGuidFromSystemAddress(RakNet::UNASSIGNED_SYSTEM_ADDRESS), true);
 				return 1;
 			}
 			else
 			{
+				//make sure the data is an event data
 				if (packet->data[0] > ID_USER_PACKET_ENUM + 1)
 				{
+					//caspulate the event
 					Event* nEvent = (Event*)packet->data;
 					eventMan->addEvent(nEvent);
 				}
@@ -191,7 +194,7 @@ int Network::nSendColorEvent(float r, float g, float b)
 	ColorEvent colorEvent = ColorEvent(r, g, b);
 	colorEvent.setTime(RakNet::GetTime());
 	//send message
-	return peer->Send(reinterpret_cast<char*>(&colorEvent), sizeof(colorEvent), HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetGuidFromSystemAddress(RakNet::UNASSIGNED_SYSTEM_ADDRESS), true);
+	return peer->Send(reinterpret_cast<char*>(&colorEvent), sizeof(colorEvent), HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetSystemAddressFromIndex(0), false);
 }
 
 int Network::nSendDirectionEvent(int x)
@@ -208,7 +211,7 @@ int Network::nSendMessageEvent(char* message, int bufferSize)
 	messEvent.setTime(RakNet::GetTime());
 	//send message
 
-	return peer->Send(reinterpret_cast<char*>(&messEvent), sizeof(messEvent), HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetGuidFromSystemAddress(RakNet::UNASSIGNED_SYSTEM_ADDRESS), true);
+	return peer->Send(reinterpret_cast<char*>(&messEvent), sizeof(messEvent), HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetSystemAddressFromIndex(0), false);
 }
 
 int Network::nSpeedEvent(float speed)
@@ -218,7 +221,7 @@ int Network::nSpeedEvent(float speed)
 	spdEvent.setTime(RakNet::GetTime());
 	//send message
 
-	return peer->Send(reinterpret_cast<char*>(&spdEvent), sizeof(spdEvent), HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetGuidFromSystemAddress(RakNet::UNASSIGNED_SYSTEM_ADDRESS), true);
+	return peer->Send(reinterpret_cast<char*>(&spdEvent), sizeof(spdEvent), HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetSystemAddressFromIndex(0), false);
 }
 
 int Network::getEventList()
@@ -228,6 +231,5 @@ int Network::getEventList()
 
 int Network::executeEvent(char* message, int bufferSize)
 {
-	eventMan->executeEvent(message, bufferSize);
-	return 0;
+	return eventMan->executeEvent(message, bufferSize);
 }

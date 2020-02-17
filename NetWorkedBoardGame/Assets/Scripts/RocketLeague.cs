@@ -114,6 +114,9 @@ public class RocketLeague : MonoBehaviour
                 if (check == 0)
                 {
                     Debug.Log(sb.ToString());
+                    //Break down string
+
+                    //add to queue based on event type
                 }
                 else if(check == -1)
                 {

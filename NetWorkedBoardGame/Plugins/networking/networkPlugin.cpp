@@ -119,10 +119,9 @@ int sendColorEvent(float r, float g, float b, netID ID)
 int sendDirectionEvent(int x, netID ID)
 {
   //create event
-	instances[ID]->nSendDirectionEvent(x);
+	return instances[ID]->nSendDirectionEvent(x);
 	//send message
 
-	return 0;
 }
 
 int sendMessageEvent(char* message, int bufferSize, netID ID)
@@ -151,7 +150,5 @@ int getEventList(netID ID)
 
 int executeEvent(char* message, int bufferSize, netID ID)
 {
-	instances[ID]->executeEvent(message, bufferSize);
-
-	return 0;
+	return instances[ID]->executeEvent(message, bufferSize);
 }

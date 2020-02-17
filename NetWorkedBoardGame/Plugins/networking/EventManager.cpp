@@ -88,14 +88,17 @@ bool EventManager::addEvent(Event* newEvent)
 
 int EventManager::getListLength()
 {
+	//start at head
 	ListNode* currentNode = mHead;
 	int count = 1;
 
+	//list is empty
 	if (mHead == nullptr)
 	{
 		return 0;
 	}
 
+	//iterate through the list
 	while (currentNode->getNext() != nullptr && count < 60)
 	{
 		currentNode = currentNode->getNext();
