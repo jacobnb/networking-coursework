@@ -104,7 +104,7 @@ public class RocketLeague : MonoBehaviour
        
         if(!NetworkManager.Instance.isServer)
         {
-            Debug.Log(Network.getEventList());
+            Debug.Log("Event List Size: " + Network.getEventList());
             /*
             for (int i = 0; i < Network.getEventList(); i++)
             {

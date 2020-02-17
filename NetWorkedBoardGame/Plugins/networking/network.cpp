@@ -163,7 +163,7 @@ int Network::readMessage(char* message, int bufferSize)
 			if (isServer)
 			{
 				//take the message and broadcast it
-				return peer->Send(message, sizeof(message)*3, HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetGuidFromSystemAddress(RakNet::UNASSIGNED_SYSTEM_ADDRESS), true);
+				return peer->Send(message, sizeof(message), HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetGuidFromSystemAddress(RakNet::UNASSIGNED_SYSTEM_ADDRESS), true);
 				
 			}
 			else
@@ -219,7 +219,6 @@ int Network::nSpeedEvent(float speed)
 	SpeedEvent spdEvent = SpeedEvent(speed);
 	spdEvent.setTime(RakNet::GetTime());
 	//send message
-
 	return peer->Send(reinterpret_cast<char*>(&spdEvent), sizeof(spdEvent), HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetSystemAddressFromIndex(0), false);
 }
 

@@ -75,13 +75,13 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.UpArrow))
         {
             //message = MessageParser.encodeForceChangeMessage(1);
-            int num = Network.sendSpeedEvent(1.0f);
+            int num = Network.sendSpeedEvent(1);
             Debug.Log("Send Report: " + num);
         }
         if (Input.GetKeyDown(KeyCode.DownArrow))
         {
             //  message = MessageParser.encodeForceChangeMessage(-1);
-            int num = Network.sendSpeedEvent(-1.0f);
+            int num = Network.sendSpeedEvent(-1);
             Debug.Log("Send Report: " + num);
         }
         if (message != "")
