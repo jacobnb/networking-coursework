@@ -113,11 +113,6 @@ public class RocketLeague : MonoBehaviour
                 }
             } 
         }
-        else
-        {
-            Debug.Log("tr:" + sb.ToString());
-        }
- 
     }
     public void resetBall()
     {
