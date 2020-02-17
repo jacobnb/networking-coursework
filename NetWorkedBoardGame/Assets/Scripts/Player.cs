@@ -6,7 +6,13 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     public int teamNum;
-    
+    private void Start()
+    {
+        if (NetworkManager.Instance.isServer)
+        {
+            Destroy(gameObject);
+        }
+    }
     // Update is called once per frame
     void Update()
     {
@@ -63,7 +69,7 @@ public class Player : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.B))
         {
-            message = MessageParser.encodeColorMessage(new Vector3(0f, 1f, 0f));
+            message = MessageParser.encodeColorMessage(new Vector3(0f, 0f, 1f));
             sendMessage(message);
         }
         if (Input.GetKeyDown(KeyCode.UpArrow))

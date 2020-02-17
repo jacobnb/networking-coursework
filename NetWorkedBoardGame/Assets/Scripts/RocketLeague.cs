@@ -88,6 +88,10 @@ public class RocketLeague : MonoBehaviour
                     Debug.Log("Invalid message type: " + message);
                     break;
             }
+            if (NetworkManager.Instance.isServer)
+            {
+                Network.sendMessage(message);
+            }
             isMessage = Network.readMessage(sb, sb.Capacity);
             message = sb.ToString();
         }
@@ -97,7 +101,7 @@ public class RocketLeague : MonoBehaviour
         Destroy(ballObject);
         ballObject = Instantiate(ballFab);
         ball = ballObject.GetComponent<Rigidbody>();
-        ballShader = ballObject.GetComponent<Material>();
+        ballShader = ballObject.GetComponent<MeshRenderer>().material;
 
     }
     public void addScore(int teamNum)
