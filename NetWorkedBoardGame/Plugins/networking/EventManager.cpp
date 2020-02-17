@@ -95,7 +95,7 @@ int EventManager::getListLength()
 		return 0;
 	}
 
-	while (currentNode->getNext() != nullptr)
+	while (currentNode->getNext() != nullptr && count < 60)
 	{
 		currentNode = currentNode->getNext();
 		count++;
