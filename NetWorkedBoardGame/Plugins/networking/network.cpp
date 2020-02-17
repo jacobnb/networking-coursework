@@ -146,7 +146,7 @@ int Network::readMessages()
 int Network::sendMessage(char* message)
 {
 	// peer->Send(message, sizeof(message)*3, HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetSystemAddressFromGuid(peer->GetMyGUID()), true);
-	peer->Send(message, sizeof(message)*3, HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetSystemAddressFromIndex(0), true);
+	peer->Send(message, sizeof(message)*10, HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetSystemAddressFromIndex(0), true);
 	return 1;
 }
 
@@ -163,18 +163,17 @@ int Network::readMessage(char* message, int bufferSize)
 			if (isServer)
 			{
 				//take the message and broadcast it
-				peer->Send(message, sizeof(message)*3, HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetGuidFromSystemAddress(RakNet::UNASSIGNED_SYSTEM_ADDRESS), true);
-				return 1;
+				return peer->Send(message, sizeof(message)*3, HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetGuidFromSystemAddress(RakNet::UNASSIGNED_SYSTEM_ADDRESS), true);
+				
 			}
 			else
 			{
 				//make sure the data is an event data
-				if (packet->data[0] > ID_USER_PACKET_ENUM + 1)
-				{
-					//caspulate the event
-					Event* nEvent = (Event*)packet->data;
-					eventMan->addEvent(nEvent);
-				}
+
+				//caspulate the event
+				Event* nEvent = (Event*)packet->data;
+				eventMan->addEvent(nEvent);
+				
 	
 			}
 		}
