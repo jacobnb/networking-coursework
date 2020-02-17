@@ -30,49 +30,59 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.S))
         {
             // message = MessageParser.encodeForceMessage(RocketLeague.ForceDirection.DOWN);
-            Network.sendDirectionEvent((int)RocketLeague.ForceDirection.DOWN);
+            int num = Network.sendDirectionEvent((int)RocketLeague.ForceDirection.DOWN);
+            Debug.Log("Send Report: " + num);
         }
         if (Input.GetKeyDown(KeyCode.A))
         {
-            Network.sendDirectionEvent((int)RocketLeague.ForceDirection.LEFT);
+            int num = Network.sendDirectionEvent((int)RocketLeague.ForceDirection.LEFT);
+            Debug.Log("Send Report: " + num);
         }
         if (Input.GetKeyDown(KeyCode.D))
         {
-            Network.sendDirectionEvent((int)RocketLeague.ForceDirection.RIGHT);  
+            int num = Network.sendDirectionEvent((int)RocketLeague.ForceDirection.RIGHT);
+            Debug.Log("Send Report: " + num);
         }
         if (Input.GetKeyDown(KeyCode.E))
         {
-            Network.sendDirectionEvent((int)RocketLeague.ForceDirection.VERT_UP);
+            int num = Network.sendDirectionEvent((int)RocketLeague.ForceDirection.VERT_UP);
+            Debug.Log("Send Report: " + num);
         }
         if (Input.GetKeyDown(KeyCode.Q))
         {
-           // message = MessageParser.encodeForceMessage(RocketLeague.ForceDirection.VERT_DOWN);
-            Network.sendDirectionEvent((int)RocketLeague.ForceDirection.VERT_DOWN);
+            // message = MessageParser.encodeForceMessage(RocketLeague.ForceDirection.VERT_DOWN);
+            int num = Network.sendDirectionEvent((int)RocketLeague.ForceDirection.VERT_DOWN);
+            Debug.Log("Send Report: " + num);
         }
         if (Input.GetKeyDown(KeyCode.R))
         {
             //message = MessageParser.encodeColorMessage(new Vector3(1f, 0f, 0f));
-            Network.sendColorEvent(1, 0, 0);
+            int num = Network.sendColorEvent(1, 0, 0);
+            Debug.Log("Send Report: " + num);
         }
-            if (Input.GetKeyDown(KeyCode.G))
+        if (Input.GetKeyDown(KeyCode.G))
         {
             //message = MessageParser.encodeColorMessage(new Vector3(0f, 1f, 0f));
-            Network.sendColorEvent(0, 1, 0);
+            int num = Network.sendColorEvent(0, 1, 0);
+            Debug.Log("Send Report: " + num);
         }
         if (Input.GetKeyDown(KeyCode.B))
         {
             // message = MessageParser.encodeColorMessage(new Vector3(0f, 1f, 0f));
-            Network.sendColorEvent(0, 0, 1);
+            int num = Network.sendColorEvent(0, 0, 1);
+            Debug.Log("Send Report: " + num);
         }
         if (Input.GetKeyDown(KeyCode.UpArrow))
         {
             //message = MessageParser.encodeForceChangeMessage(1);
-            Network.sendSpeedEvent(1.0f);
+            int num = Network.sendSpeedEvent(1.0f);
+            Debug.Log("Send Report: " + num);
         }
         if (Input.GetKeyDown(KeyCode.DownArrow))
         {
             //  message = MessageParser.encodeForceChangeMessage(-1);
-            Network.sendSpeedEvent(-1.0f);
+            int num = Network.sendSpeedEvent(-1.0f);
+            Debug.Log("Send Report: " + num);
         }
         if (message != "")
         {

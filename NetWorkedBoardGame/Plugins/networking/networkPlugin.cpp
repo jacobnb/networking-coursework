@@ -110,10 +110,8 @@ int doEverything(bool isServer)
 
 int sendColorEvent(float r, float g, float b, netID ID)
 {
-	instances[ID]->nSendColorEvent(r,g,b);
+	return instances[ID]->nSendColorEvent(r,g,b);
 	//send message
-
-	return 0;
 }
 
 int sendDirectionEvent(int x, netID ID)
@@ -127,17 +125,16 @@ int sendDirectionEvent(int x, netID ID)
 int sendMessageEvent(char* message, int bufferSize, netID ID)
 {
 	//create event
-	instances[ID]->nSendMessageEvent(message, bufferSize);
+	return instances[ID]->nSendMessageEvent(message, bufferSize);
 	//send message
 
-	return 0;
 }
 
 int sendSpeedEvent(float speed, netID ID)
 {
 	//create event
 
-	instances[ID]->nSpeedEvent(speed);
+	return instances[ID]->nSpeedEvent(speed);
 	//send message
 
 	return 0;

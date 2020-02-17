@@ -163,7 +163,7 @@ int Network::readMessage(char* message, int bufferSize)
 			if (isServer)
 			{
 				//take the message and broadcast it
-				peer->Send(message, sizeof(message), HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetGuidFromSystemAddress(RakNet::UNASSIGNED_SYSTEM_ADDRESS), true);
+				peer->Send(message, sizeof(message)*3, HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetGuidFromSystemAddress(RakNet::UNASSIGNED_SYSTEM_ADDRESS), true);
 				return 1;
 			}
 			else
