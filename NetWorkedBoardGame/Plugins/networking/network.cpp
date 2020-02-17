@@ -169,12 +169,12 @@ int Network::readMessage(char* message, int bufferSize)
 			else
 			{
 				//make sure the data is an event data
-
-				//caspulate the event
-				Event* nEvent = (Event*)packet->data;
-				eventMan->addEvent(nEvent);
-				
-	
+				if (packet->data[0] > ID_USER_PACKET_ENUM + 1)
+				{
+					//caspulate the event
+					Event* nEvent = (Event*)packet->data;
+					eventMan->addEvent(nEvent);
+				}
 			}
 		}
 	}

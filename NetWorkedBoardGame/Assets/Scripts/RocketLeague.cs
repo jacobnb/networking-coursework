@@ -105,22 +105,19 @@ public class RocketLeague : MonoBehaviour
         if(!NetworkManager.Instance.isServer)
         {
             Debug.Log("Event List Size: " + Network.getEventList());
-            /*
+            
             for (int i = 0; i < Network.getEventList(); i++)
             {
-                int check = Network.executeEvent(sb, sb.Capacity);
-                if (check == 0)
+
+                if (Network.executeEvent(sb, sb.Capacity) == 0)
                 {
                     Debug.Log(sb.ToString());
                     //Break down string
 
                     //add to queue based on event type
                 }
-                else if(check == -1)
-                {
-                    Debug.Log("empty");
-                }
-            } */
+
+            } 
         }
         else
         {
