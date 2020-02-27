@@ -25,9 +25,21 @@ public class StartScene : MonoBehaviour
 	public InputField IP_input;
     public InputField PortInput;
     public InputField UserName;
+    public GameObject Mode;
 	bool networkLinked = false;
 	public bool isServer = false;
 
+    public void onServerChange()
+    {
+        if (isServerToggle.isOn)
+        {
+            Mode.SetActive(true);
+        }
+        else
+        {
+            Mode.SetActive(false);
+        }
+    }
     public void Connect()
     {
         isServer = isServerToggle.isOn;
@@ -44,7 +56,8 @@ public class StartScene : MonoBehaviour
 
         if (isServer)
         {
-            NetworkManager.Instance.initServer(int.Parse(PortInput.text), UserName.text);
+            
+            NetworkManager.Instance.initServer(int.Parse(PortInput.text), UserName.text, (NetworkManager.NetworkMode)Mode.GetComponent<Dropdown>().value);
         }
         else
         {

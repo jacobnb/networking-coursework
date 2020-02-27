@@ -4,6 +4,12 @@ using UnityEngine;
 using System.Text;
 public class NetworkManager : MonoBehaviour
 {
+    public enum NetworkMode
+    {
+        DATA_PUSH,
+        DATA_SHARING,
+        DATA_COUPLED
+    }
     private static NetworkManager instance;
     public static NetworkManager Instance
     {
@@ -22,6 +28,12 @@ public class NetworkManager : MonoBehaviour
         DontDestroyOnLoad(this.gameObject);
     }
     public void initServer(int port, string username)
+    {
+        isServer = true;
+        Network.getNetworkInstance();
+        Network.initServer(port, username);
+    }
+    public void initServer(int port, string username, NetworkMode netMode)
     {
         isServer = true;
         Network.getNetworkInstance();
