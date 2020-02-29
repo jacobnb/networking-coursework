@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-struct data
+public struct data
 {
     public Vector3 position;
     public Vector3 velocity;
 }
-struct behavior
+public struct behavior
 {
     public float radius;
     public float separation;
@@ -15,18 +15,92 @@ struct behavior
     public float cohesion;
     public float forward;
     public float maxForce;
+    public behavior(float Radius, float Separation, float Alignment, float Cohesion, float Forward, float MaxForce)
+    {
+        radius = Radius;
+        separation = Separation;
+        alignment = Alignment;
+        cohesion = Cohesion;
+        forward = Forward;
+        maxForce = MaxForce;
+    }
 }
-public class Boid
+public class Boid: MonoBehaviour
 {
+    public GameObject boidFab;
     const int NUM_BOIDS = 20;
+    const int MIN_Z = 5;
+    const int MAX_Z = 20;
     data[] boids = new data[NUM_BOIDS];
     behavior[] behave = new behavior[NUM_BOIDS];
-
+    GameObject[] gameObjects = new GameObject[NUM_BOIDS];
+    private void Start()
+    {
+        initBoidObjects();
+    }
+    private void Update()
+    {
+        updateBoids();
+    }
+    void initBoidObjects()
+    {
+        Vector3 position = Vector3.zero;
+        Vector3 velocity = new Vector3(1f, 1f, 1f);
+        for(int i=0; i < NUM_BOIDS; i++)
+        {
+            // TODO? are structs deep or shallow copied?
+            gameObjects[i] = Instantiate(boidFab);
+            boids[i].position = position;
+            position.x++;
+            boids[i].velocity = velocity;
+            behave[i] = new behavior(5f, 5f, 5f, 5f, 5f, 10f);
+        }
+    }
     void updateBoids()
     {
-        // TODO: Wrap screen.
+        screenWrap();
         updateVelocity();
-        // TODO: apply new velocity
+        applyVelocityAndPosition();
+    }
+    void screenWrap()
+    {
+        for(int i = 0; i<NUM_BOIDS; i++)
+        {
+            Vector3 screenPos = Camera.main.WorldToScreenPoint(boids[i].position);
+            if(screenPos.x > Screen.width)
+            {
+                screenPos.x = 0f;
+            }
+            else if (screenPos.x < 0f) {
+                screenPos.x = Screen.width;
+            }
+            if(screenPos.y > Screen.height)
+            {
+                screenPos.y = 0f;
+            }
+            else if (screenPos.y < 0f)
+            {
+                screenPos.y = Screen.height;
+            }
+            if(screenPos.z > MAX_Z)
+            {
+                screenPos.z = MIN_Z;
+            }
+            if(screenPos.z < MIN_Z)
+            {
+                screenPos.z = MAX_Z;
+            }
+            boids[i].position = Camera.main.ScreenToWorldPoint(screenPos);
+        }
+    }
+    void applyVelocityAndPosition()
+    {
+        for(int i =0; i<NUM_BOIDS; i++)
+        {
+            gameObjects[i].transform.position = boids[i].position;
+            // TODO: cache this.
+            gameObjects[i].GetComponent<Rigidbody>().velocity = boids[i].velocity;
+        }
     }
     void updateVelocity()
     {
@@ -40,11 +114,13 @@ public class Boid
             Vector3 alignment = Vector3.zero;
             Vector3 cohesion = Vector3.zero;
             // get all other boids data
-            for (int c = 0; c < NUM_BOIDS; c++)
+            for (int c = 0; /*see below*/; c++)
             {
 
                 if (i == c) //skip self
                     c++;
+                if (c >= NUM_BOIDS)
+                    break;
                 if ((currentBoid.position - boids[c].position).sqrMagnitude
                     < (behave[i].radius * behave[i].radius))
                 {
@@ -67,6 +143,7 @@ public class Boid
                 newVelocity = newVelocity.normalized * behave[i].maxForce;
             }
             currentBoid.velocity = newVelocity;
+            Debug.Log(newVelocity);
         }
     }
     //individual
