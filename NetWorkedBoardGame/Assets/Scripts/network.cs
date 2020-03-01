@@ -4,12 +4,6 @@ using System.Text;
 public class Network
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct blah
-    {
-        public vec3 data;
-        public vec3 dataz;
-    };
-    [StructLayout(LayoutKind.Sequential)]
     public struct vec3
     {
         public float x;
@@ -46,7 +40,7 @@ public class Network
             return vec;
         }
     }
-    
+
     [DllImport("networking")]
     public static extern int initNetwork(int numNetworkInstances);
     [DllImport("networking")]
@@ -59,15 +53,17 @@ public class Network
     public static extern int cleanup(int ID = 0);
 
     //send gameplay message
-    [DllImport("networking", CharSet=CharSet.Ansi)]
+    [DllImport("networking", CharSet = CharSet.Ansi)]
     public static extern int sendMessage(string message, int ID = 0);
     //@return 1 = message, 0 = no message, -1 = error
-    [DllImport("networking", CharSet=CharSet.Ansi)]
+    [DllImport("networking", CharSet = CharSet.Ansi)]
     public static extern int readMessage(StringBuilder message, int bufferSize, int ID = 0);
     [DllImport("networking")]
     public static extern int checkConnection(int ID = 0);
     [DllImport("networking")]
     public static extern int doEverything(bool isServer);
-    [DllImport("Networking")]
-    public static extern void testArray([MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 1)]blah[] arr, int length);
+    [DllImport("networking")]
+    public static extern int sendBoidMessage(Boid.data[] boids, int length, int ID = 0);
+    [DllImport("networking")]
+    public static extern int readBoidMessage(Boid.data[] boids, int length, int ID = 0);
 }

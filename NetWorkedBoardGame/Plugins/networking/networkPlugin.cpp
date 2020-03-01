@@ -14,12 +14,6 @@ int initNetwork(int numNetworkInstances) {
 	return 1337;
 }
 
-void testArray(blah* arr, int length) {
-	for (int i = 0; i < length; i++) {
-		arr[i].data.x+=1.1;
-		::fprintf(stderr, "Plugin: %f", arr[i].data.x);
-	}
-}
 
 
 // @return: ID to access network instance.
@@ -63,7 +57,20 @@ int sendMessage(char* message, netID ID) {
 	}
 	return FALSE;
 }
-
+int sendBoidMessage(data* boidsArr, int length, netID ID) {
+	if (instances[ID]) {
+		instances[ID]->sendBoidMessage(boidsArr, length);
+		return TRUE;
+	}
+	return FALSE;
+}
+int readBoidMessage(data* boidsArr, int length, netID ID) {
+	if (instances[ID]) {
+		instances[ID]->readBoidMessage(boidsArr, length);
+		return TRUE;
+	}
+	return FALSE;
+}
 int readMessage(char* message, int bufferSize, netID ID) {
 	if (instances[ID]) {
 		return instances[ID]->readMessage(message, bufferSize);

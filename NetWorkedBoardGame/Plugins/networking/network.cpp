@@ -7,6 +7,7 @@
 #include "RakNet/BitStream.h"
 #include "RakNet/MessageIdentifiers.h"
 #include "RakNet/RakAlloca.h"
+#include "RakNet/GetTime.h"
 
 Network::Network() {
 	peer = RakNet::RakPeerInterface::GetInstance();
@@ -134,6 +135,49 @@ int Network::readMessages()
 	}
 	return 0;
 }
+// TODO: move these anywhere but here.
+RakNet::MessageID useTimeStamp;
+RakNet::Time timeStamp;
+RakNet::MessageID typeId;
+int Network::sendBoidMessage(data* boids, int length) {
+	RakNet::BitStream* bs = new RakNet::BitStream();
+	char* arr;
+	arr = (char*)malloc(sizeof(data) * length);
+	arr = (char*)boids;
+	::fprintf(stderr, "%f, %f, %f\n", boids[0].position.x, boids[0].position.y, boids[0].position.z);
+	memcpy(arr, boids, sizeof(data) * length);
+	useTimeStamp = ID_TIMESTAMP;
+	timeStamp = RakNet::GetTime();
+	typeId = ID_USER_PACKET_ENUM;
+	bs->Write(useTimeStamp);
+	bs->Write(timeStamp);
+	bs->Write(typeId);
+	bs->Write(arr, sizeof(data) * length);
+	peer->Send(bs, HIGH_PRIORITY, RELIABLE_ORDERED, (char)0, peer->GetGuidFromSystemAddress(RakNet::UNASSIGNED_SYSTEM_ADDRESS), true);
+	//free(arr); the memory is still handled Unity side.
+	return 1;
+}
+
+// any excess memory in boids will be left as is.
+int Network::readBoidMessage(data* boids, int length)
+{
+	::fprintf(stderr, "Reading Message\n");
+	packet = peer->Receive();
+	if (packet) {
+		RakNet::BitStream bs(packet->data, packet->length, false);
+		bs.Read(useTimeStamp);
+		bs.Read(timeStamp);
+		bs.Read(typeId);
+		const unsigned int len = min(sizeof(data) * length, packet->bitSize);
+		bs.Read((char*)boids, len);
+		//memcpy(boids, packet->data, len);
+		::fprintf(stderr, "%f, %f, %f\n", boids[0].position.x, boids[0].position.y, boids[0].position.z);
+		peer->DeallocatePacket(packet);
+		return 1;
+	}
+	return 0;
+}
+
 
 int Network::sendMessage(char* message)
 {

@@ -1,5 +1,16 @@
 #pragma once
 #include <string>
+struct vec3 {
+	float x;
+	float y;
+	float z;
+};
+struct data
+{
+	vec3 position;
+	vec3 velocity;
+};
+
 struct ConnectMessage
 {
 	std::string clientUserName;

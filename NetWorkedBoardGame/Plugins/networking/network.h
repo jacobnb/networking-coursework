@@ -58,6 +58,8 @@ public:
 	int GetConnectionState();
 	int readMessages();
 	int sendMessage(char* message);
+	int sendBoidMessage(data* boids, int length);
+	int readBoidMessage(data* boids, int length);
 	int readMessage(char* message, int bufferSize);
 	//server functions
 	void kickPlayer(int userID);

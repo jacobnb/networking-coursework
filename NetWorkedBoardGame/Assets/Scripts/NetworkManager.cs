@@ -60,4 +60,12 @@ public class NetworkManager : MonoBehaviour
         Network.sendMessage(message);
         Debug.Log("Seding Message");
     }
+    public void sendBoids(ref Boid.data[] boids)
+    {
+        Network.sendBoidMessage(boids, boids.Length);
+    }
+    public void readBoids(ref Boid.data[] boids)
+    {
+        Network.readBoidMessage(boids, boids.Length);
+    }
 }

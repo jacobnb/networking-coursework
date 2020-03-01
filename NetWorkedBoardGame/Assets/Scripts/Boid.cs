@@ -3,49 +3,51 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Runtime.InteropServices;
 
-[StructLayout(LayoutKind.Sequential)]
-public struct data
-{
-    public Network.vec3 position;
-    public Network.vec3 velocity;
-}
-public struct behavior
-{
-    public float radius;
-    public float separation;
-    public float alignment;
-    public float cohesion;
-    public float forward;
-    public float maxForce;
-    public behavior(float Radius, float Separation, float Alignment, float Cohesion, float Forward, float MaxForce)
-    {
-        radius = Radius;
-        separation = Separation;
-        alignment = Alignment;
-        cohesion = Cohesion;
-        forward = Forward;
-        maxForce = MaxForce;
-    }
-}
+
+
 public class Boid: MonoBehaviour
 {
+    [StructLayout(LayoutKind.Sequential)]
+    public struct data
+    {
+        public Network.vec3 position;
+        public Network.vec3 velocity;
+    }
+    public struct behavior
+    {
+        public float radius;
+        public float separation;
+        public float alignment;
+        public float cohesion;
+        public float forward;
+        public float maxForce;
+        public behavior(float Radius, float Separation, float Alignment, float Cohesion, float Forward, float MaxForce)
+        {
+            radius = Radius;
+            separation = Separation;
+            alignment = Alignment;
+            cohesion = Cohesion;
+            forward = Forward;
+            maxForce = MaxForce;
+        }
+    }
     // TODO: Make boids collide with each other.
     public GameObject boidFab;
     const int NUM_BOIDS = 20;
     const int MIN_Z = 5;
     const int MAX_Z = 20;
-    data[] boids = new data[NUM_BOIDS];
+    public data[] boids = new data[NUM_BOIDS];
     behavior[] behave = new behavior[NUM_BOIDS];
     GameObject[] gameObjects = new GameObject[NUM_BOIDS];
     private void Start()
     {
-        initBoidObjects();
+        //initBoidObjects();
     }
     private void Update()
     {
-        updateBoids(Time.deltaTime);
+        //updateBoids(Time.deltaTime);
     }
-    void initBoidObjects()
+    public void initBoidObjects()
     {
         Network.vec3 position = new Network.vec3(0,0,0);
         position.x = -10;
@@ -59,13 +61,13 @@ public class Boid: MonoBehaviour
             //behave[i] = new behavior(5f, 5f, 5f, 5f, 5f, 10f);
         }
     }
-    void updateBoids(float dt)
+    public void updateBoids(float dt)
     {
         screenWrap();
         //updateBoidVelocity();
         applyVelocityAndPosition(dt);
     }
-    void screenWrap()
+    public void screenWrap()
     {
         for(int i = 0; i<NUM_BOIDS; i++)
         {
@@ -102,11 +104,18 @@ public class Boid: MonoBehaviour
             boids[i].position = new Network.vec3(Camera.main.ScreenToWorldPoint(screenPos));
         }
     }
-    void applyVelocityAndPosition(float dt)
+    public void applyVelocityAndPosition(float dt)
     {
         for(int i =0; i<NUM_BOIDS; i++)
         {
             boids[i].position += boids[i].velocity * dt;
+            gameObjects[i].transform.position = boids[i].position.toVector3();
+        }
+    }
+    public void setPosition()
+    {
+        for (int i = 0; i < NUM_BOIDS; i++)
+        {
             gameObjects[i].transform.position = boids[i].position.toVector3();
         }
     }
