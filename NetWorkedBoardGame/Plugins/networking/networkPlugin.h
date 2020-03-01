@@ -23,6 +23,12 @@ extern "C"
 #else // !__cplusplus
 #endif // __cplusplus
 
+struct blah
+{
+    float data;
+    float dataz;
+};
+
 MYUNITYPLUGIN_SYMBOL int initNetwork(int numNetworkInstances);
 MYUNITYPLUGIN_SYMBOL netID getNetworkInstance();
 MYUNITYPLUGIN_SYMBOL int initClient(uString IP, int port, uString username, netID ID=0);
@@ -32,6 +38,7 @@ MYUNITYPLUGIN_SYMBOL int sendMessage(char* message, netID ID = 0);
 MYUNITYPLUGIN_SYMBOL int readMessage(char* message, int bufferSize, netID ID = 0);
 MYUNITYPLUGIN_SYMBOL int checkConnection(netID ID = 0);
 MYUNITYPLUGIN_SYMBOL int doEverything(bool isServer);
+MYUNITYPLUGIN_SYMBOL void testArray(blah* arr, int length);
 #ifdef __cplusplus
 } // extern "C"
 #else // !__cplusplus

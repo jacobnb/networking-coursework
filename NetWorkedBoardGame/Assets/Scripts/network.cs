@@ -3,6 +3,12 @@ using System.Runtime.InteropServices;
 using System.Text;
 public class Network
 {
+    [StructLayout(LayoutKind.Sequential)]
+    public struct blah
+    {
+        public float data;
+        public float dataz;
+    };
     [DllImport("networking")]
     public static extern int initNetwork(int numNetworkInstances);
     [DllImport("networking")]
@@ -24,4 +30,6 @@ public class Network
     public static extern int checkConnection(int ID = 0);
     [DllImport("networking")]
     public static extern int doEverything(bool isServer);
+    [DllImport("Networking")]
+    public static extern void testArray([MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 1)]blah[] arr, int length);
 }

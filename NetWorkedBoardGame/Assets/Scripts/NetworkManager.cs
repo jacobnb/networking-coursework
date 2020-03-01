@@ -17,6 +17,7 @@ public class NetworkManager : MonoBehaviour
     }
     public int networkInstances = 5;
     public bool isServer = false;
+    public NetworkMode mode;
     private void Awake()
     {
         if (instance != null && instance != this)
@@ -36,6 +37,7 @@ public class NetworkManager : MonoBehaviour
     public void initServer(int port, string username, NetworkMode netMode)
     {
         isServer = true;
+        mode = netMode;
         Network.getNetworkInstance();
         Network.initServer(port, username);
     }

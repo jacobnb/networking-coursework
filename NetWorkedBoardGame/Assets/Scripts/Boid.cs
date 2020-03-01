@@ -27,6 +27,7 @@ public struct behavior
 }
 public class Boid: MonoBehaviour
 {
+    // TODO: Make boids collide with each other.
     public GameObject boidFab;
     const int NUM_BOIDS = 20;
     const int MIN_Z = 5;
@@ -40,15 +41,15 @@ public class Boid: MonoBehaviour
     }
     private void Update()
     {
-        updateBoids();
+        updateBoids(Time.deltaTime);
     }
     void initBoidObjects()
     {
         Vector3 position = Vector3.zero;
-        Vector3 velocity = new Vector3(1f, 1f, 1f);
+        position.x = -10;
+        Vector3 velocity = new Vector3(2f, 2f, 2f);
         for(int i=0; i < NUM_BOIDS; i++)
         {
-            // TODO? are structs deep or shallow copied?
             gameObjects[i] = Instantiate(boidFab);
             boids[i].position = position;
             position.x++;
@@ -56,11 +57,11 @@ public class Boid: MonoBehaviour
             behave[i] = new behavior(5f, 5f, 5f, 5f, 5f, 10f);
         }
     }
-    void updateBoids()
+    void updateBoids(float dt)
     {
         screenWrap();
-        updateVelocity();
-        applyVelocityAndPosition();
+        //updateBoidVelocity();
+        applyVelocityAndPosition(dt);
     }
     void screenWrap()
     {
@@ -69,40 +70,45 @@ public class Boid: MonoBehaviour
             Vector3 screenPos = Camera.main.WorldToScreenPoint(boids[i].position);
             if(screenPos.x > Screen.width)
             {
-                screenPos.x = 0f;
+                //screenPos.x = 0f;
+                boids[i].velocity.x = -boids[i].velocity.x;
             }
             else if (screenPos.x < 0f) {
-                screenPos.x = Screen.width;
+                //screenPos.x = Screen.width;
+                boids[i].velocity.x = -boids[i].velocity.x;
             }
             if(screenPos.y > Screen.height)
             {
-                screenPos.y = 0f;
+                //screenPos.y = 0f;
+                boids[i].velocity.y = -boids[i].velocity.y;
             }
             else if (screenPos.y < 0f)
             {
-                screenPos.y = Screen.height;
+                //screenPos.y = Screen.height;
+                boids[i].velocity.y = -boids[i].velocity.y;
             }
             if(screenPos.z > MAX_Z)
             {
-                screenPos.z = MIN_Z;
+                //screenPos.z = MIN_Z;
+                boids[i].velocity.z = -boids[i].velocity.z;
             }
             if(screenPos.z < MIN_Z)
             {
-                screenPos.z = MAX_Z;
+                //screenPos.z = MAX_Z;
+                boids[i].velocity.z = -boids[i].velocity.z;
             }
             boids[i].position = Camera.main.ScreenToWorldPoint(screenPos);
         }
     }
-    void applyVelocityAndPosition()
+    void applyVelocityAndPosition(float dt)
     {
         for(int i =0; i<NUM_BOIDS; i++)
         {
+            boids[i].position += boids[i].velocity * dt;
             gameObjects[i].transform.position = boids[i].position;
-            // TODO: cache this.
-            gameObjects[i].GetComponent<Rigidbody>().velocity = boids[i].velocity;
         }
     }
-    void updateVelocity()
+    void updateBoidVelocity()
     {
         data currentBoid;
         Vector3 newVelocity = Vector3.zero;

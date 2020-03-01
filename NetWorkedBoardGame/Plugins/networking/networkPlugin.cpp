@@ -14,6 +14,14 @@ int initNetwork(int numNetworkInstances) {
 	return 1337;
 }
 
+void testArray(blah* arr, int length) {
+	for (int i = 0; i < length; i++) {
+		arr[i].data+=1.1;
+		::fprintf(stderr, "Plugin: %f", arr[i].data);
+	}
+}
+
+
 // @return: ID to access network instance.
 netID getNetworkInstance() {
 	instances[length] = new Network();
