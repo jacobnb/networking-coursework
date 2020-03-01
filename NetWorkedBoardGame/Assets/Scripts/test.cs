@@ -10,8 +10,8 @@ public class test : MonoBehaviour
     {
         for(int i=0; i<5; i++)
         {
-            arr[i].data = i;
-            arr[i].dataz = i;
+            arr[i].data = new Network.vec3(1f, 2f, 3f);
+            arr[i].dataz = new Network.vec3(0f,0f,0f);
         }
         sendArr();
     }
@@ -21,8 +21,8 @@ public class test : MonoBehaviour
         Network.testArray(arr, 5);
         for(int i=0; i<5; i++)
         {
-            Debug.Log(arr[i].data);
-            Debug.Log(arr[i].dataz);
+            Debug.Log(arr[i].data.x);
+            Debug.Log(arr[i].dataz.x);
         }
     }
 }

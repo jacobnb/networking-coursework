@@ -16,8 +16,8 @@ int initNetwork(int numNetworkInstances) {
 
 void testArray(blah* arr, int length) {
 	for (int i = 0; i < length; i++) {
-		arr[i].data+=1.1;
-		::fprintf(stderr, "Plugin: %f", arr[i].data);
+		arr[i].data.x+=1.1;
+		::fprintf(stderr, "Plugin: %f", arr[i].data.x);
 	}
 }
 

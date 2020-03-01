@@ -6,9 +6,47 @@ public class Network
     [StructLayout(LayoutKind.Sequential)]
     public struct blah
     {
-        public float data;
-        public float dataz;
+        public vec3 data;
+        public vec3 dataz;
     };
+    [StructLayout(LayoutKind.Sequential)]
+    public struct vec3
+    {
+        public float x;
+        public float y;
+        public float z;
+        public vec3(float X, float Y, float Z)
+        {
+            x = X;
+            y = Y;
+            z = Z;
+        }
+        public vec3(Vector3 vec)
+        {
+            x = vec.x;
+            y = vec.y;
+            z = vec.z;
+        }
+        public Vector3 toVector3()
+        {
+            return new Vector3(x, y, z);
+        }
+        public static vec3 operator *(vec3 vec, float scalar)
+        {
+            vec.x *= scalar;
+            vec.y *= scalar;
+            vec.z *= scalar;
+            return vec;
+        }
+        public static vec3 operator +(vec3 vec, vec3 rhs)
+        {
+            vec.x += rhs.x;
+            vec.y += rhs.y;
+            vec.z += rhs.z;
+            return vec;
+        }
+    }
+    
     [DllImport("networking")]
     public static extern int initNetwork(int numNetworkInstances);
     [DllImport("networking")]

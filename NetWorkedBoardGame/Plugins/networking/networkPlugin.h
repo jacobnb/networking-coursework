@@ -23,10 +23,15 @@ extern "C"
 #else // !__cplusplus
 #endif // __cplusplus
 
+struct vec3 {
+    float x;
+    float y;
+    float z;
+};
 struct blah
 {
-    float data;
-    float dataz;
+    vec3 data;
+    vec3 dataz;
 };
 
 MYUNITYPLUGIN_SYMBOL int initNetwork(int numNetworkInstances);
