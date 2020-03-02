@@ -531,6 +531,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   networkInstances: 5
   isServer: 0
+  mode: 0
 --- !u!4 &247716893
 Transform:
   m_ObjectHideFlags: 0

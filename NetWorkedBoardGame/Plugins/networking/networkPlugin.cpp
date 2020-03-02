@@ -52,22 +52,19 @@ int cleanup(netID ID) {
 
 int sendMessage(char* message, netID ID) {
 	if (instances[ID]) {
-		instances[ID]->sendMessage(message);
-		return TRUE;
+		return instances[ID]->sendMessage(message);
 	}
 	return FALSE;
 }
 int sendBoidMessage(data* boidsArr, int length, netID ID) {
 	if (instances[ID]) {
-		instances[ID]->sendBoidMessage(boidsArr, length);
-		return TRUE;
+		return instances[ID]->sendBoidMessage(boidsArr, length);
 	}
 	return FALSE;
 }
 int readBoidMessage(data* boidsArr, int length, netID ID) {
 	if (instances[ID]) {
-		instances[ID]->readBoidMessage(boidsArr, length);
-		return TRUE;
+		return instances[ID]->readBoidMessage(boidsArr, length);
 	}
 	return FALSE;
 }
@@ -119,6 +116,14 @@ int doEverything(bool isServer)
 			//client->readMessages();
 			//client->readMessages();
 		}
+	}
+	return 0;
+}
+int readMessages(netID ID)
+{
+	if (instances[ID]) {
+		instances[ID]->readMessages();
+		return 1;
 	}
 	return 0;
 }

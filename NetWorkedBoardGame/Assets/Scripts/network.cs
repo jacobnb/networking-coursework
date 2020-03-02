@@ -66,4 +66,6 @@ public class Network
     public static extern int sendBoidMessage(Boid.data[] boids, int length, int ID = 0);
     [DllImport("networking")]
     public static extern int readBoidMessage(Boid.data[] boids, int length, int ID = 0);
+    [DllImport("networking")]
+    public static extern int readMessages(int ID = 0);
 }

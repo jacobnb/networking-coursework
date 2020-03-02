@@ -28,6 +28,10 @@ public class NetworkManager : MonoBehaviour
         Network.initNetwork(networkInstances);
         DontDestroyOnLoad(this.gameObject);
     }
+    private void Update()
+    {
+        Network.readMessages();
+    }
     public void initServer(int port, string username)
     {
         isServer = true;
@@ -44,6 +48,13 @@ public class NetworkManager : MonoBehaviour
     public void initClient(string IP, int port, string username)
     {
         isServer = false;
+        Network.getNetworkInstance();
+        Network.initClient(IP, port, username);
+    }
+    public void initClient(string IP, int port, string username, NetworkMode netMode)
+    {
+        isServer = false;
+        mode = netMode;
         Network.getNetworkInstance();
         Network.initClient(IP, port, username);
     }
@@ -64,8 +75,8 @@ public class NetworkManager : MonoBehaviour
     {
         Network.sendBoidMessage(boids, boids.Length);
     }
-    public void readBoids(ref Boid.data[] boids)
+    public int readBoids(ref Boid.data[] boids)
     {
-        Network.readBoidMessage(boids, boids.Length);
+        return Network.readBoidMessage(boids, boids.Length);
     }
 }

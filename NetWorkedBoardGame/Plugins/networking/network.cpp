@@ -63,6 +63,36 @@ int Network::readMessages()
 	for (packet = peer->Receive(); packet; peer->DeallocatePacket(packet), packet = peer->Receive())
 	{
 		switch (packet->data[0]) {
+		case ID_TIMESTAMP: {
+			RakNet::BitStream bs(packet->data, packet->length, false);
+			bs.Read(useTimeStamp);
+			bs.Read(timeStamp);
+			bs.Read(typeId);
+			//switch (typeId) {
+			if (typeId == BOID) {
+				int len;
+				bs.Read(len);
+				data* boids = (data*)malloc(len);
+				bs.Read((char*)boids, len);
+				boidMessages.push(boids);
+				char* message = (char*)malloc(sizeof(int) * 2);
+				sprintf(message, "0%d", len);
+				gameMessages.push(GameMessage(message, len));
+			}
+			else if (typeId == GAME_MESSAGE) {
+				char* gmessage = (char*)malloc(packet->bitSize);
+				bs.Read(gmessage, packet->bitSize);
+				gameMessages.push(GameMessage(gmessage, packet->bitSize));
+			}
+			/*break;
+		case GAME_MESSAGE:*/
+
+		//break;
+	/*default:
+		::fprintf(stderr, "Game Message: %i\n", typeId);
+	}*/
+		}
+			break;
 		case ID_REMOTE_DISCONNECTION_NOTIFICATION:
 			::fprintf(stderr, "Another client has disconnected.\n");
 			break;
@@ -79,30 +109,6 @@ int Network::readMessages()
 		{
 			::fprintf(stderr, "Our connection request has been accepted.\n");
 		}
-		if (!isServer)
-		{
-			//isClient do client stuff
-			//send username message
-		}
-
-		case USER_SEND_USERNAME:
-			break;
-
-		case SERVER_RETURN_ACKNOWLEDGE:
-			break;
-
-		case USER_SEND_MESSAGE:
-			break;
-
-		case RECIEVE_CHAT_MESSAGE:
-			break;
-
-		case GAME_START:
-			break;
-
-		case GAME_END:
-			break;
-
 		case ID_NEW_INCOMING_CONNECTION:
 			::fprintf(stderr, "A connection is incoming.\n");
 			break;
@@ -119,7 +125,6 @@ int Network::readMessages()
 				::fprintf(stderr, "We have been disconnected.\n");
 			}
 			break;
-
 		case ID_CONNECTION_LOST:
 			if (isServer) {
 				::fprintf(stderr, "A client lost the connection.\n");
@@ -135,79 +140,64 @@ int Network::readMessages()
 	}
 	return 0;
 }
-// TODO: move these anywhere but here.
-RakNet::MessageID useTimeStamp;
-RakNet::Time timeStamp;
-RakNet::MessageID typeId;
+
 int Network::sendBoidMessage(data* boids, int length) {
 	RakNet::BitStream* bs = new RakNet::BitStream();
+	int len = sizeof(data) * length;
 	char* arr;
-	arr = (char*)malloc(sizeof(data) * length);
+	arr = (char*)malloc(len);
 	arr = (char*)boids;
 	::fprintf(stderr, "%f, %f, %f\n", boids[0].position.x, boids[0].position.y, boids[0].position.z);
-	memcpy(arr, boids, sizeof(data) * length);
+	memcpy(arr, boids, len);
 	useTimeStamp = ID_TIMESTAMP;
 	timeStamp = RakNet::GetTime();
-	typeId = ID_USER_PACKET_ENUM;
+	typeId = BOID;
 	bs->Write(useTimeStamp);
 	bs->Write(timeStamp);
 	bs->Write(typeId);
-	bs->Write(arr, sizeof(data) * length);
+	bs->Write(len);
+	bs->Write(arr, len);
 	peer->Send(bs, HIGH_PRIORITY, RELIABLE_ORDERED, (char)0, peer->GetGuidFromSystemAddress(RakNet::UNASSIGNED_SYSTEM_ADDRESS), true);
 	//free(arr); the memory is still handled Unity side.
 	return 1;
 }
 
-// any excess memory in boids will be left as is.
 int Network::readBoidMessage(data* boids, int length)
 {
-	::fprintf(stderr, "Reading Message\n");
-	packet = peer->Receive();
-	if (packet) {
-		RakNet::BitStream bs(packet->data, packet->length, false);
-		bs.Read(useTimeStamp);
-		bs.Read(timeStamp);
-		bs.Read(typeId);
-		const unsigned int len = min(sizeof(data) * length, packet->bitSize);
-		bs.Read((char*)boids, len);
-		//memcpy(boids, packet->data, len);
-		::fprintf(stderr, "%f, %f, %f\n", boids[0].position.x, boids[0].position.y, boids[0].position.z);
-		peer->DeallocatePacket(packet);
-		return 1;
+	int len = sizeof(data) * length;
+	::fprintf(stderr, "Reading Boid Message");
+	if (boidMessages.empty()) {
+		return 0;
 	}
-	return 0;
+	//boids = boidMessages.front();
+	memcpy(boids, boidMessages.front(), len);
+	boidMessages.pop();
+	::fprintf(stderr, " %f\n", boids[0].position.y);
+	return 1;
 }
 
 
 int Network::sendMessage(char* message)
 {
-	// peer->Send(message, sizeof(message)*3, HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetSystemAddressFromGuid(peer->GetMyGUID()), true);
-	peer->Send(message, sizeof(message)*3, HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetGuidFromSystemAddress(RakNet::UNASSIGNED_SYSTEM_ADDRESS), true);
+	RakNet::BitStream* bs = new RakNet::BitStream();
+	useTimeStamp = ID_TIMESTAMP;
+	timeStamp = RakNet::GetTime();
+	typeId = GAME_MESSAGE;
+	bs->Write(useTimeStamp);
+	bs->Write(timeStamp);
+	bs->Write(typeId);
+	bs->Write(message);
+	peer->Send(bs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetGuidFromSystemAddress(RakNet::UNASSIGNED_SYSTEM_ADDRESS), true);
 	return 1;
 }
 
 int Network::readMessage(char* message, int bufferSize)
 {
-	packet = peer->Receive();
-	if (packet) {
-		strcpy_s(message, bufferSize, (char*)packet->data);
-		return 1;
+	if (gameMessages.empty()) {
+		return 0;
 	}
-	return 0;
-}
-
-void  Network::kickPlayer(int userID)
-{
-
-}
-
-int Network::getClientListLength()
-{
+	strcpy_s(message, bufferSize, gameMessages.front().message);
+	gameMessages.pop();
 	return 1;
 }
 
-uString Network::getClient(int index)
-{
-	char* string = new char['asdf'];
-	return string;
-}

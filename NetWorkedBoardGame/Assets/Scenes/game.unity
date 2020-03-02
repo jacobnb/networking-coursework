@@ -341,6 +341,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   boidFab: {fileID: 7663711681536751523, guid: 515852554ef004148b839aabc84190ab, type: 3}
+  gameObjects: []
 --- !u!114 &1357581671
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -353,3 +354,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: feadd02c3ddaead4cb76b8b20d89c445, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  foreignBoidFab: {fileID: 7663711681536751523, guid: 15858fce0045fb844b10f6b504e0dbd4,
+    type: 3}

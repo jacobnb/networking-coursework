@@ -6,31 +6,20 @@
 #include <vector>
 #include <string>
 #include "NetworkPackageStructs.h"
-
+#include <queue>
 #define uString char* //Whatever we use to transfer string data from Unity
-enum GameMessages
-{
-	TURN_MOVE = ID_USER_PACKET_ENUM + 1,
-	USER_SEND_USERNAME,
-	SERVER_RETURN_ACKNOWLEDGE,
-	USER_SEND_MESSAGE,
-	RECIEVE_CHAT_MESSAGE,
-	KICK_USER,
-	GAME_START,
-	GAME_END
-};
 
-struct clientData {
-	std::string username;
-	int ID;
-};
+
 
 class Network {
 private:
 	unsigned int MAX_CLIENTS = 10;
 	unsigned short SERVER_PORT = 60000;
-
-	
+	std::queue<data *> boidMessages;
+	std::queue<GameMessage> gameMessages;
+	RakNet::MessageID useTimeStamp;
+	RakNet::Time timeStamp;
+	RakNet::MessageID typeId;
 	bool isServer;
 
 	RakNet::Packet* packet;

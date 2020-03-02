@@ -31,14 +31,14 @@ public class StartScene : MonoBehaviour
 
     public void onServerChange()
     {
-        if (isServerToggle.isOn)
-        {
-            Mode.SetActive(true);
-        }
-        else
-        {
-            Mode.SetActive(false);
-        }
+        //if (isServerToggle.isOn)
+        //{
+        //    Mode.SetActive(true);
+        //}
+        //else
+        //{
+        //    Mode.SetActive(false);
+        //}
     }
     public void Connect()
     {

@@ -33,12 +33,12 @@ public class Boid: MonoBehaviour
     }
     // TODO: Make boids collide with each other.
     public GameObject boidFab;
-    const int NUM_BOIDS = 20;
+    public int NUM_BOIDS = 20;
     const int MIN_Z = 5;
     const int MAX_Z = 20;
-    public data[] boids = new data[NUM_BOIDS];
-    behavior[] behave = new behavior[NUM_BOIDS];
-    GameObject[] gameObjects = new GameObject[NUM_BOIDS];
+    public data[] boids;
+    behavior[] behave;
+    public GameObject[] gameObjects;
     private void Start()
     {
         //initBoidObjects();
@@ -47,9 +47,23 @@ public class Boid: MonoBehaviour
     {
         //updateBoids(Time.deltaTime);
     }
+    public void resize(int newLength)
+    {
+        // TODO: make this more efficient
+        foreach(GameObject go in gameObjects)
+        {
+            go.SetActive(false);
+        }
+        NUM_BOIDS = newLength;
+        initBoidObjects();
+    }
+
     public void initBoidObjects()
     {
-        Network.vec3 position = new Network.vec3(0,0,0);
+    boids = new data[NUM_BOIDS];
+    behave = new behavior[NUM_BOIDS];
+    gameObjects = new GameObject[NUM_BOIDS];
+    Network.vec3 position = new Network.vec3(0,0,0);
         position.x = -10;
         Network.vec3 velocity = new Network.vec3(2f, 2f, 2f);
         for(int i=0; i < NUM_BOIDS; i++)

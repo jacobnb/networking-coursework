@@ -33,6 +33,7 @@ MYUNITYPLUGIN_SYMBOL int readBoidMessage(data* boidsArr, int length, netID ID = 
 MYUNITYPLUGIN_SYMBOL int readMessage(char* message, int bufferSize, netID ID = 0);
 MYUNITYPLUGIN_SYMBOL int checkConnection(netID ID = 0);
 MYUNITYPLUGIN_SYMBOL int doEverything(bool isServer);
+MYUNITYPLUGIN_SYMBOL int readMessages(netID ID=0);
 #ifdef __cplusplus
 } // extern "C"
 #else // !__cplusplus
