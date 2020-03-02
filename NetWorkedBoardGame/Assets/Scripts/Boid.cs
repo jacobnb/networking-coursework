@@ -35,7 +35,8 @@ public class Boid: MonoBehaviour
     float radius = .5f;
     float maxSpeed = 5f;
     public GameObject boidFab;
-    public int NUM_BOIDS = 4;
+    int NUM_BOIDS = 4;
+    public int getNumBoids() { return NUM_BOIDS; }
     const int MIN_Z = 15;
     const int MAX_Z = 25;
     public data[] boids;
@@ -83,6 +84,13 @@ public class Boid: MonoBehaviour
         //updateBoidVelocity();
         applyVelocityAndPosition(dt);
     }
+    public void updateBoids(float dt, Boid with)
+    {
+        doCollision(with);
+        screenWrap();
+        //updateBoidVelocity();
+        applyVelocityAndPosition(dt);
+    }
     public void doCollision()
     {
         for (int i = 0; i < NUM_BOIDS; i++)
@@ -106,7 +114,47 @@ public class Boid: MonoBehaviour
             }
         }
     }
-
+    public void doCollision(Boid with)
+    {
+        for (int i = 0; i < NUM_BOIDS; i++)
+        {
+            data currentBoid = boids[i];
+            Vector3 position = boids[i].position.toVector3();
+            // get all other boids data
+            for (int c = 0; /*see below*/; c++)
+            {
+                if (i == c) //skip self
+                    c++;
+                if (c >= NUM_BOIDS)
+                    break;
+                Vector3 oPosition = boids[c].position.toVector3();
+                Vector3 diff = (position - oPosition);
+                if (diff.sqrMagnitude <= 4 * radius * radius)
+                {
+                    Vector3 newVel = Vector3.Reflect(boids[i].velocity.toVector3(), diff);
+                    boids[i].velocity = new Network.vec3(newVel.normalized * maxSpeed);
+                }
+            }
+        }
+        for (int i = 0; i < NUM_BOIDS; i++)
+        {
+            data currentBoid = boids[i];
+            Vector3 position = boids[i].position.toVector3();
+            // get all other boids data
+            for (int c = 0; /*see below*/; c++)
+            {
+                if (c >= with.getNumBoids())
+                    break;
+                Vector3 oPosition = with.boids[c].position.toVector3();
+                Vector3 diff = (position - oPosition);
+                if (diff.sqrMagnitude <= 4 * radius * radius)
+                {
+                    Vector3 newVel = Vector3.Reflect(boids[i].velocity.toVector3(), diff);
+                    boids[i].velocity = new Network.vec3(newVel.normalized * maxSpeed);
+                }
+            }
+        }
+    }
     public void screenWrap()
     {
         float border = 50f;
