@@ -51,7 +51,7 @@ public class BoidManager : MonoBehaviour
                 int length = int.Parse(message.Substring(1));
                 if(length != boid.boids.Length)
                 {
-                    boid.resize(length);
+                    //boid.resize(length);
                 }
                 nm.readBoids(ref boid.boids);
             }
