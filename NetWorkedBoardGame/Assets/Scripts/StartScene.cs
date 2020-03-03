@@ -61,7 +61,7 @@ public class StartScene : MonoBehaviour
         }
         else
         {
-            NetworkManager.Instance.initClient(IP_input.text, int.Parse(PortInput.text), UserName.text);
+            NetworkManager.Instance.initClient(IP_input.text, int.Parse(PortInput.text), UserName.text, (NetworkManager.NetworkMode)Mode.GetComponent<Dropdown>().value);
         }
         SceneManager.LoadScene("game");
     }

@@ -50,8 +50,5 @@ public:
 	int sendBoidMessage(data* boids, int length);
 	int readBoidMessage(data* boids, int length);
 	int readMessage(char* message, int bufferSize);
-	//server functions
-	void kickPlayer(int userID);
-	int getClientListLength();
-	uString getClient(int index);
+	int serverMessages();
 };

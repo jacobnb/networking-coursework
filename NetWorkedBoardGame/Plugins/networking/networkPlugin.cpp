@@ -127,3 +127,11 @@ int readMessages(netID ID)
 	}
 	return 0;
 }
+
+int serverMessages(netID ID)
+{
+	if (instances[ID]) {
+		return instances[ID]->serverMessages();
+	}
+	return 0;
+}

@@ -58,6 +58,81 @@ int Network::GetConnectionState() {
 	return peer->GetConnectionState(peer->GetSystemAddressFromGuid(peer->GetMyGUID()));
 }
 
+// just pass along messages to other peer.
+int Network::serverMessages()
+{
+	for (packet = peer->Receive(); packet; peer->DeallocatePacket(packet), packet = peer->Receive())
+	{
+		switch (packet->data[0]) {
+		case ID_TIMESTAMP: {
+			RakNet::BitStream bs(packet->data, packet->length, false);
+			bs.Read(useTimeStamp);
+			bs.Read(timeStamp);
+			bs.Read(typeId);
+			//switch (typeId) {
+			if (typeId == BOID) {
+				peer->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, (char)0, packet->guid, true);
+			}
+			else if (typeId == GAME_MESSAGE) {
+				peer->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, (char)0, packet->guid, true);
+			}
+			/*break;
+		case GAME_MESSAGE:*/
+
+		//break;
+	/*default:
+		::fprintf(stderr, "Game Message: %i\n", typeId);
+	}*/
+		}
+						 break;
+		case ID_REMOTE_DISCONNECTION_NOTIFICATION:
+			::fprintf(stderr, "Another client has disconnected.\n");
+			break;
+
+		case ID_REMOTE_CONNECTION_LOST:
+			::fprintf(stderr, "Another client has lost the connection.\n");
+			break;
+
+		case ID_REMOTE_NEW_INCOMING_CONNECTION:
+			::fprintf(stderr, "Another client has connected.\n");
+			break;
+
+		case ID_CONNECTION_REQUEST_ACCEPTED:
+		{
+			::fprintf(stderr, "Our connection request has been accepted.\n");
+		}
+		case ID_NEW_INCOMING_CONNECTION:
+			::fprintf(stderr, "A connection is incoming.\n");
+			break;
+
+		case ID_NO_FREE_INCOMING_CONNECTIONS:
+			::fprintf(stderr, "The server is full.\n");
+			break;
+
+		case ID_DISCONNECTION_NOTIFICATION:
+			if (isServer) {
+				::fprintf(stderr, "A client has disconnected.\n");
+			}
+			else {
+				::fprintf(stderr, "We have been disconnected.\n");
+			}
+			break;
+		case ID_CONNECTION_LOST:
+			if (isServer) {
+				::fprintf(stderr, "A client lost the connection.\n");
+			}
+			else {
+				::fprintf(stderr, "Connection lost.\n");
+			}
+			break;
+		default:
+			::fprintf(stderr, (char*)packet->data);
+		}
+
+	}
+	return 0;
+}
+
 int Network::readMessages()
 {
 	for (packet = peer->Receive(); packet; peer->DeallocatePacket(packet), packet = peer->Receive())
@@ -157,7 +232,8 @@ int Network::sendBoidMessage(data* boids, int length) {
 	bs->Write(typeId);
 	bs->Write(len);
 	bs->Write(arr, len);
-	peer->Send(bs, HIGH_PRIORITY, RELIABLE_ORDERED, (char)0, peer->GetGuidFromSystemAddress(RakNet::UNASSIGNED_SYSTEM_ADDRESS), true);
+	//peer->Send(bs, HIGH_PRIORITY, RELIABLE_ORDERED, (char)0, peer->GetGuidFromSystemAddress(RakNet::UNASSIGNED_SYSTEM_ADDRESS), true);
+	peer->Send(bs, HIGH_PRIORITY, RELIABLE_ORDERED, (char)0, peer->GetMyGUID(), false);
 	//free(arr); the memory is still handled Unity side.
 	return 1;
 }

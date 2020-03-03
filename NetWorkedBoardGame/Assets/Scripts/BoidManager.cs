@@ -27,10 +27,10 @@ public class BoidManager : MonoBehaviour
                 boids.initBoidObjects();
 
             }
-            else if (nm.mode == NetworkManager.NetworkMode.DATA_PUSH)
+            else if (nm.mode == NetworkManager.NetworkMode.DATA_SHARING)
             {
-                boids.initBoidObjects();
-                otherBoids.initBoidObjects();
+            //    boids.initBoidObjects();
+            //    otherBoids.initBoidObjects();
             }
         }
         else
@@ -40,8 +40,9 @@ public class BoidManager : MonoBehaviour
                 otherBoids.initBoidObjects();
                 //nm.sendMessage(MessageParser.spawnBoidsMessage(boid.getNumBoids()));
             }
-            else if (nm.mode == NetworkManager.NetworkMode.DATA_PUSH)
+            else if (nm.mode == NetworkManager.NetworkMode.DATA_SHARING)
             {
+                Debug.Log("hubabubah");
                 boids.initBoidObjects();
                 otherBoids.initBoidObjects();
             }
@@ -51,6 +52,12 @@ public class BoidManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(nm.mode == NetworkManager.NetworkMode.DATA_SHARING && nm.isServer)
+        {
+            // should just route messages to all other clients.
+            Network.serverMessages();
+            return;
+        }
         string message = nm.readMessage();
         while(message != "")
         {
