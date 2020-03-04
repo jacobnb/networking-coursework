@@ -28,6 +28,10 @@ public class NetworkManager : MonoBehaviour
         Network.initNetwork(networkInstances);
         DontDestroyOnLoad(this.gameObject);
     }
+    private void Update()
+    {
+        Network.readMessages();
+    }
     public void initServer(int port, string username)
     {
         isServer = true;
@@ -57,7 +61,7 @@ public class NetworkManager : MonoBehaviour
     public string readMessage()
     {
         StringBuilder sb = new StringBuilder(256);
-        if (Network.readMessage(sb, sb.Capacity) > 0)
+        if(Network.readMessage(sb, sb.Capacity)>0)
             return sb.ToString();
         return "";
     }

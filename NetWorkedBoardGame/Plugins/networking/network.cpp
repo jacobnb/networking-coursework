@@ -11,7 +11,7 @@
 
 Network::Network() {
 	peer = RakNet::RakPeerInterface::GetInstance();
-	serverGuidSet = false;
+	serverGuid = RakNet::UNASSIGNED_SYSTEM_ADDRESS;
 }
 
 Network::~Network()
@@ -62,88 +62,8 @@ int Network::GetConnectionState() {
 // just pass along messages to other peer.
 int Network::serverMessages()
 {
-	::fprintf(stderr, "Routing Message ");
 	for (packet = peer->Receive(); packet; peer->DeallocatePacket(packet), packet = peer->Receive())
 	{
-		::fprintf(stderr, "got a message\n");
-		
-		switch (packet->data[0]) {
-		case ID_TIMESTAMP: {
-			RakNet::BitStream bs(packet->data, packet->length, false);
-			bs.Read(useTimeStamp);
-			bs.Read(timeStamp);
-			bs.Read(typeId);
-			::fprintf(stderr, "%i\n", typeId);
-			if (typeId == BOID) {
-				::fprintf(stderr, "Routing Boid Message\n");
-				peer->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, (char)0, packet->guid, true);
-			}
-			else if (typeId == GAME_MESSAGE) {
-				peer->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, (char)0, packet->guid, true);
-			}
-			/*break;
-		case GAME_MESSAGE:*/
-
-		//break;
-	/*default:
-		::fprintf(stderr, "Game Message: %i\n", typeId);
-	}*/
-		}
-			break;
-		case ID_REMOTE_DISCONNECTION_NOTIFICATION:
-			::fprintf(stderr, "Another client has disconnected.\n");
-			break;
-
-		case ID_REMOTE_CONNECTION_LOST:
-			::fprintf(stderr, "Another client has lost the connection.\n");
-			break;
-
-		case ID_REMOTE_NEW_INCOMING_CONNECTION:
-			::fprintf(stderr, "Another client has connected.\n");
-			break;
-
-		case ID_CONNECTION_REQUEST_ACCEPTED:
-		{
-			//::fprintf(stderr, "Our connection request has been accepted.\n");
-		}
-		case ID_NEW_INCOMING_CONNECTION:
-			::fprintf(stderr, "A connection is incoming.\n");
-			break;
-
-		case ID_NO_FREE_INCOMING_CONNECTIONS:
-			::fprintf(stderr, "The server is full.\n");
-			break;
-
-		case ID_DISCONNECTION_NOTIFICATION:
-			if (isServer) {
-				::fprintf(stderr, "A client has disconnected.\n");
-			}
-			else {
-				::fprintf(stderr, "We have been disconnected.\n");
-			}
-			break;
-		case ID_CONNECTION_LOST:
-			if (isServer) {
-				::fprintf(stderr, "A client lost the connection.\n");
-			}
-			else {
-				::fprintf(stderr, "Connection lost.\n");
-			}
-			break;
-		default:
-			::fprintf(stderr, (char*)packet->data);
-		}
-
-	}
-	return TRUE;
-}
-
-int Network::readMessages()
-{
-	::fprintf(stderr, "Reading Messages ");
-	for (packet = peer->Receive(); packet; peer->DeallocatePacket(packet), packet = peer->Receive())
-	{
-		::fprintf(stderr, "ID = %i", packet->data[0]);
 		switch (packet->data[0]) {
 		case ID_TIMESTAMP: {
 			RakNet::BitStream bs(packet->data, packet->length, false);
@@ -152,23 +72,10 @@ int Network::readMessages()
 			bs.Read(typeId);
 			//switch (typeId) {
 			if (typeId == BOID) {
-				::fprintf(stderr, "Reading in boid message\n");
-				int len;
-				bs.Read(len);
-				data* boids = (data*)malloc(len);
-				bs.Read((char*)boids, len);
-				boidMessages.push(boids);
-				char* message = (char*)malloc(sizeof(int) * 2);
-				sprintf(message, "0%d", len);
-				gameMessages.push(GameMessage(message, len));
+				peer->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, (char)0, packet->guid, true);
 			}
 			else if (typeId == GAME_MESSAGE) {
-				char* gmessage = (char*)malloc(packet->bitSize);
-				bs.Read(gmessage, packet->bitSize);
-				gameMessages.push(GameMessage(gmessage, packet->bitSize));
-			}
-			else {
-				::fprintf(stderr, "Unkown ID: %i", typeId);
+				peer->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, (char)0, packet->guid, true);
 			}
 			/*break;
 		case GAME_MESSAGE:*/
@@ -178,7 +85,7 @@ int Network::readMessages()
 		::fprintf(stderr, "Game Message: %i\n", typeId);
 	}*/
 		}
-			break;
+						 break;
 		case ID_REMOTE_DISCONNECTION_NOTIFICATION:
 			::fprintf(stderr, "Another client has disconnected.\n");
 			break;
@@ -193,8 +100,6 @@ int Network::readMessages()
 
 		case ID_CONNECTION_REQUEST_ACCEPTED:
 		{
-			serverGuid.rakNetGuid = packet->guid;
-			serverGuidSet = true;
 			::fprintf(stderr, "Our connection request has been accepted.\n");
 		}
 		case ID_NEW_INCOMING_CONNECTION:
@@ -226,17 +131,100 @@ int Network::readMessages()
 		}
 
 	}
-	return 1;
+	return 0;
+}
+
+int Network::readMessages()
+{
+	for (packet = peer->Receive(); packet; peer->DeallocatePacket(packet), packet = peer->Receive())
+	{
+		switch (packet->data[0]) {
+		case ID_TIMESTAMP: {
+			RakNet::BitStream bs(packet->data, packet->length, false);
+			bs.Read(useTimeStamp);
+			bs.Read(timeStamp);
+			bs.Read(typeId);
+			//switch (typeId) {
+			if (typeId == BOID) {
+				int len;
+				bs.Read(len);
+				data* boids = (data*)malloc(len);
+				bs.Read((char*)boids, len);
+				boidMessages.push(boids);
+				char* message = (char*)malloc(sizeof(int) * 2);
+				sprintf(message, "0%d", len);
+				gameMessages.push(GameMessage(message, len));
+			}
+			else if (typeId == GAME_MESSAGE) {
+				char* gmessage = (char*)malloc(packet->bitSize);
+				bs.Read(gmessage, packet->bitSize);
+				gameMessages.push(GameMessage(gmessage, packet->bitSize));
+			}
+			/*break;
+		case GAME_MESSAGE:*/
+
+		//break;
+	/*default:
+		::fprintf(stderr, "Game Message: %i\n", typeId);
+	}*/
+		}
+			break;
+		case ID_REMOTE_DISCONNECTION_NOTIFICATION:
+			::fprintf(stderr, "Another client has disconnected.\n");
+			break;
+
+		case ID_REMOTE_CONNECTION_LOST:
+			::fprintf(stderr, "Another client has lost the connection.\n");
+			break;
+
+		case ID_REMOTE_NEW_INCOMING_CONNECTION:
+			::fprintf(stderr, "Another client has connected.\n");
+			break;
+
+		case ID_CONNECTION_REQUEST_ACCEPTED:
+		{
+			serverGuid = packet->guid;
+			::fprintf(stderr, "Our connection request has been accepted.\n");
+		}
+		case ID_NEW_INCOMING_CONNECTION:
+			::fprintf(stderr, "A connection is incoming.\n");
+			break;
+
+		case ID_NO_FREE_INCOMING_CONNECTIONS:
+			::fprintf(stderr, "The server is full.\n");
+			break;
+
+		case ID_DISCONNECTION_NOTIFICATION:
+			if (isServer) {
+				::fprintf(stderr, "A client has disconnected.\n");
+			}
+			else {
+				::fprintf(stderr, "We have been disconnected.\n");
+			}
+			break;
+		case ID_CONNECTION_LOST:
+			if (isServer) {
+				::fprintf(stderr, "A client lost the connection.\n");
+			}
+			else {
+				::fprintf(stderr, "Connection lost.\n");
+			}
+			break;
+		default:
+			::fprintf(stderr, (char*)packet->data);
+		}
+
+	}
+	return 0;
 }
 
 int Network::sendBoidMessage(data* boids, int length) {
-	::fprintf(stderr, "Sending Message\n");
 	RakNet::BitStream* bs = new RakNet::BitStream();
 	int len = sizeof(data) * length;
 	char* arr;
 	arr = (char*)malloc(len);
 	arr = (char*)boids;
-	//::fprintf(stderr, "%f, %f, %f\n", boids[0].position.x, boids[0].position.y, boids[0].position.z);
+	::fprintf(stderr, "%f, %f, %f\n", boids[0].position.x, boids[0].position.y, boids[0].position.z);
 	memcpy(arr, boids, len);
 	useTimeStamp = ID_TIMESTAMP;
 	timeStamp = RakNet::GetTime();
@@ -246,7 +234,7 @@ int Network::sendBoidMessage(data* boids, int length) {
 	bs->Write(typeId);
 	bs->Write(len);
 	bs->Write(arr, len);
-	if (!serverGuidSet && !isServer) {
+	if (serverGuid.systemAddress != RakNet::UNASSIGNED_SYSTEM_ADDRESS) {
 		peer->Send(bs, HIGH_PRIORITY, RELIABLE_ORDERED, (char)0, serverGuid, false);
 	}
 	else {

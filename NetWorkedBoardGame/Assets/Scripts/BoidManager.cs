@@ -5,14 +5,16 @@ using UnityEngine;
 public class BoidManager : MonoBehaviour
 {
     Boid boids;
+    Boid otherBoids;
+    public GameObject foreignBoidFab;
     NetworkManager nm;
     // Start is called before the first frame update
     void Start()
     {
         nm = NetworkManager.Instance;
         boids = GetComponent<Boid>();
-        boids.initBoidObjects();
-
+        otherBoids = gameObject.AddComponent<Boid>();
+        otherBoids.boidFab = foreignBoidFab;
         if (nm.isServer)
         {
             // server shouldn't render hack.
@@ -20,45 +22,92 @@ public class BoidManager : MonoBehaviour
             //{
             //    go.SetActive(false);
             //}
-        }
+            if (nm.mode == NetworkManager.NetworkMode.DATA_PUSH)
+            {
+                boids.initBoidObjects();
 
+            }
+            else if (nm.mode == NetworkManager.NetworkMode.DATA_SHARING)
+            {
+            //    boids.initBoidObjects();
+            //    otherBoids.initBoidObjects();
+            }
+        }
+        else
+        {
+            if (nm.mode == NetworkManager.NetworkMode.DATA_PUSH)
+            {
+                otherBoids.initBoidObjects();
+                //nm.sendMessage(MessageParser.spawnBoidsMessage(boid.getNumBoids()));
+            }
+            else if (nm.mode == NetworkManager.NetworkMode.DATA_SHARING)
+            {
+                boids.initBoidObjects();
+                otherBoids.initBoidObjects();
+            }
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-
-        Network.readMessages();
-        string message = nm.readMessage();
-        while (message != "")
+        if(nm.mode == NetworkManager.NetworkMode.DATA_SHARING && nm.isServer)
         {
+            Debug.Log("Routing Only");
+            // should just route messages to all other clients.
+            Network.serverMessages();
+            return;
+        }
+        string message = nm.readMessage();
+        while(message != "")
+        {
+            Debug.Log(message);
             // see MessageParser.messageTypes
-            if (message[0] == '0') //there's a boid position update
+            if(message[0] == '0') //there's a boid position update
             {
                 int length = int.Parse(message.Substring(1));
-                if (length != boids.boids.Length)
+                if(length != otherBoids.boids.Length)
                 {
                     //boid.resize(length);
                 }
-                nm.readBoids(ref boids.boids);
+                nm.readBoids(ref otherBoids.boids);
             }
             else if (message[0] == '1')
             {
                 // spawn boids message;
                 int boidsToSpawn = MessageParser.getNumSpawnBoids(message);
-                boids.resize(boidsToSpawn);
+                otherBoids.resize(boidsToSpawn);
             }
             message = nm.readMessage();
         }
-        if (nm.isServer)
+        if(nm.mode == NetworkManager.NetworkMode.DATA_PUSH)
         {
-            // TODO: replace w/ timestamp
-            boids.updateBoids(Time.deltaTime);
-            nm.sendBoids(ref boids.boids);
+            if (nm.isServer)
+            {
+                // TODO: replace w/ timestamp
+                boids.updateBoids(Time.deltaTime);
+                nm.sendBoids(ref boids.boids);
+            }
+            else
+            {
+                otherBoids.setPosition();
+            }
         }
-        else
+        else if(nm.mode == NetworkManager.NetworkMode.DATA_SHARING)
         {
-            boids.setPosition();
+            if (!nm.isServer)
+            {
+                // TODO: replace w/ timestamp
+                boids.updateBoids(Time.deltaTime);
+                nm.sendBoids(ref boids.boids);
+                otherBoids.setPosition();
+            }
+        }
+        else if(nm.mode == NetworkManager.NetworkMode.DATA_COUPLED)
+        {
+            boids.updateBoids(Time.deltaTime, otherBoids);
+            nm.sendBoids(ref boids.boids);
+            otherBoids.setPosition();
         }
     }
 }
