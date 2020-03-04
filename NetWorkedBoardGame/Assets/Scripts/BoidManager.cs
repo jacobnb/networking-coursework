@@ -42,7 +42,6 @@ public class BoidManager : MonoBehaviour
             }
             else if (nm.mode == NetworkManager.NetworkMode.DATA_SHARING)
             {
-                Debug.Log("hubabubah");
                 boids.initBoidObjects();
                 otherBoids.initBoidObjects();
             }
@@ -54,6 +53,7 @@ public class BoidManager : MonoBehaviour
     {
         if(nm.mode == NetworkManager.NetworkMode.DATA_SHARING && nm.isServer)
         {
+            Debug.Log("Routing Only");
             // should just route messages to all other clients.
             Network.serverMessages();
             return;

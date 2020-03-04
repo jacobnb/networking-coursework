@@ -21,7 +21,7 @@ private:
 	RakNet::Time timeStamp;
 	RakNet::MessageID typeId;
 	bool isServer;
-
+	RakNet::AddressOrGUID serverGuid;
 	RakNet::Packet* packet;
 
 	//client data

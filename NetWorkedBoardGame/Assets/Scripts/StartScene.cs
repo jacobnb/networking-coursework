@@ -19,7 +19,9 @@ public class StartScene : MonoBehaviour
 			return;
 		}
 		instance = this;
-	}
+        Mode.GetComponent<Dropdown>().value = 1;
+
+    }
 
 	public Toggle isServerToggle;
 	public InputField IP_input;

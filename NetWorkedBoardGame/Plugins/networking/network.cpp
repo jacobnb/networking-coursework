@@ -11,6 +11,7 @@
 
 Network::Network() {
 	peer = RakNet::RakPeerInterface::GetInstance();
+	serverGuid = RakNet::UNASSIGNED_SYSTEM_ADDRESS;
 }
 
 Network::~Network()
@@ -182,6 +183,7 @@ int Network::readMessages()
 
 		case ID_CONNECTION_REQUEST_ACCEPTED:
 		{
+			serverGuid = packet->guid;
 			::fprintf(stderr, "Our connection request has been accepted.\n");
 		}
 		case ID_NEW_INCOMING_CONNECTION:
@@ -232,8 +234,13 @@ int Network::sendBoidMessage(data* boids, int length) {
 	bs->Write(typeId);
 	bs->Write(len);
 	bs->Write(arr, len);
-	//peer->Send(bs, HIGH_PRIORITY, RELIABLE_ORDERED, (char)0, peer->GetGuidFromSystemAddress(RakNet::UNASSIGNED_SYSTEM_ADDRESS), true);
-	peer->Send(bs, HIGH_PRIORITY, RELIABLE_ORDERED, (char)0, peer->GetMyGUID(), false);
+	if (serverGuid.systemAddress != RakNet::UNASSIGNED_SYSTEM_ADDRESS) {
+		peer->Send(bs, HIGH_PRIORITY, RELIABLE_ORDERED, (char)0, serverGuid, false);
+	}
+	else {
+		peer->Send(bs, HIGH_PRIORITY, RELIABLE_ORDERED, (char)0, peer->GetGuidFromSystemAddress(RakNet::UNASSIGNED_SYSTEM_ADDRESS), true);
+		::fprintf(stderr, "Server GUID Not Defined");
+	}
 	//free(arr); the memory is still handled Unity side.
 	return 1;
 }
