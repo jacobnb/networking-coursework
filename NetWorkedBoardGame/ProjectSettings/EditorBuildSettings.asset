@@ -11,4 +11,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/game.unity
     guid: f60e4cd3715177f4cb2c00ea8558cafc
+  - enabled: 1
+    path: Assets/Scenes/game_coupled.unity
+    guid: bca92a3ae1d15de4d983455ba4e25d9b
+  - enabled: 1
+    path: Assets/Scenes/game_sharing.unity
+    guid: 9a13b0759a44dae4e94de937287d3818
   m_configObjects: {}

@@ -19,7 +19,7 @@ public class StartScene : MonoBehaviour
 			return;
 		}
 		instance = this;
-        //Mode.GetComponent<Dropdown>().value = 1;
+        Mode.GetComponent<Dropdown>().value = 1;
 
     }
 
@@ -65,7 +65,13 @@ public class StartScene : MonoBehaviour
         {
             NetworkManager.Instance.initClient(IP_input.text, int.Parse(PortInput.text), UserName.text, (NetworkManager.NetworkMode)Mode.GetComponent<Dropdown>().value);
         }
-        SceneManager.LoadScene("game");
+        if((NetworkManager.NetworkMode)Mode.GetComponent<Dropdown>().value == NetworkManager.NetworkMode.DATA_PUSH)
+            SceneManager.LoadScene("game");
+        if ((NetworkManager.NetworkMode)Mode.GetComponent<Dropdown>().value == NetworkManager.NetworkMode.DATA_SHARING)
+            SceneManager.LoadScene("game_sharing");
+        if ((NetworkManager.NetworkMode)Mode.GetComponent<Dropdown>().value == NetworkManager.NetworkMode.DATA_COUPLED)
+            Debug.Log("TODO: Set up script");
+                //SceneManager.LoadScene("game_coupled");
     }
 
 }

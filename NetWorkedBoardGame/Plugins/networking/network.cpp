@@ -135,12 +135,13 @@ int Network::serverMessages()
 		}
 
 	}
+	::fprintf(stderr, "No More Server Messages\n");
 	return TRUE;
 }
 
 int Network::readMessages()
 {
-	::fprintf(stderr, "Reading Messages ");
+	//::fprintf(stderr, "Reading Messages ");
 	for (packet = peer->Receive(); packet; peer->DeallocatePacket(packet), packet = peer->Receive())
 	{
 		::fprintf(stderr, "ID = %i", packet->data[0]);
@@ -251,9 +252,9 @@ int Network::sendBoidMessage(data* boids, int length) {
 	}
 	else {
 		peer->Send(bs, HIGH_PRIORITY, RELIABLE_ORDERED, (char)0, peer->GetGuidFromSystemAddress(RakNet::UNASSIGNED_SYSTEM_ADDRESS), true);
-		::fprintf(stderr, "Server GUID Not Defined");
+		::fprintf(stderr, "Server GUID Not Defined\n");
 	}
-	//free(arr); the memory is still handled Unity side.
+	//don't free(arr); the memory is still handled Unity side.
 	return 1;
 }
 

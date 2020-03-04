@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class SharingBoidManager : MonoBehaviour
 {
@@ -17,9 +15,9 @@ public class SharingBoidManager : MonoBehaviour
         otherBoids.boidFab = foreignBoidFab;
         if (nm.isServer)
         {
-           
-                //    boids.initBoidObjects();
-                //    otherBoids.initBoidObjects();
+
+            //    boids.initBoidObjects();
+            //    otherBoids.initBoidObjects();
         }
         else
         {
@@ -33,7 +31,7 @@ public class SharingBoidManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (nm.mode == NetworkManager.NetworkMode.DATA_SHARING && nm.isServer)
+        if (nm.isServer)
         {
             //Debug.Log("Routing Only");
             // should just route messages to all other clients.
@@ -43,63 +41,38 @@ public class SharingBoidManager : MonoBehaviour
             }
             return;
         }
-        else
-        {
 
-            Network.readMessages();
-            string message = nm.readMessage();
-            while (message != "")
+        Network.readMessages();
+        string message = nm.readMessage();
+        while (message != "")
+        {
+            Debug.Log("Reading Messages");
+            Debug.Log(message);
+            // see MessageParser.messageTypes
+            if (message[0] == '0') //there's a boid position update
             {
-                Debug.Log("Reading Messages");
-                Debug.Log(message);
-                // see MessageParser.messageTypes
-                if (message[0] == '0') //there's a boid position update
+                Debug.Log("Reading Other Boids");
+                int length = int.Parse(message.Substring(1));
+                if (length != otherBoids.boids.Length)
                 {
-                    Debug.Log("Reading Other Boids");
-                    int length = int.Parse(message.Substring(1));
-                    if (length != otherBoids.boids.Length)
-                    {
-                        //boid.resize(length);
-                    }
-                    nm.readBoids(ref otherBoids.boids);
+                    //boid.resize(length);
                 }
-                else if (message[0] == '1')
-                {
-                    // spawn boids message;
-                    int boidsToSpawn = MessageParser.getNumSpawnBoids(message);
-                    otherBoids.resize(boidsToSpawn);
-                }
-                message = nm.readMessage();
+                nm.readBoids(ref otherBoids.boids);
             }
-            if (nm.mode == NetworkManager.NetworkMode.DATA_PUSH)
+            else if (message[0] == '1')
             {
-                if (nm.isServer)
-                {
-                    // TODO: replace w/ timestamp
-                    boids.updateBoids(Time.deltaTime);
-                    nm.sendBoids(ref boids.boids);
-                }
-                else
-                {
-                    otherBoids.setPosition();
-                }
+                // spawn boids message;
+                int boidsToSpawn = MessageParser.getNumSpawnBoids(message);
+                otherBoids.resize(boidsToSpawn);
             }
-            else if (nm.mode == NetworkManager.NetworkMode.DATA_SHARING)
-            {
-                if (!nm.isServer)
-                {
-                    // TODO: replace w/ timestamp
-                    boids.updateBoids(Time.deltaTime);
-                    nm.sendBoids(ref boids.boids);
-                    otherBoids.setPosition();
-                }
-            }
-            else if (nm.mode == NetworkManager.NetworkMode.DATA_COUPLED)
-            {
-                boids.updateBoids(Time.deltaTime, otherBoids);
-                nm.sendBoids(ref boids.boids);
-                otherBoids.setPosition();
-            }
+            message = nm.readMessage();
+        }
+        if (!nm.isServer)
+        {
+            // TODO: replace w/ timestamp
+            boids.updateBoids(Time.deltaTime);
+            nm.sendBoids(ref boids.boids);
+            otherBoids.setPosition();
         }
     }
 }
