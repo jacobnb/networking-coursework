@@ -19,7 +19,7 @@ public class StartScene : MonoBehaviour
 			return;
 		}
 		instance = this;
-        Mode.GetComponent<Dropdown>().value = 1;
+        //Mode.GetComponent<Dropdown>().value = 1;
 
     }
 

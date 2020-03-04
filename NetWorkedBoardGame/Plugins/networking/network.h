@@ -22,6 +22,7 @@ private:
 	RakNet::MessageID typeId;
 	bool isServer;
 	RakNet::AddressOrGUID serverGuid;
+	bool serverGuidSet;
 	RakNet::Packet* packet;
 
 	//client data

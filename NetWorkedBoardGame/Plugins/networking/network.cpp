@@ -11,7 +11,7 @@
 
 Network::Network() {
 	peer = RakNet::RakPeerInterface::GetInstance();
-	serverGuid = RakNet::UNASSIGNED_SYSTEM_ADDRESS;
+	serverGuidSet = false;
 }
 
 Network::~Network()
@@ -62,16 +62,20 @@ int Network::GetConnectionState() {
 // just pass along messages to other peer.
 int Network::serverMessages()
 {
+	::fprintf(stderr, "Routing Message ");
 	for (packet = peer->Receive(); packet; peer->DeallocatePacket(packet), packet = peer->Receive())
 	{
+		::fprintf(stderr, "got a message\n");
+		
 		switch (packet->data[0]) {
 		case ID_TIMESTAMP: {
 			RakNet::BitStream bs(packet->data, packet->length, false);
 			bs.Read(useTimeStamp);
 			bs.Read(timeStamp);
 			bs.Read(typeId);
-			//switch (typeId) {
+			::fprintf(stderr, "%i\n", typeId);
 			if (typeId == BOID) {
+				::fprintf(stderr, "Routing Boid Message\n");
 				peer->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, (char)0, packet->guid, true);
 			}
 			else if (typeId == GAME_MESSAGE) {
@@ -85,7 +89,7 @@ int Network::serverMessages()
 		::fprintf(stderr, "Game Message: %i\n", typeId);
 	}*/
 		}
-						 break;
+			break;
 		case ID_REMOTE_DISCONNECTION_NOTIFICATION:
 			::fprintf(stderr, "Another client has disconnected.\n");
 			break;
@@ -100,7 +104,7 @@ int Network::serverMessages()
 
 		case ID_CONNECTION_REQUEST_ACCEPTED:
 		{
-			::fprintf(stderr, "Our connection request has been accepted.\n");
+			//::fprintf(stderr, "Our connection request has been accepted.\n");
 		}
 		case ID_NEW_INCOMING_CONNECTION:
 			::fprintf(stderr, "A connection is incoming.\n");
@@ -131,13 +135,15 @@ int Network::serverMessages()
 		}
 
 	}
-	return 0;
+	return TRUE;
 }
 
 int Network::readMessages()
 {
+	::fprintf(stderr, "Reading Messages ");
 	for (packet = peer->Receive(); packet; peer->DeallocatePacket(packet), packet = peer->Receive())
 	{
+		::fprintf(stderr, "ID = %i", packet->data[0]);
 		switch (packet->data[0]) {
 		case ID_TIMESTAMP: {
 			RakNet::BitStream bs(packet->data, packet->length, false);
@@ -146,6 +152,7 @@ int Network::readMessages()
 			bs.Read(typeId);
 			//switch (typeId) {
 			if (typeId == BOID) {
+				::fprintf(stderr, "Reading in boid message\n");
 				int len;
 				bs.Read(len);
 				data* boids = (data*)malloc(len);
@@ -160,6 +167,9 @@ int Network::readMessages()
 				bs.Read(gmessage, packet->bitSize);
 				gameMessages.push(GameMessage(gmessage, packet->bitSize));
 			}
+			else {
+				::fprintf(stderr, "Unkown ID: %i", typeId);
+			}
 			/*break;
 		case GAME_MESSAGE:*/
 
@@ -183,7 +193,8 @@ int Network::readMessages()
 
 		case ID_CONNECTION_REQUEST_ACCEPTED:
 		{
-			serverGuid = packet->guid;
+			serverGuid.rakNetGuid = packet->guid;
+			serverGuidSet = true;
 			::fprintf(stderr, "Our connection request has been accepted.\n");
 		}
 		case ID_NEW_INCOMING_CONNECTION:
@@ -215,16 +226,17 @@ int Network::readMessages()
 		}
 
 	}
-	return 0;
+	return 1;
 }
 
 int Network::sendBoidMessage(data* boids, int length) {
+	::fprintf(stderr, "Sending Message\n");
 	RakNet::BitStream* bs = new RakNet::BitStream();
 	int len = sizeof(data) * length;
 	char* arr;
 	arr = (char*)malloc(len);
 	arr = (char*)boids;
-	::fprintf(stderr, "%f, %f, %f\n", boids[0].position.x, boids[0].position.y, boids[0].position.z);
+	//::fprintf(stderr, "%f, %f, %f\n", boids[0].position.x, boids[0].position.y, boids[0].position.z);
 	memcpy(arr, boids, len);
 	useTimeStamp = ID_TIMESTAMP;
 	timeStamp = RakNet::GetTime();
@@ -234,7 +246,7 @@ int Network::sendBoidMessage(data* boids, int length) {
 	bs->Write(typeId);
 	bs->Write(len);
 	bs->Write(arr, len);
-	if (serverGuid.systemAddress != RakNet::UNASSIGNED_SYSTEM_ADDRESS) {
+	if (!serverGuidSet && !isServer) {
 		peer->Send(bs, HIGH_PRIORITY, RELIABLE_ORDERED, (char)0, serverGuid, false);
 	}
 	else {
