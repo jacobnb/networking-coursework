@@ -56,7 +56,6 @@ public class NetworkManager : MonoBehaviour
     }
     public string readMessage()
     {
-        Debug.Log("Bad Server!");
         StringBuilder sb = new StringBuilder(256);
         if (Network.readMessage(sb, sb.Capacity) > 0)
             return sb.ToString();

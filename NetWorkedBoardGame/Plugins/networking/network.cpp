@@ -11,7 +11,7 @@
 
 Network::Network() {
 	peer = RakNet::RakPeerInterface::GetInstance();
-	serverGuid.rakNetGuid.g = 0;
+	serverGuidSet = false;
 }
 
 Network::~Network()
@@ -140,9 +140,10 @@ int Network::serverMessages()
 
 int Network::readMessages()
 {
-	
+	::fprintf(stderr, "Reading Messages ");
 	for (packet = peer->Receive(); packet; peer->DeallocatePacket(packet), packet = peer->Receive())
 	{
+		::fprintf(stderr, "ID = %i", packet->data[0]);
 		switch (packet->data[0]) {
 		case ID_TIMESTAMP: {
 			RakNet::BitStream bs(packet->data, packet->length, false);
@@ -165,6 +166,9 @@ int Network::readMessages()
 				char* gmessage = (char*)malloc(packet->bitSize);
 				bs.Read(gmessage, packet->bitSize);
 				gameMessages.push(GameMessage(gmessage, packet->bitSize));
+			}
+			else {
+				::fprintf(stderr, "Unkown ID: %i", typeId);
 			}
 			/*break;
 		case GAME_MESSAGE:*/
@@ -190,6 +194,7 @@ int Network::readMessages()
 		case ID_CONNECTION_REQUEST_ACCEPTED:
 		{
 			serverGuid.rakNetGuid = packet->guid;
+			serverGuidSet = true;
 			::fprintf(stderr, "Our connection request has been accepted.\n");
 		}
 		case ID_NEW_INCOMING_CONNECTION:
@@ -225,6 +230,7 @@ int Network::readMessages()
 }
 
 int Network::sendBoidMessage(data* boids, int length) {
+	::fprintf(stderr, "Sending Message\n");
 	RakNet::BitStream* bs = new RakNet::BitStream();
 	int len = sizeof(data) * length;
 	char* arr;
@@ -240,7 +246,7 @@ int Network::sendBoidMessage(data* boids, int length) {
 	bs->Write(typeId);
 	bs->Write(len);
 	bs->Write(arr, len);
-	if (serverGuid.rakNetGuid.g !=0) {
+	if (!serverGuidSet && !isServer) {
 		peer->Send(bs, HIGH_PRIORITY, RELIABLE_ORDERED, (char)0, serverGuid, false);
 	}
 	else {
