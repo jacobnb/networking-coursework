@@ -29,11 +29,9 @@ int Network::initClient(uString IP, int port, uString username)
 	isServer = false;
 	MAX_CLIENTS = 1;
 	SERVER_PORT = port;
-
 	strcpy_s(serverName, username);
 	peer->Connect(IP, port, 0, 0);
 	//peer->Connect("127.0.0.1:60000", 60000, 0, 0);
-
 	return TRUE;
 }
 
@@ -62,20 +60,15 @@ int Network::GetConnectionState() {
 // just pass along messages to other peer.
 int Network::serverMessages()
 {
-	::fprintf(stderr, "Routing Message ");
 	for (packet = peer->Receive(); packet; peer->DeallocatePacket(packet), packet = peer->Receive())
 	{
-		::fprintf(stderr, "got a message\n");
-		
 		switch (packet->data[0]) {
 		case ID_TIMESTAMP: {
 			RakNet::BitStream bs(packet->data, packet->length, false);
 			bs.Read(useTimeStamp);
 			bs.Read(timeStamp);
 			bs.Read(typeId);
-			::fprintf(stderr, "%i\n", typeId);
 			if (typeId == BOID) {
-				::fprintf(stderr, "Routing Boid Message\n");
 				peer->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, (char)0, packet->guid, true);
 			}
 			else if (typeId == GAME_MESSAGE) {
@@ -171,13 +164,6 @@ int Network::readMessages()
 			else {
 				::fprintf(stderr, "Unkown ID: %i", typeId);
 			}
-			/*break;
-		case GAME_MESSAGE:*/
-
-		//break;
-	/*default:
-		::fprintf(stderr, "Game Message: %i\n", typeId);
-	}*/
 		}
 			break;
 		case ID_REMOTE_DISCONNECTION_NOTIFICATION:
@@ -198,6 +184,7 @@ int Network::readMessages()
 			serverGuidSet = true;
 			::fprintf(stderr, "Our connection request has been accepted.\n");
 		}
+			break;
 		case ID_NEW_INCOMING_CONNECTION:
 			::fprintf(stderr, "A connection is incoming.\n");
 			break;
@@ -224,6 +211,7 @@ int Network::readMessages()
 			break;
 		default:
 			::fprintf(stderr, (char*)packet->data);
+			::fprintf(stderr, "Default Message ID\n");
 		}
 
 	}
@@ -231,7 +219,7 @@ int Network::readMessages()
 }
 
 int Network::sendBoidMessage(data* boids, int length) {
-	::fprintf(stderr, "Sending Message\n");
+	//::fprintf(stderr, "Sending Message\n");
 	RakNet::BitStream* bs = new RakNet::BitStream();
 	int len = sizeof(data) * length;
 	char* arr;
@@ -247,12 +235,17 @@ int Network::sendBoidMessage(data* boids, int length) {
 	bs->Write(typeId);
 	bs->Write(len);
 	bs->Write(arr, len);
-	if (!serverGuidSet && !isServer) {
-		peer->Send(bs, HIGH_PRIORITY, RELIABLE_ORDERED, (char)0, serverGuid, false);
+	if (serverGuidSet ) {
+		if (!isServer) {
+			peer->Send(bs, HIGH_PRIORITY, RELIABLE_ORDERED, (char)0, serverGuid, false);
+		}
+		else {
+			::fprintf(stderr, "server guid defined but isServer");
+		}
 	}
 	else {
+		//::fprintf(stderr, "Is Server / No GUID\n");
 		peer->Send(bs, HIGH_PRIORITY, RELIABLE_ORDERED, (char)0, peer->GetGuidFromSystemAddress(RakNet::UNASSIGNED_SYSTEM_ADDRESS), true);
-		::fprintf(stderr, "Server GUID Not Defined\n");
 	}
 	//don't free(arr); the memory is still handled Unity side.
 	return 1;
