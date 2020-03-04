@@ -51,63 +51,73 @@ public class BoidManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(nm.mode == NetworkManager.NetworkMode.DATA_SHARING && nm.isServer)
+        if (nm.mode == NetworkManager.NetworkMode.DATA_SHARING && nm.isServer)
         {
-            Debug.Log("Routing Only");
+            //Debug.Log("Routing Only");
             // should just route messages to all other clients.
-            Network.serverMessages();
+            if (Network.serverMessages() == 0)
+            {
+                Debug.Log("Failed to send messages");
+            }
             return;
         }
-        string message = nm.readMessage();
-        while(message != "")
+        else
         {
-            Debug.Log(message);
-            // see MessageParser.messageTypes
-            if(message[0] == '0') //there's a boid position update
+
+
+            string message = nm.readMessage();
+            while (message != "")
             {
-                int length = int.Parse(message.Substring(1));
-                if(length != otherBoids.boids.Length)
+                Debug.Log("Reading Messages");
+                Debug.Log(message);
+                // see MessageParser.messageTypes
+                if (message[0] == '0') //there's a boid position update
                 {
-                    //boid.resize(length);
+                    Debug.Log("Reading Other Boids");
+                    int length = int.Parse(message.Substring(1));
+                    if (length != otherBoids.boids.Length)
+                    {
+                        //boid.resize(length);
+                    }
+                    nm.readBoids(ref otherBoids.boids);
                 }
-                nm.readBoids(ref otherBoids.boids);
+                else if (message[0] == '1')
+                {
+                    // spawn boids message;
+                    int boidsToSpawn = MessageParser.getNumSpawnBoids(message);
+                    otherBoids.resize(boidsToSpawn);
+                }
+                message = nm.readMessage();
             }
-            else if (message[0] == '1')
+            if (nm.mode == NetworkManager.NetworkMode.DATA_PUSH)
             {
-                // spawn boids message;
-                int boidsToSpawn = MessageParser.getNumSpawnBoids(message);
-                otherBoids.resize(boidsToSpawn);
+                if (nm.isServer)
+                {
+                    // TODO: replace w/ timestamp
+                    boids.updateBoids(Time.deltaTime);
+                    nm.sendBoids(ref boids.boids);
+                }
+                else
+                {
+                    otherBoids.setPosition();
+                }
             }
-            message = nm.readMessage();
-        }
-        if(nm.mode == NetworkManager.NetworkMode.DATA_PUSH)
-        {
-            if (nm.isServer)
+            else if (nm.mode == NetworkManager.NetworkMode.DATA_SHARING)
             {
-                // TODO: replace w/ timestamp
-                boids.updateBoids(Time.deltaTime);
+                if (!nm.isServer)
+                {
+                    // TODO: replace w/ timestamp
+                    boids.updateBoids(Time.deltaTime);
+                    nm.sendBoids(ref boids.boids);
+                    otherBoids.setPosition();
+                }
+            }
+            else if (nm.mode == NetworkManager.NetworkMode.DATA_COUPLED)
+            {
+                boids.updateBoids(Time.deltaTime, otherBoids);
                 nm.sendBoids(ref boids.boids);
-            }
-            else
-            {
                 otherBoids.setPosition();
             }
-        }
-        else if(nm.mode == NetworkManager.NetworkMode.DATA_SHARING)
-        {
-            if (!nm.isServer)
-            {
-                // TODO: replace w/ timestamp
-                boids.updateBoids(Time.deltaTime);
-                nm.sendBoids(ref boids.boids);
-                otherBoids.setPosition();
-            }
-        }
-        else if(nm.mode == NetworkManager.NetworkMode.DATA_COUPLED)
-        {
-            boids.updateBoids(Time.deltaTime, otherBoids);
-            nm.sendBoids(ref boids.boids);
-            otherBoids.setPosition();
         }
     }
 }
