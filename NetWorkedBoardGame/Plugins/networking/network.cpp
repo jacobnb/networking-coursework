@@ -100,7 +100,7 @@ int Network::serverMessages()
 
 		case ID_CONNECTION_REQUEST_ACCEPTED:
 		{
-			::fprintf(stderr, "Our connection request has been accepted.\n");
+			//::fprintf(stderr, "Our connection request has been accepted.\n");
 		}
 		case ID_NEW_INCOMING_CONNECTION:
 			::fprintf(stderr, "A connection is incoming.\n");
@@ -183,7 +183,9 @@ int Network::readMessages()
 
 		case ID_CONNECTION_REQUEST_ACCEPTED:
 		{
-			serverGuid = packet->guid;
+			serverGuid.rakNetGuid = packet->guid;
+			::fprintf(stderr, "%i", packet->guid.g);
+			::fprintf(stderr, "%i", serverGuid.rakNetGuid.g);
 			::fprintf(stderr, "Our connection request has been accepted.\n");
 		}
 		case ID_NEW_INCOMING_CONNECTION:
@@ -234,7 +236,7 @@ int Network::sendBoidMessage(data* boids, int length) {
 	bs->Write(typeId);
 	bs->Write(len);
 	bs->Write(arr, len);
-	if (serverGuid.systemAddress != RakNet::UNASSIGNED_SYSTEM_ADDRESS) {
+	if (serverGuid.systemAddress == RakNet::UNASSIGNED_SYSTEM_ADDRESS) {
 		peer->Send(bs, HIGH_PRIORITY, RELIABLE_ORDERED, (char)0, serverGuid, false);
 	}
 	else {
