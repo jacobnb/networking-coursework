@@ -13,18 +13,10 @@ public class CoupledBoidManager : MonoBehaviour
         boids = GetComponent<Boid>();
         otherBoids = gameObject.AddComponent<Boid>();
         otherBoids.boidFab = foreignBoidFab;
-        if (nm.isServer)
+        if (!nm.isServer)
         {
-
-            //    boids.initBoidObjects();
-            //    otherBoids.initBoidObjects();
-        }
-        else
-        {
-
-            boids.initBoidObjects();
-            otherBoids.initBoidObjects();
-
+        boids.initBoidObjects();
+        otherBoids.initBoidObjects();
         }
     }
 
@@ -41,7 +33,8 @@ public class CoupledBoidManager : MonoBehaviour
             }
             return;
         }
-
+        // TODO: to enable server to interact with boids, 
+        // need to link GUID to Unity side. OR handle interaction plugin side.
         Network.readMessages();
         string message = nm.readMessage();
         while (message != "")
