@@ -70,8 +70,7 @@ public class StartScene : MonoBehaviour
         if ((NetworkManager.NetworkMode)Mode.GetComponent<Dropdown>().value == NetworkManager.NetworkMode.DATA_SHARING)
             SceneManager.LoadScene("game_sharing");
         if ((NetworkManager.NetworkMode)Mode.GetComponent<Dropdown>().value == NetworkManager.NetworkMode.DATA_COUPLED)
-            Debug.Log("TODO: Set up script");
-                //SceneManager.LoadScene("game_coupled");
+            SceneManager.LoadScene("game_coupled");
     }
 
 }

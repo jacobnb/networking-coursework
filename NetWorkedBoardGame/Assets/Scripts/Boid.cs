@@ -135,12 +135,7 @@ public class Boid: MonoBehaviour
                     boids[i].velocity = new Network.vec3(newVel.normalized * maxSpeed);
                 }
             }
-        }
-        for (int i = 0; i < NUM_BOIDS; i++)
-        {
-            data currentBoid = boids[i];
-            Vector3 position = boids[i].position.toVector3();
-            // get all other boids data
+            // Handle our collision with other boids.
             for (int c = 0; /*see below*/; c++)
             {
                 if (c >= with.getNumBoids())
