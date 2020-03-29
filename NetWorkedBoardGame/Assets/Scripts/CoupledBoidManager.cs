@@ -15,8 +15,8 @@ public class CoupledBoidManager : MonoBehaviour
         otherBoids.boidFab = foreignBoidFab;
         if (!nm.isServer)
         {
-        boids.initBoidObjects();
-        otherBoids.initBoidObjects();
+            boids.initBoidObjects();
+            otherBoids.initBoidObjects();
         }
     }
 
@@ -65,6 +65,7 @@ public class CoupledBoidManager : MonoBehaviour
             // TODO: replace w/ timestamp
             boids.updateBoids(Time.deltaTime, otherBoids);
             nm.sendBoids(ref boids.boids);
+            // TODO: call update Boids.
             otherBoids.setPosition();
         }
     }

@@ -12,6 +12,7 @@ public class Boid: MonoBehaviour
     {
         public Network.vec3 position;
         public Network.vec3 velocity;
+        public Network.vec3 acceleration;
     }
     public struct behavior
     {
@@ -74,6 +75,7 @@ public class Boid: MonoBehaviour
             boids[i].position = position;
             position.x+=2;
             boids[i].velocity = velocity;
+            boids[i].acceleration = new Network.vec3(0f,0f,0f);
             //behave[i] = new behavior(5f, 5f, 5f, 5f, 5f, 10f);
         }
     }
@@ -83,6 +85,7 @@ public class Boid: MonoBehaviour
         screenWrap();
         //updateBoidVelocity();
         applyVelocityAndPosition(dt);
+        eulerIntegrate(dt);
     }
     public void updateBoids(float dt, Boid with)
     {
@@ -194,6 +197,16 @@ public class Boid: MonoBehaviour
         {
             boids[i].position += boids[i].velocity * dt;
             gameObjects[i].transform.position = boids[i].position.toVector3();
+        }
+    }
+    public void eulerIntegrate(float dt)
+    {
+        // step 2: Motion Integration
+        for (int i = 0; i < NUM_BOIDS; i++)
+        {
+            boids[i].position += boids[i].velocity * dt + boids[i].acceleration *.5f * dt * dt;
+            gameObjects[i].transform.position = boids[i].position.toVector3();
+            boids[i].velocity += boids[i].acceleration * dt;
         }
     }
     public void setPosition()
