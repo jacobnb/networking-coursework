@@ -17,6 +17,7 @@ struct data
 {
 	vec3 position;
 	vec3 velocity;
+	vec3 acceleration;
 	data(data* cpy) {
 		position = vec3(cpy->position);
 		velocity = vec3(cpy->velocity);

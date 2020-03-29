@@ -85,7 +85,7 @@ public class Boid: MonoBehaviour
         screenWrap();
         //updateBoidVelocity();
         applyVelocityAndPosition(dt);
-        eulerIntegrate(dt);
+        //eulerIntegrate(dt);
     }
     public void updateBoids(float dt, Boid with)
     {

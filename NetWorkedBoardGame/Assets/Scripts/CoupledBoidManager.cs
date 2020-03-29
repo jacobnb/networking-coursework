@@ -65,8 +65,8 @@ public class CoupledBoidManager : MonoBehaviour
             // TODO: replace w/ timestamp
             boids.updateBoids(Time.deltaTime, otherBoids);
             nm.sendBoids(ref boids.boids);
-            // TODO: call update Boids.
-            otherBoids.setPosition();
+            // otherBoids.setPosition();
+            otherBoids.updateBoids(Time.deltaTime, boids);
         }
     }
 }
