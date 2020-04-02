@@ -29,7 +29,8 @@ MYUNITYPLUGIN_SYMBOL int initServer(int port, uString username, int maxClients =
 MYUNITYPLUGIN_SYMBOL int cleanup(netID ID=0);
 MYUNITYPLUGIN_SYMBOL int sendMessage(char* message, netID ID = 0);
 MYUNITYPLUGIN_SYMBOL int sendBoidMessage(data* boidsArr, int length, netID ID = 0);
-MYUNITYPLUGIN_SYMBOL int readBoidMessage(data* boidsArr, int length, netID ID = 0);
+MYUNITYPLUGIN_SYMBOL uint64_t readBoidMessage(data* boidsArr, int length, netID ID = 0);
+MYUNITYPLUGIN_SYMBOL uint64_t getCurrentTime(netID ID = 0);
 MYUNITYPLUGIN_SYMBOL int readMessage(char* message, int bufferSize, netID ID = 0);
 MYUNITYPLUGIN_SYMBOL int checkConnection(netID ID = 0);
 MYUNITYPLUGIN_SYMBOL int doEverything(bool isServer);

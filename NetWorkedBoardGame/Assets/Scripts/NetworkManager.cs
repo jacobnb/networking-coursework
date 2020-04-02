@@ -70,7 +70,7 @@ public class NetworkManager : MonoBehaviour
     {
         Network.sendBoidMessage(boids, boids.Length);
     }
-    public int readBoids(ref Boid.data[] boids)
+    public ulong readBoids(ref Boid.data[] boids)
     {
         return Network.readBoidMessage(boids, boids.Length);
     }

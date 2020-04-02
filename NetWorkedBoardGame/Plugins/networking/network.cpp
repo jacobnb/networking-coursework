@@ -152,6 +152,7 @@ int Network::readMessages()
 				data* boids = (data*)malloc(len);
 				bs.Read((char*)boids, len);
 				boidMessages.push(boids);
+				boidMessageTimes.push(timeStamp);
 				char* message = (char*)malloc(sizeof(int) * 2);
 				sprintf(message, "0%d", len);
 				gameMessages.push(GameMessage(message, len));
@@ -251,7 +252,7 @@ int Network::sendBoidMessage(data* boids, int length) {
 	return 1;
 }
 
-int Network::readBoidMessage(data* boids, int length)
+uint64_t Network::readBoidMessage(data* boids, int length)
 {
 	int len = sizeof(data) * length;
 	::fprintf(stderr, "Reading Boid Message");
@@ -261,8 +262,15 @@ int Network::readBoidMessage(data* boids, int length)
 	//boids = boidMessages.front();
 	memcpy(boids, boidMessages.front(), len);
 	boidMessages.pop();
-	::fprintf(stderr, " %f\n", boids[0].position.y);
-	return 1;
+	//::fprintf(stderr, " %f\n", boids[0].position.y);
+	uint64_t timestamp = boidMessageTimes.front();
+	boidMessageTimes.pop();
+	return timestamp;
+}
+
+uint64_t Network::getCurrentTime()
+{
+	return RakNet::GetTime();
 }
 
 

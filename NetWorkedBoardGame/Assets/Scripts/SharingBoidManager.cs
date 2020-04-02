@@ -2,6 +2,8 @@
 
 public class SharingBoidManager : MonoBehaviour
 {
+    // TODO: Not updated to use current time.
+
     Boid boids;
     Boid otherBoids;
     public GameObject foreignBoidFab;
@@ -70,7 +72,7 @@ public class SharingBoidManager : MonoBehaviour
         if (!nm.isServer)
         {
             // TODO: replace w/ timestamp
-            boids.updateBoids(Time.deltaTime);
+            boids.updateBoids(Network.getCurrentTime());
             nm.sendBoids(ref boids.boids);
             otherBoids.setPosition();
         }

@@ -32,6 +32,16 @@ public class Boid: MonoBehaviour
             maxForce = MaxForce;
         }
     }
+    /* time variables
+    * When the boids array was updated
+    * When the boids were last integrated
+    * current game time - to get delta
+    * 
+    * Need to store previous data to lerp? or maybe lerp based on game object position
+    */
+    public float msToLerp = 2000f;
+    public ulong time; // last message time
+    ulong lastUpdateTime;
     // TODO: Make boids collide with each other.
     float radius = .5f;
     float maxSpeed = 5f;
@@ -64,10 +74,11 @@ public class Boid: MonoBehaviour
 
     public void initBoidObjects()
     {
-    boids = new data[NUM_BOIDS];
-    behave = new behavior[NUM_BOIDS];
-    gameObjects = new GameObject[NUM_BOIDS];
-    Network.vec3 position = new Network.vec3(-2,0,0);
+        time = Network.getCurrentTime();
+        boids = new data[NUM_BOIDS];
+        behave = new behavior[NUM_BOIDS];
+        gameObjects = new GameObject[NUM_BOIDS];
+        Network.vec3 position = new Network.vec3(-2,0,0);
         Network.vec3 velocity = new Network.vec3(5f, 1,1);
         for(int i=0; i < NUM_BOIDS; i++)
         {
@@ -79,20 +90,47 @@ public class Boid: MonoBehaviour
             //behave[i] = new behavior(5f, 5f, 5f, 5f, 5f, 10f);
         }
     }
-    public void updateBoids(float dt)
+    public void updateBoids(ulong gameTime)
     {
         doCollision();
         screenWrap();
         //updateBoidVelocity();
-        applyVelocityAndPosition(dt);
-        //eulerIntegrate(dt);
+        // applyVelocityAndPosition((gameTime-time)/1000f);
+        eulerIntegrate((gameTime-time)/1000f);
+        lastUpdateTime = time;
+        time = gameTime;
+        setPosition();
+
     }
-    public void updateBoids(float dt, Boid with)
+    public void deadReckonBoids(ulong gameTime, Boid with)
     {
+        float dt = (gameTime - time) / 1000f;
+
+        doCollision(with);
+        // applyVelocityAndPosition((gameTime-time)/1000f);
+        eulerIntegrate(dt);
+        if (gameTime- lastUpdateTime > 100) // > .1 s
+        {
+            lerpPosition(Mathf.Min(dt / msToLerp, 1f));
+        }
+        else
+        {
+            setPosition();
+        }
+        lastUpdateTime = time;
+        time = gameTime;
+    }
+    public void updateBoids(ulong gameTime, Boid with)
+    {
+        float dt = (gameTime - time) / 1000f;
         doCollision(with);
         screenWrap();
         //updateBoidVelocity();
-        applyVelocityAndPosition(dt);
+        //applyVelocityAndPosition((gameTime - time) / 1000f);
+        eulerIntegrate(dt);
+        lastUpdateTime = time;
+        time = gameTime;
+        setPosition();
     }
     public void doCollision()
     {
@@ -189,6 +227,7 @@ public class Boid: MonoBehaviour
                 boids[i].velocity.z = -boids[i].velocity.z;
             }
             boids[i].position = new Network.vec3(Camera.main.ScreenToWorldPoint(screenPos));
+         //   gameObjects[i].transform.position = boids[i].position.toVector3();
         }
     }
     public void applyVelocityAndPosition(float dt)
@@ -205,7 +244,6 @@ public class Boid: MonoBehaviour
         for (int i = 0; i < NUM_BOIDS; i++)
         {
             boids[i].position += boids[i].velocity * dt + boids[i].acceleration *.5f * dt * dt;
-            gameObjects[i].transform.position = boids[i].position.toVector3();
             boids[i].velocity += boids[i].acceleration * dt;
         }
     }
@@ -214,6 +252,13 @@ public class Boid: MonoBehaviour
         for (int i = 0; i < NUM_BOIDS; i++)
         {
             gameObjects[i].transform.position = boids[i].position.toVector3();
+        }
+    }
+    public void lerpPosition(float t)
+    {
+        for (int i = 0; i < NUM_BOIDS; i++)
+        {
+            gameObjects[i].transform.position = Vector3.Lerp(gameObjects[i].transform.position, boids[i].position.toVector3(), t);
         }
     }
     //void updateBoidVelocity()

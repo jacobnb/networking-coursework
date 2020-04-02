@@ -2,10 +2,12 @@
 
 public class CoupledBoidManager : MonoBehaviour
 {
+    bool shouldUpdate = true;
     Boid boids;
     Boid otherBoids;
     public GameObject foreignBoidFab;
     NetworkManager nm;
+    ulong gameTime;
     // Start is called before the first frame update
     void Start()
     {
@@ -23,6 +25,12 @@ public class CoupledBoidManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            shouldUpdate = !shouldUpdate;
+        }
+        
+        gameTime = Network.getCurrentTime();
         if (nm.isServer)
         {
             //Debug.Log("Routing Only");
@@ -36,11 +44,11 @@ public class CoupledBoidManager : MonoBehaviour
         // TODO: to enable server to interact with boids, 
         // need to link GUID to Unity side. OR handle interaction plugin side.
         Network.readMessages();
-        string message = nm.readMessage();
+        string message = "";
+        if(shouldUpdate)
+            message = nm.readMessage();
         while (message != "")
         {
-            Debug.Log("Reading Messages");
-            Debug.Log(message);
             // see MessageParser.messageTypes
             if (message[0] == '0') //there's a boid position update
             {
@@ -50,23 +58,25 @@ public class CoupledBoidManager : MonoBehaviour
                 {
                     //boid.resize(length);
                 }
-                nm.readBoids(ref otherBoids.boids);
+                otherBoids.time = nm.readBoids(ref otherBoids.boids);
             }
-            else if (message[0] == '1')
+            else
             {
-                // spawn boids message;
-                int boidsToSpawn = MessageParser.getNumSpawnBoids(message);
-                otherBoids.resize(boidsToSpawn);
+                if (message[0] == '1')
+                {
+                    // spawn boids message;
+                    int boidsToSpawn = MessageParser.getNumSpawnBoids(message);
+                    otherBoids.resize(boidsToSpawn);
+                }
             }
             message = nm.readMessage();
         }
         if (!nm.isServer)
         {
-            // TODO: replace w/ timestamp
-            boids.updateBoids(Time.deltaTime, otherBoids);
-            nm.sendBoids(ref boids.boids);
-            // otherBoids.setPosition();
-            otherBoids.updateBoids(Time.deltaTime, boids);
+            boids.updateBoids(gameTime, otherBoids);
+            if (shouldUpdate)
+                nm.sendBoids(ref boids.boids);
+            otherBoids.updateBoids(gameTime, boids);
         }
     }
 }

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class BoidManager : MonoBehaviour
 {
+    // TODO: Not updated to use current time. see coupled boid manager
     Boid boids;
     NetworkManager nm;
     // Start is called before the first frame update
@@ -52,8 +53,7 @@ public class BoidManager : MonoBehaviour
         }
         if (nm.isServer)
         {
-            // TODO: replace w/ timestamp
-            boids.updateBoids(Time.deltaTime);
+            boids.updateBoids(Network.getCurrentTime());
             nm.sendBoids(ref boids.boids);
         }
         else

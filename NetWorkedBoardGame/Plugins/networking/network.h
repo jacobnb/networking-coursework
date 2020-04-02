@@ -16,6 +16,7 @@ private:
 	unsigned int MAX_CLIENTS = 10;
 	unsigned short SERVER_PORT = 60000;
 	std::queue<data *> boidMessages;
+	std::queue<RakNet::Time> boidMessageTimes;
 	std::queue<GameMessage> gameMessages;
 	RakNet::MessageID useTimeStamp;
 	RakNet::Time timeStamp;
@@ -49,7 +50,9 @@ public:
 	int readMessages();
 	int sendMessage(char* message);
 	int sendBoidMessage(data* boids, int length);
-	int readBoidMessage(data* boids, int length);
+	// @return timestamp
+	uint64_t readBoidMessage(data* boids, int length);
+	uint64_t getCurrentTime();
 	int readMessage(char* message, int bufferSize);
 	int serverMessages();
 };

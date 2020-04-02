@@ -62,9 +62,16 @@ int sendBoidMessage(data* boidsArr, int length, netID ID) {
 	}
 	return FALSE;
 }
-int readBoidMessage(data* boidsArr, int length, netID ID) {
+uint64_t readBoidMessage(data* boidsArr, int length, netID ID) {
 	if (instances[ID]) {
 		return instances[ID]->readBoidMessage(boidsArr, length);
+	}
+	return FALSE;
+}
+MYUNITYPLUGIN_SYMBOL uint64_t getCurrentTime(netID ID)
+{
+	if (instances[ID]) {
+		return instances[ID]->getCurrentTime();
 	}
 	return FALSE;
 }
